@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        Java-AbstractQueuedSynchronizer｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>Java-AbstractQueuedSynchronizer</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2016-12-09
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            Java-AbstractQueuedSynchronizer
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <p>Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。</p>
+<p>从ReentrantLock看AQS：<br>对于ReentrantLock 通常使用的如下：</p>
+<pre><code>reentrantLock.lock();
+//to do something
+reentrantLock.unlock();
+</code></pre><p>它可以保证to do something 这段代码在同一个时间有且只有一个线程执行这断代码，其余的现场将被挂起，直到获得锁。</p>
+<p>reentrantLock.lock()的实现：</p>
+<pre><code>public void lock() {
+       sync.lock();
+   }
+</code></pre><p> ReentrantLock内部有一个代理类来具体的完成这个操作，ReentrantLock主要分为公平锁，和非公平锁,而这个的具体实现就是拓展了AQS</p>
+<pre><code>abstract static class Sync extends AbstractQueuedSynchronizer {...}
+static final class NonfairSync extends Sync {...}
+static final class FairSync extends Sync {...}
+</code></pre><p>公平锁:类似于排队一样，先到先服务的原则<br>非公平锁:绕过排队直接插入，当然也有插入不进去的：）</p>
+<p>公平锁的获取:</p>
+<pre><code>final void lock() {
+            acquire(1);
+        }
+</code></pre><p>其中acquire 方法为AQS的 acquire方法</p>
+<pre><code>public final void acquire(int arg) {
+       if (!tryAcquire(arg) &amp;&amp;
+           acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+           selfInterrupt();
+   }
+</code></pre><p>这代码就是尝试的获取锁，如果获取失败，将这个请求加入的到获取锁的队列之中</p>
+<p>tryAcquire方法在AQS类中么有给出具体的实现，显然是交给子类自己去实现:</p>
+<pre><code>protected boolean tryAcquire(int arg) {
+        throw new UnsupportedOperationException();
+    }
+</code></pre><p>那就来看一下他的子类公平锁的具体实现：</p>
+<pre><code>protected final boolean tryAcquire(int acquires) {
+            final Thread current = Thread.currentThread();
+            int c = getState();
+            if (c == 0) {
+                if (!hasQueuedPredecessors() &amp;&amp;
+                    compareAndSetState(0, acquires)) {
+                    setExclusiveOwnerThread(current);
+                    return true;
+                }
+            }
+            else if (current == getExclusiveOwnerThread()) {
+                int nextc = c + acquires;
+                if (nextc &lt; 0)
+                    throw new Error(&quot;Maximum lock count exceeded&quot;);
+                setState(nextc);
+                return true;
+            }
+            return false;
+        }
+</code></pre><p>方法getState 的实现是在AQS中，使用一个volatile变了来表示一个锁的使用状态</p>
+<pre><code>private volatile int state;
+protected final int getState() {
+    return state;
+}
+</code></pre><p>如果 state == 0<br>  表示锁没有被其他线程使用然后在调用hasQueuedPredecessors()方法判断队列是否还有其他线程,如果没有没有其他线程，说明没有其他线程正在占有锁，那就进行获取锁，将state 设置为获取状态，如果通过CAS（compareAndSetState）操作将状态为更新成功则代表当前线程获取锁，因此，将当前线程设置到AQS的一个变量中，说明这个线程拿走了锁。</p>
+<p>  如果不为0 意味着，锁已经被拿走了，但是，因为ReentrantLock是重入锁，是可以重复lock,unlock的，只要成对出现行。一次。这里还要再判断一次 获取锁的线程是不是当前请求锁的线程。如果是的，累加在state字段上就可以了。致此，如果获取到锁，那就返回true ,如果么有获取到，那就返回false,然后将获取的锁的线程放入到队列中，只是在放入到队列之前要进行包装一下:</p>
+<pre><code>private Node addWaiter(Node mode) {
+     Node node = new Node(Thread.currentThread(), mode);
+     // Try the fast path of enq; backup to full enq on failure
+     Node pred = tail;
+     if (pred != null) {
+         node.prev = pred;
+         if (compareAndSetTail(pred, node)) {
+             pred.next = node;
+             return node;
+         }
+     }
+     enq(node);
+     return node;
+ }
+</code></pre><p>使用当前线程通过设置mode（独占，共享）构造一个node节点，创建这个节点加入到队列的尾部,如果队列不为空队列，那么通过CAS操作将当前节点设置为最新想获取锁的节点,如果失败则将进入一个死循环进行更改。将获取锁的节点加入到队列还需要将当前线程挂起</p>
+<pre><code>final boolean acquireQueued(final Node node, int arg) {
+      boolean failed = true;
+      try {
+          boolean interrupted = false;
+          for (;;) {
+              final Node p = node.predecessor();
+              if (p == head &amp;&amp; tryAcquire(arg)) {
+                  setHead(node);
+                  p.next = null; // help GC
+                  failed = false;
+                  return interrupted;
+              }
+              if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
+                  parkAndCheckInterrupt())
+                  interrupted = true;
+          }
+      } finally {
+          if (failed)
+              cancelAcquire(node);
+      }
+  }
+</code></pre><p>if (p == head &amp;&amp; tryAcquire(arg)) 如果当前的节点是head说明他是队列中第一个“有效的”节点，因此尝试获取，上文中有提到这个类是交给子类去扩展的,  shouldParkAfterFailedAcquire(p, node) 否则，检查前一个节点的状态为，看当前获取锁失败的线程是否需要挂起。/如果需要，借助JUC包下的LockSopport类的静态方法Park挂起当前线程。知道被唤醒。</p>
+<p>获取锁，说完了，释放锁也有异曲同工之妙，和获取锁的相应对应，获取一个锁，标示为+1，释放一个锁，标志位-1。具体的释放过程也只子类自己去实现:</p>
+<pre><code>protected final boolean tryRelease(int releases) {
+            int c = getState() - releases;
+            if (Thread.currentThread() != getExclusiveOwnerThread()) //如果释放的线程和获取锁的线程不是同一个，抛出非法监视器状态异常。
+                throw new IllegalMonitorStateException();
+            boolean free = false;
+            if (c == 0) {//因为是重入的关系，不是每次释放锁c都等于0，直到最后一次释放锁时，才通知AQS不需要再记录哪个线程正在获取锁。
+                free = true;
+                setExclusiveOwnerThread(null);
+            }
+            setState(c);
+            return free;
+        }
+</code></pre><p>释放锁成功过后，找到AQS头节点，并且进行唤醒线程,寻找的顺序是从队列尾部开始往前去找的最前面的一个waitStatus小于0的节点</p>
+<pre><code>private void unparkSuccessor(Node node) {
+      int ws = node.waitStatus;
+      if (ws &lt; 0)
+          compareAndSetWaitStatus(node, ws, 0);
+      Node s = node.next;
+      if (s == null || s.waitStatus &gt; 0) {
+          s = null;
+          for (Node t = tail; t != null &amp;&amp; t != node; t = t.prev)
+              if (t.waitStatus &lt;= 0)
+                  s = t;
+      }
+      if (s != null)
+          LockSupport.unpark(s.thread);
+  }
+</code></pre><p>公平锁，获取和释放都说完了，那非公平的获取和释放那就很好理解了，他们之间的区别就在于非公平的锁，在获取的时候进行更改，如果更改不成功那还是要入队列的</p>
+<pre><code>final void lock() {
+           if (compareAndSetState(0, 1))
+               setExclusiveOwnerThread(Thread.currentThread());
+           else
+               acquire(1);
+       }
+</code></pre><p>AQS只是维护一个状态，一个控制各个线程何时可以访问的状态，它只对状态负责，而这个状态表示什么含义，由子类自己去定义。</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/"
+                     data-title="Java-AbstractQueuedSynchronizer"
+                     data-url="http://happyer.github.io/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/"
+                     data-images=""
+                     data-content="Java 中的 ReentrantLock Semaphore ReentrantReadWr... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2016/12/09/2016-03-15-AQS/" data-toggle="tooltip" data-placement="top"
+                           title="The java.util.concurrent Synchronizer Framework（译）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2016/12/09/2015-7-05-android-圆形进度条/" data-toggle="tooltip" data-placement="top"
+                           title="android圆形进度条自定义">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/"
+                         data-title="Java-AbstractQueuedSynchronizer"
+                         data-url="http://happyer.github.io/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2016
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>

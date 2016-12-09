@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        The java.util.concurrent Synchronizer Framework（译）｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2016-03-15-AQS/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>The java.util.concurrent Synchronizer Framework（译）</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2016-12-09
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            The java.util.concurrent Synchronizer Framework（译）
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <p>在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）<br>都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇文章主要描述框架的设计实现和用法已经性能呢的测试。</p>
+<p>设计与实现：</p>
+<p>同步背后的基本思想是你很简单的。acquire操作如下：</p>
+<pre><code>while (synchronization state does not allow acquire) {
+      enqueue current thread if not already queued;
+      possibly block current thread;
+}
+dequeue current thread if it was queued;
+</code></pre><p>release操作如下：</p>
+<pre><code>update synchronization state;
+if (state may permit a blocked thread to acquire)
+    unblock one or more queued threads;
+</code></pre><p>为了支持上面的操作，需要一下3个基本的组件互相协调：</p>
+<p>同步状态的原理管理<br>线程的阻塞和解除阻塞<br>队列的维护</p>
+<p>按照上面3组件来创造一个框架是有可能的。然而这样既没有效果有没有用。例如：存储在队列的节点信息必须与需要解除锁的信息一致，同时暴露方法的签名依赖与同步状态的特性</p>
+<p>同步框架的核心决策是为了这3个组件选择一个和具体的实现，同时在使用的时候有着大量的可选可用。有意地限制了其应用的范围，但是提供了足够的效率，使得在实践中没有理由去不去使用这个框架，再合适的地方运用的时候。</p>
+<p>同步状态：</p>
+<p>AQS类使用单个int（32位）来保存同步状态，并暴露出getState、setState以及compareAndSet操作来读取和更新这个状态。这些方法都依赖于j.u.c.atomic包的支持，这个包提供了兼容JSR133中volatile在读和写上的语义，并且通过使用本地的compare-and-swap或load-linked/store-conditional指令来实现compareAndSetState，使得仅当同步状态拥有一个期望值的时候，才会被原子地设置成新值。</p>
+<p>将同步状态限制为一个32位的整形是出于实践上的决定。虽然JSR166也提供了64位long字段的原子性操作，但这些操作在很多平台上还是使用内部锁的方式来模拟实现的，这会使同步器的性能可能不会很理想。将来可能会有一个类是专门使用64位的状态的。然而，32位的状态对大多数应用程序都是足够的。在j.u.c包中，只有一个同步器类可能需要多于32位来维持状态，那就是CyclicBarrier类，所以，它用了锁。</p>
+<p>基于AQS的具体实现类必须根据暴露出的状态相关的方法定义tryAcquire和tryRelease方法，以控制acquire和release操作。<br>当同步状态满足时，tryAcquire方法必须返回true，而当新的同步状态允许后续acquire时，tryRelease方法也必须返回true。这些方法都接受一个int类型的参数用于传递想要的状态。例如：可重入锁中，当某个线程从条件等待中返回，然后重新获取锁时，为了重新建立循环计数的场景。很多同步器并不需要这样一个参数，因此忽略它即可。</p>
+<p>阻塞：<br>直到JSR166之前，阻塞线程和解除线程阻塞都是基于Java内置管程，没有其它非基于Java内置管程的API可以用来创建同步器。唯一可以选的是Thread.suspend和Thread.resume，但是他们没有解决竞争的问题，因此没有作用。当一个非阻塞的线程在一个正准备阻塞的线程调用suspend前调用了resume，这个resume操作将不会有什么效果。</p>
+<p>j.u.c包有一个LockSuport类，这个类中包含了解决这个问题的方法。方法LockSupport.park阻塞当前线程除非/直到有个LockSupport.unpark方法被调用（unpark方法被提前调用也是可以的）。unpark的调用是没有被计数的，因此在一个park调用前多次调用unpark方法只会解除一个park操作。另外，它们作用于每个线程而不是每个同步器。一个线程在一个新的同步器上调用park操作可能会立即返回，因为在此之前可能有“剩余的”unpark操作。但是，在缺少一个unpark操作时，下一次调用park就会阻塞。虽然可以显式地消除这个状态（译者注：就是多余的unpark调用），但并不值得这样做。在需要的时候多次调用park会更高效。</p>
+<p>这个简单的机制与有些用法在某种程度上是相似的，例如Solaris-9的线程库，WIN32中的“可消费事件”，以及Linux中的NPTL线程库。因此最常见的运行Java的平台上都有相对应的有效实现。（但目前Solaris和Linux上的Sun Hotspot JVM参考实现实际上是使用一个pthread的condvar来适应目前的运行时设计的）。park方法同样支持可选的相对或绝对的超时设置，以及与JVM的Thread.interrupt结合 —— 可通过中断来unpark一个线程。</p>
+<p>持续更新中。。。</p>
+<p>参考文献：<br>  The java.util.concurrent Synchronizer Framework</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2016/12/09/2016-03-15-AQS/"
+                     data-title="The java.util.concurrent Synchronizer Framework（译）"
+                     data-url="http://happyer.github.io/2016/12/09/2016-03-15-AQS/"
+                     data-images=""
+                     data-content="在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/" data-toggle="tooltip" data-placement="top"
+                           title="深入分析ConcurrentHashMap">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/" data-toggle="tooltip" data-placement="top"
+                           title="Java-AbstractQueuedSynchronizer">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2016/12/09/2016-03-15-AQS/"
+                         data-title="The java.util.concurrent Synchronizer Framework（译）"
+                         data-url="http://happyer.github.io/2016/12/09/2016-03-15-AQS/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2016
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>

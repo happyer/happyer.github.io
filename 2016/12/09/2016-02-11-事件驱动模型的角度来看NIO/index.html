@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        事件驱动模型的角度来看 JAVA NIO｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>事件驱动模型的角度来看 JAVA NIO</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2016-12-09
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            事件驱动模型的角度来看 JAVA NIO
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h2 id="事件驱动模型的角度来看-JAVA-NIO"><a href="#事件驱动模型的角度来看-JAVA-NIO" class="headerlink" title="事件驱动模型的角度来看 JAVA NIO"></a>事件驱动模型的角度来看 JAVA NIO</h2><p>事件驱动模型的角度来看 java nio，先作知识的简单铺垫，<br>1，阻塞非阻塞<br>阻塞式I/O模型：<br>（1）等待数据准备好；<br>（2）从内核向进程复制数据。<br>2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。进而不断的通过轮询方式来获取正确的结果<br>3，I/O多路复用：虽然I/O多路复用的函数也是阻塞的，但是其与以上两种还是有不同的，I/O多路复用是阻塞在select，epoll这样的系统调用之上，而没有阻塞在真正的I/O系统调用。</p>
+<p>阻塞，非阻塞：进程/线程要访问的数据是否就绪，进程/线程是否需要等待；<br>同步，异步：访问数据的方式，同步需要主动读写数据，在读写数据的过程中还是会阻塞；异步只需要I/O操作完成的通知，并不主动读写数据，由操作系统内核完成数据的读写。</p>
+<p>这里只是简单的概述而已</p>
+<p>4.nio 主要模块介绍</p>
+<p><img src="https://raw.githubusercontent.com/happyer/happyer.github.io/master/images/chanel_selector_buffer.png" alt=""></p>
+<p>selector 主要负责监听io事件，channel这里可以简单理解对于数据的操作,我觉得把它理解为socket 吧好理解一点，比如发送数据和读取数据，buffer 则是将数据进行读入和读取，对于buffer的理解可以参照java io 读取的文件的buffer<br>5，java nio 开发流程架构</p>
+<p><img src="https://raw.githubusercontent.com/happyer/happyer.github.io/master/images/reactor.png" alt=""></p>
+<p>6，代码的实现:<br>（1）Reactor 构造函数</p>
+<pre><code>  public Reactor(int port) throws IOException {
+  selector = Selector.open();
+  serverSocketChannel = ServerSocketChannel.open();
+  serverSocketChannel.bind(new InetSocketAddress(port));
+  serverSocketChannel.configureBlocking(false);
+  SelectionKey selectionKey =  serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+  selectionKey.attach(new Acceptor());
+
+}
+</code></pre><p>Reactor是一种事件驱动模型；使用Selector 有如下方法<br>a. public static Selector open()；<br>该方法获取一种io 多路复用的机制，比如linux 2.6＋平台java提供的是epoll 机制，mac os x 提供的是kqueue机制，这里就不对io 复用探讨<br>b. 获取server channel 对象进行绑定监听端口<br>c. 设置服务方式为非阻塞方式<br>d. 将channel 注册到selector 上，让selector 去管理我们关心的io<br>e. SelectionKey 理解为selector 和 channel 之间的抽象</p>
+<p>(2)实现Runable接口的run 方法</p>
+<pre><code>public void run() {
+      try {
+          while (!Thread.interrupted()) {
+              selector.select();
+              Set selected = selector.selectedKeys();
+              Iterator it = selected.iterator();
+              //循环的遍历，可以操作的事件
+              while (it.hasNext())
+                  //将读取到的事件进行分发
+                  dispatch((SelectionKey)(it.next()));
+              selected.clear();
+          }
+      } catch (IOException e){
+
+      }
+  }
+</code></pre><p>Selector是java nio 中的多路复用器，配合SelectionKey使用，SelectionKey代表着一个Channel和Selector的关系的抽象，Channel向Selector注册的时候产生，由Selector维护。Selector维护着三个SelectionKey的集合：</p>
+<p>private Set<selectionkey> publicKeys;  当有SelectionKey关联的Channel有Channel向Selector注册的IO事件就绪的时候并且有select操作，对应的SelectionKey会被放到publicSelectedKeys中。因为这个集合中的SelectionKey可以通过直接调用Set的remove将SelectionKey移除。<br>private Set<selectionkey> publicSelectedKeys 当有SelectionKey关联的Channel有Channel向Selector注册的IO事件就绪的时候并且有select操作，对应的SelectionKey会被放到publicSelectedKeys中。因为这个集合中的SelectionKey可以通过直接调用Set的remove将SelectionKey移除。<br>private final Set<selectionkey> cancelledKeys  当有已经向Selector注册的Channel发生degistered的时候，SelectionKey将被放到这个集合，并且在下一次select的时候被从所有的集合中移出。</selectionkey></selectionkey></selectionkey></p>
+<p>(3)Acceptor 类:</p>
+<pre><code>class Acceptor implements Runnable {
+
+    public void run() {
+        try {
+            SocketChannel c = serverSocketChannel.accept();
+            if (c != null)
+                new Thread(new Handler(c,selector)).start();
+        }
+        catch(IOException ex) {
+        }
+    }
+}
+</code></pre><p>这里就是获取到相应的channel 对象，然后交给处理线程 handler去处理</p>
+<p>(4)dispatch 方法：</p>
+<pre><code>private void dispatch(SelectionKey k) {
+     Runnable r = (Runnable)(k.attachment());
+     if (r != null)
+         r.run();
+ }
+</code></pre><p>这里 SelectionKey .attachment 使用的是AtomicReferenceFieldUpdater 这个类的方法 原子更新<br>（5）Handler 类</p>
+<pre><code>public Handler(SocketChannel socketChannel, Selector selector) throws IOException {
+    this.socketChannel = socketChannel;
+    socketChannel.configureBlocking(false);
+    selectionKey = socketChannel.register(selector, 0);
+    selectionKey.attach(this);
+    selectionKey.interestOps(SelectionKey.OP_READ);
+    selector.wakeup();
+
+}
+
+public void run() {
+        if (state == READING) read();
+        else if (state == SENDING) send();
+}
+</code></pre><p>逻辑，就是让selector 继续侦听我们注册的事件，然后对于数据进行read write 操作而已</p>
+<p><a href="https://github.com/happyer/java_nio" target="_blank" rel="external">代码地址</a></p>
+<p>至此整个reactor 的基本架构已经结束，此次纪录为后面的netty 做准备</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/"
+                     data-title="事件驱动模型的角度来看 JAVA NIO"
+                     data-url="http://happyer.github.io/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/"
+                     data-images=""
+                     data-content="事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2016/12/09/2016-02-05-CountDownLatch/" data-toggle="tooltip" data-placement="top"
+                           title="java多线程CountDownLatch使用">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2016/12/09/2016-02-12-maven继承聚合/" data-toggle="tooltip" data-placement="top"
+                           title="maven的聚合与继承的使用">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/"
+                         data-title="事件驱动模型的角度来看 JAVA NIO"
+                         data-url="http://happyer.github.io/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#事件驱动模型的角度来看-JAVA-NIO"><span class="toc-text">事件驱动模型的角度来看 JAVA NIO</span></a></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2016
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>
