@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        c++复制构造函数｜chauncy&#39;s blog
+        mysql 索引｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+    <link rel="canonical" href="http://happyer.github.io/2016/12/24/2016-12-24-mysql索引/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,18 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>c++复制构造函数</h1>
+                    <h1>mysql 索引</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2016-12-24
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#mysql"
+                           title="mysql">mysql</a>
                         
                     </div>
                 </div>
@@ -162,7 +165,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            c++复制构造函数
+            mysql 索引
         </span>
     </div>
 </header>
@@ -173,38 +176,29 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下</p>
-<pre><code>class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs);   //copy 构造函数
-      Widget&amp; operator=(const Widget&amp; rhs);  //copy assignment 操作符
-      ~Widget{};();
-};
+                <p>#索引目的<br>索引的目的在于提高查询效率，就内比为字典一样</p>
+<p>#索引原理</p>
+<p>生活中都有很多例子，动车上车的时候，以及图书官等，数据库也是一样，只是更为复杂还有范围查询(&gt;、&lt;、between、in)、模糊查询(like)、并集查询(or)等等。数据库应该选择怎么样的方式来应对所有的问题呢？我们回想字典的例子，能不能把数据分成段，然后分段查询呢？最简单的如果1000条数据，1到100分成第一段，101到200分成第二段，201到300分成第三段……这样查第250条数据，只要找第三段就可以了，一下子去除了90%的无效数据。但如果是1千万的记录呢，分成几段比较好？稍有算法基础的同学会想到搜索树，其平均复杂度是lgN，具有不错的查询性能。但这里我们忽略了一个关键的问题，复杂度模型是基于每次相同的操作成本来考虑的，数据库实现比较复杂，数据保存在磁盘上，而为了提高性能，每次又可以把部分数据读入内存来计算，因为我们知道访问磁盘的成本大概是访问内存的十万倍左右，所以简单的搜索树难以满足复杂的应用场景。</p>
+<p>mysql 的索引存储结构，为B+树</p>
 
-Widget w1;       //default 构造函数
-Widget w2(w1);  //调用copy构造函数
-w1 = w2;        //调用copy assignment操作符
-</code></pre><p>当你看到赋值操作符小心,因为”=”语法可以用来调用copy构造函数</p>
-<pre><code>Widget w3 = w1    //copy 构造函数
-</code></pre><p>copy 构造,和copy 赋值,很容易区分,幸好,如果一个新的对象别定义(与上面的w3),则调用copy构造,反之则赋值.看到很多网上的资料都是说,只要一看到对象赋值另外一个同类型的对象,就是copy 构造,这是错误的现在来看</p>
-<p>至于我当初学习copy构造的时候,为什么要引用来作为传递了??</p>
-<p>传入参数用const类型的引用，可以节省参数赋值的开支，最后赋值给的是this指针指向的对象，复制构造函数会默认的进行简单变量的赋值。<br>另外重要的原因就是：避免递归调用！<br>如果定义如下的构造函数：</p>
-<pre><code>Widget:: Widget( Widget rhs);
-</code></pre><p>那么当用一个 Widget对象初始化另一个 Widget对象时，如</p>
-<pre><code>Widget w4=w4; //假设w4是一个已存在Widget对象
-</code></pre><p>该复制构造函数就会被无限制地递归下去：调用WIdget(Widgetr)</p>
+<p>如上图，是一颗b+树，关于b+树的定义可以参见B+树，这里只说一些重点，浅蓝色的块我们称之为一个磁盘块，可以看到每个磁盘块包含几个数据项（深蓝色所示）和指针（黄色所示），如磁盘块1包含数据项17和35，包含指针P1、P2、P3，P1表示小于17的磁盘块，P2表示在17和35之间的磁盘块，P3表示大于35的磁盘块。真实的数据存在于叶子节点即3、5、9、10、13、15、28、29、36、60、75、79、90、99。非叶子节点只不存储真实的数据，只存储指引搜索方向的数据项，如17、35并不真实存在于数据表中</p>
+<p>#b+树的查找过程<br>如图所示，如果要查找数据项29，那么首先会把磁盘块1由磁盘加载到内存，此时发生一次IO，在内存中用二分查找确定29在17和35之间，锁定磁盘块1的P2指针，内存时间因为非常短（相比磁盘的IO）可以忽略不计，通过磁盘块1的P2指针的磁盘地址把磁盘块3由磁盘加载到内存，发生第二次IO，29在26和30之间，锁定磁盘块3的P2指针，通过指针加载磁盘块8到内存，发生第三次IO，同时内存中做二分查找找到29，结束查询，总计三次IO。真实的情况是，3层的b+树可以表示上百万的数据，如果上百万的数据查找只需要三次IO，性能提高将是巨大的，如果没有索引，每个数据项都要发生一次IO，那么总共需要百万次的IO，显然成本非常非常高。</p>
+<p>b+树性质<br>1.我们知道IO次数取决于b+数的高度h，假设当前数据表的数据为N，每个磁盘块的数据项的数量是m，则有h=㏒(m+1)N，当数据量N一定的情况下，m越大，h越小；而m = 磁盘块的大小 / 数据项的大小，磁盘块的大小也就是一个数据页的大小，是固定的，如果数据项占的空间越小，数据项的数量越多，树的高度越低。这就是为什么每个数据项，即索引字段要尽量的小，比如int占4字节，要比bigint8字节少一半。这也是为什么b+树要求把真实的数据放到叶子节点而不是内层节点，一旦放到内层节点，磁盘块的数据项会大幅度下降，导致树增高。当数据项等于1时将会退化成线性表。</p>
+<p>#建索引的原则</p>
+<p>1.最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(&gt;、&lt;、between、like)就停止匹配，比如a = 1 and b = 2 and c &gt; 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。<br>2.=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式<br>3.尽量选择区分度高的列作为索引,区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录<br>4.索引列不能参与计算，保持列“干净”，比如from_unixtime(create_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create_time = unix_timestamp(’2014-05-29’);<br>5.尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可</p>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                     data-title="c++复制构造函数"
-                     data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/"
+                     data-thread-key="2016/12/24/2016-12-24-mysql索引/"
+                     data-title="mysql 索引"
+                     data-url="http://happyer.github.io/2016/12/24/2016-12-24-mysql索引/"
                      data-images=""
-                     data-content="今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一... | chauncy&#39;s blog ">
+                     data-content="#索引目的索引的目的在于提高查询效率，就内比为字典一样
+#索引原理
+生活中都有很多例子，动车上... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -223,14 +217,14 @@ w1 = w2;        //调用copy assignment操作符
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/" data-toggle="tooltip" data-placement="top"
-                           title="事件驱动模型的角度来看 JAVA NIO">&larr; Previous Post</a>
+                        <a href="/2016/12/24/2016-12-25-消息队列kafka/" data-toggle="tooltip" data-placement="top"
+                           title="消息队列 kafka">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2016/12/09/hello-world/" data-toggle="tooltip" data-placement="top"
-                           title="Hello World">Next Post &rarr;</a>
+                        <a href="/2016/12/09/2016-03-02-java内存模型/" data-toggle="tooltip" data-placement="top"
+                           title="java内存模型">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -239,9 +233,9 @@ w1 = w2;        //调用copy assignment操作符
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                         data-title="c++复制构造函数"
-                         data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+                         data-thread-key="2016/12/24/2016-12-24-mysql索引/"
+                         data-title="mysql 索引"
+                         data-url="http://happyer.github.io/2016/12/24/2016-12-24-mysql索引/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -274,6 +268,9 @@ w1 = w2;        //调用copy assignment操作符
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#mysql"
+                           title="mysql">mysql</a>
                         
                     </div>
                 </section>

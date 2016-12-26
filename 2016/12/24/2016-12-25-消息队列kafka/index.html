@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        c++复制构造函数｜chauncy&#39;s blog
+        消息队列 kafka｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+    <link rel="canonical" href="http://happyer.github.io/2016/12/24/2016-12-25-消息队列kafka/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,24 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>c++复制构造函数</h1>
+                    <h1>消息队列 kafka</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2016-12-24
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#java"
+                           title="java">java</a>
+                        
+                        <a class="tag" href="/tags/#scala"
+                           title="scala">scala</a>
+                        
+                        <a class="tag" href="/tags/#mq"
+                           title="mq">mq</a>
                         
                     </div>
                 </div>
@@ -162,7 +171,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            c++复制构造函数
+            消息队列 kafka
         </span>
     </div>
 </header>
@@ -173,38 +182,25 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下</p>
-<pre><code>class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs);   //copy 构造函数
-      Widget&amp; operator=(const Widget&amp; rhs);  //copy assignment 操作符
-      ~Widget{};();
-};
-
-Widget w1;       //default 构造函数
-Widget w2(w1);  //调用copy构造函数
-w1 = w2;        //调用copy assignment操作符
-</code></pre><p>当你看到赋值操作符小心,因为”=”语法可以用来调用copy构造函数</p>
-<pre><code>Widget w3 = w1    //copy 构造函数
-</code></pre><p>copy 构造,和copy 赋值,很容易区分,幸好,如果一个新的对象别定义(与上面的w3),则调用copy构造,反之则赋值.看到很多网上的资料都是说,只要一看到对象赋值另外一个同类型的对象,就是copy 构造,这是错误的现在来看</p>
-<p>至于我当初学习copy构造的时候,为什么要引用来作为传递了??</p>
-<p>传入参数用const类型的引用，可以节省参数赋值的开支，最后赋值给的是this指针指向的对象，复制构造函数会默认的进行简单变量的赋值。<br>另外重要的原因就是：避免递归调用！<br>如果定义如下的构造函数：</p>
-<pre><code>Widget:: Widget( Widget rhs);
-</code></pre><p>那么当用一个 Widget对象初始化另一个 Widget对象时，如</p>
-<pre><code>Widget w4=w4; //假设w4是一个已存在Widget对象
-</code></pre><p>该复制构造函数就会被无限制地递归下去：调用WIdget(Widgetr)</p>
+                <p>Kafka部分名词解释如下：</p>
+<p>Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多个broker可以组成一个Kafka集群。<br>Topic：一类消息，例如pv日志、uv日志等都可以以topic的形式存在，Kafka集群能够同时负责多个topic的分发。<br>Partition：topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列。<br>Segment：partition物理上由多个segment组成，下面2.2和2.3有详细说明。<br>offset：每个partition都由一系列有序的、不可变的消息组成，这些消息被连续的追加到partition中。partition中的每个消息都有一个连续的序列号叫做offset,用于partition唯一标识一条消息.</p>
+<p>在Kafka文件存储中，同一个topic下有多个不同partition，每个partition为一个目录，partiton命名规则为topic名称+有序序号，第一个partiton序号从0开始，序号最大值为partitions数量减1。</p>
+<p>每个partion相当于一个巨型文件被平均分配到多个大小相等segment(段)数据文件中。但每个段segment file消息数量不一定相等，这种特性方便old segment file快速被删除。<br>每个partiton只需要支持顺序读写就行了，segment文件生命周期由服务端配置参数决定。<br>这样做的好处就是能快速删除无用文件，有效提高磁盘利用率。</p>
+<p>partion中segment file组成和物理结构。<br>segment file组成：由2大部分组成，分别为index file和data file，此2个文件一一对应，成对出现，后缀”.index”和“.log”分别表示为segment索引文件、数据文件.<br>segment文件命名规则：partion全局的第一个segment从0开始，后续每个segment文件名为上一个segment文件最后一条消息的offset值。数值最大为64位long大小，19位数字字符长度，没有数字用0填充。</p>
+<p>设置每个segment大小为500MB,并启动producer向Kafka broker写入大量数据,如下图2所示segment文件列表形象说明了上述2个规则：<br>image</p>
+<p>以上述图2中一对segment file文件为例，说明segment中index&lt;—-&gt;data file对应关系物理结构如下：<br>image</p>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                     data-title="c++复制构造函数"
-                     data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/"
+                     data-thread-key="2016/12/24/2016-12-25-消息队列kafka/"
+                     data-title="消息队列 kafka"
+                     data-url="http://happyer.github.io/2016/12/24/2016-12-25-消息队列kafka/"
                      data-images=""
-                     data-content="今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一... | chauncy&#39;s blog ">
+                     data-content="Kafka部分名词解释如下：
+Broker：消息中间件处理结点，一个Kafka节点就是一个br... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -222,15 +218,10 @@ w1 = w2;        //调用copy assignment操作符
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/" data-toggle="tooltip" data-placement="top"
-                           title="事件驱动模型的角度来看 JAVA NIO">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2016/12/09/hello-world/" data-toggle="tooltip" data-placement="top"
-                           title="Hello World">Next Post &rarr;</a>
+                        <a href="/2016/12/24/2016-12-24-mysql索引/" data-toggle="tooltip" data-placement="top"
+                           title="mysql 索引">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -239,9 +230,9 @@ w1 = w2;        //调用copy assignment操作符
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                         data-title="c++复制构造函数"
-                         data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+                         data-thread-key="2016/12/24/2016-12-25-消息队列kafka/"
+                         data-title="消息队列 kafka"
+                         data-url="http://happyer.github.io/2016/12/24/2016-12-25-消息队列kafka/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -274,6 +265,15 @@ w1 = w2;        //调用copy assignment操作符
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#java"
+                           title="java">java</a>
+                        
+                        <a class="tag" href="/tags/#scala"
+                           title="scala">scala</a>
+                        
+                        <a class="tag" href="/tags/#mq"
+                           title="mq">mq</a>
                         
                     </div>
                 </section>
