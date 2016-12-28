@@ -273,6 +273,29 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/28/2016-12-27-java-SynchronousQueue/">
+        <h2 class="post-title">
+            java-SynchronousQueue (转)
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-28
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称为内在锁），它强制实行互斥，确保执行 synchronized 块的线程的动作，能够被后来执行受相同锁保护的 synchron..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/24/2016-12-25-消息队列kafka/">
         <h2 class="post-title">
             消息队列 kafka
@@ -373,9 +396,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
         <h2 class="post-title">
-            Netty的FastThreadLocal
+            事件驱动模型的角度来看 JAVA NIO
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -383,7 +406,7 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
+                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
             </p>
         </div>
     </a>
@@ -396,9 +419,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-18-java gc总结/">
+    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
         <h2 class="post-title">
-            进一步理解java垃圾收集器
+            maven的聚合与继承的使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -406,9 +429,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
-2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
-3..
+                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
+在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
             </p>
         </div>
     </a>
@@ -421,9 +443,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-02-仿函数/">
+    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
         <h2 class="post-title">
-            仿函数（functor function objects）
+            java多线程CountDownLatch使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -431,32 +453,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
-.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
-        <h2 class="post-title">
-            netty与protobuf生产者和消费者
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
-阻塞队列（BlockingQueue）是一个支持两..
+                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
+public static vo..
             </p>
         </div>
     </a>
@@ -558,7 +556,7 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
                     
                     
                     <a href="/tags/#java" title="java"
-                       rel="3">java</a>
+                       rel="4">java</a>
                     
                     
                     
