@@ -153,9 +153,56 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/28/2016-12-27-java-SynchronousQueue/">
+    <a href="/2017/01/16/2017-01-16-mapreduce/">
         <h2 class="post-title">
-            java-SynchronousQueue (转)
+            未命名
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-01-16
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                老司机带你用 Go 语言实现 MapReduce 框架&emsp;&emsp;MapReduce 是 Google 提出的一个软件架构，用于大规模数据集（大于1TB）的并行运算。简而言之，就是将任务切分成很小的任务然后一个一个区的执行最后汇总，这就像小时候我们老师经常教育我们一样，大事化小，小事..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/30/2016-12-30-distributed-system-clock/">
+        <h2 class="post-title">
+            分布式一致算法 clock
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-30
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                aws 的 Dynamo 在数据一致性上面使用的算法为 vector clock （也叫做Data Version） 感觉挺不错，然后就去看了看paper
+主要是使用的是一种 vector clock 和 logic clock要解释这一个东西，就不得不说一个神一样的纯在的lamport大神写的..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/">
+        <h2 class="post-title">
+            未命名
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-28
@@ -163,7 +210,9 @@
         
         <div class="post-content-preview">
             <p>
-                在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称为内在锁），它强制实行互斥，确保执行 synchronized 块的线程的动作，能够被后来执行受相同锁保护的 synchron..
+                
+layout: defaulttitle: java-SynchronousQueuetags: [java ]—联系方式
+在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称..
             </p>
         </div>
     </a>
@@ -276,9 +325,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
-            事件驱动模型的角度来看 JAVA NIO
+            Netty的FastThreadLocal
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -286,55 +335,7 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
-        <h2 class="post-title">
-            maven的聚合与继承的使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
-        <h2 class="post-title">
-            java多线程CountDownLatch使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -446,7 +447,13 @@ public static vo..
                     
                     
                     
+                    <a href="/tags/#scala" title="scala"
+                       rel="2">scala</a>
                     
+                    
+                    
+                    <a href="/tags/#mq" title="mq"
+                       rel="2">mq</a>
                     
                     
                 </div>
@@ -517,7 +524,7 @@ public static vo..
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; chauncy 2016
+                    Copyright &copy; chauncy 2017
                     <br>
                     <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
                     <br>

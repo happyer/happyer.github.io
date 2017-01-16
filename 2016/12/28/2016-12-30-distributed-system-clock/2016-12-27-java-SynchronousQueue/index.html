@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        java-SynchronousQueue (转)｜chauncy&#39;s blog
+        chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/28/2016-12-27-java-SynchronousQueue/">
+    <link rel="canonical" href="http://happyer.github.io/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,7 +145,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>java-SynchronousQueue (转)</h1>
+                    <h1></h1>
                     
                     <span class="meta">
                          作者 chauncy
@@ -155,9 +155,6 @@
                     </span>
                     <div class="tags text-center">
                         
-                        <a class="tag" href="/tags/#java"
-                           title="java">java</a>
-                        
                     </div>
                 </div>
             </div>
@@ -165,7 +162,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            java-SynchronousQueue (转)
+            
         </span>
     </div>
 </header>
@@ -176,7 +173,9 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称为内在锁），它强制实行互斥，确保执行 synchronized 块的线程的动作，能够被后来执行受相同锁保护的 synchronized 块的其他线程看到。在使用得当的时候，内在锁可以让程序做到线程安全，但是在使用锁定保护短的代码路径，而且线程频繁地争用锁的时候，锁定可能成为相当繁重的操作。</p>
+                <hr>
+<p>layout: default<br>title: java-SynchronousQueue<br>tags: [java ]<br>—<a href="media/%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F.md">联系方式</a></p>
+<p>在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称为内在锁），它强制实行互斥，确保执行 synchronized 块的线程的动作，能够被后来执行受相同锁保护的 synchronized 块的其他线程看到。在使用得当的时候，内在锁可以让程序做到线程安全，但是在使用锁定保护短的代码路径，而且线程频繁地争用锁的时候，锁定可能成为相当繁重的操作。</p>
 <p>非阻塞的计数器<br>清单 1 中的 Counter 是线程安全的，但是使用锁的需求带来的性能成本困扰了一些开发人员。但是锁是必需的，因为虽然增加看起来是单一操作，但实际是三个独立操作的简化：检索值，给值加 1，再写回值。（在 getValue 方法上也需要同步，以保证调用 getValue 的线程看到的是最新的值。虽然许多开发人员勉强地使自己相信忽略锁定需求是可以接受的，但忽略锁定需求并不是好策略。）<br>在多个线程同时请求同一个锁时，会有一个线程获胜并得到锁，而其他线程被阻塞。JVM 实现阻塞的方式通常是挂起阻塞的线程，过一会儿再重新调度它。由此造成的上下文切换相对于锁保护的少数几条指令来说，会造成相当大的延迟。<br>清单 1. 使用同步的线程安全的计数器</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Counter</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">long</span> value = <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">increment</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> ++value;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>清单 2 中的 NonblockingCounter 显示了一种最简单的非阻塞算法：使用 AtomicInteger 的 compareAndSet() （CAS）方法的计数器。compareAndSet() 方法规定 “将这个变量更新为新值，但是如果从我上次看到这个变量之后其他线程修改了它的值，那么更新就失败”</p>
@@ -190,11 +189,11 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedQueue</span> &lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> &lt;<span class="title">E</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">final</span> E item;</div><div class="line">        <span class="keyword">final</span> AtomicReference&lt;Node&lt;E&gt;&gt; next;</div><div class="line">        Node(E item, Node&lt;E&gt; next) &#123;</div><div class="line">            <span class="keyword">this</span>.item = item;</div><div class="line">            <span class="keyword">this</span>.next = <span class="keyword">new</span> AtomicReference&lt;Node&lt;E&gt;&gt;(next);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; head</div><div class="line">        = <span class="keyword">new</span> AtomicReference&lt;Node&lt;E&gt;&gt;(<span class="keyword">new</span> Node&lt;E&gt;(<span class="keyword">null</span>, <span class="keyword">null</span>));</div><div class="line">    <span class="keyword">private</span> AtomicReference&lt;Node&lt;E&gt;&gt; tail = head;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">put</span><span class="params">(E item)</span> </span>&#123;</div><div class="line">        Node&lt;E&gt; newNode = <span class="keyword">new</span> Node&lt;E&gt;(item, <span class="keyword">null</span>);</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            Node&lt;E&gt; curTail = tail.get();</div><div class="line">            Node&lt;E&gt; residue = curTail.next.get();</div><div class="line">            <span class="keyword">if</span> (curTail == tail.get()) &#123;</div><div class="line">                <span class="keyword">if</span> (residue == <span class="keyword">null</span>) <span class="comment">/* A */</span> &#123;</div><div class="line">                    <span class="keyword">if</span> (curTail.next.compareAndSet(<span class="keyword">null</span>, newNode)) <span class="comment">/* C */</span> &#123;</div><div class="line">                        tail.compareAndSet(curTail, newNode) <span class="comment">/* D */</span> ;</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    tail.compareAndSet(curTail, residue) <span class="comment">/* B */</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>像许多队列算法一样，空队列只包含一个假节点。头指针总是指向假节点；尾指针总指向最后一个节点或倒数第二个节点。图 1 演示了正常情况下有两个元素的队列：</p>
 <p>图 1. 有两个元素，处在静止状态的队列</p>
-<img src="/2016/12/28/2016-12-27-java-SynchronousQueue/1.png" alt="1.png" title="">
+
 <p>如 清单 4 所示，插入一个元素涉及两个指针更新，这两个更新都是通过 CAS 进行的：从队列当前的最后节点（C）链接到新节点，并把尾指针移动到新的最后一个节点（D）。如果第一步失败，那么队列的状态不变，插入线程会继续重试，直到成功。一旦操作成功，插入被当成生效，其他线程就可以看到修改。还需要把尾指针移动到新节点的位置上，但是这项工作可以看成是 “清理工作”，因为任何处在这种情况下的线程都可以判断出是否需要这种清理，也知道如何进行清理。<br>队列总是处于两种状态之一：正常状态（或称静止状态，图 1 和 图 3）或中间状态（图 2）。在插入操作之前和第二个 CAS（D）成功之后，队列处在静止状态；在第一个 CAS（C）成功之后，队列处在中间状态。在静止状态时，尾指针指向的链接节点的 next 字段总为 null，而在中间状态时，这个字段为非 null。任何线程通过比较 tail.next 是否为 null，就可以判断出队列的状态，这是让线程可以帮助其他线程 “完成” 操作的关键。</p>
-<img src="/2016/12/28/2016-12-27-java-SynchronousQueue/2.png" alt="2.png" title="">
+
 <p>插入操作在插入新元素（A）之前，先检查队列是否处在中间状态，如 清单 4 所示。如果是在中间状态，那么肯定有其他线程已经处在元素插入的中途，在步骤（C）和（D）之间。不必等候其他线程完成，当前线程就可以 “帮助” 它完成操作，把尾指针向前移动（B）。如果有必要，它还会继续检查尾指针并向前移动指针，直到队列处于静止状态，这时它就可以开始自己的插入了。<br>第一个 CAS（C）可能因为两个线程竞争访问队列当前的最后一个元素而失败；在这种情况下，没有发生修改，失去 CAS 的线程会重新装入尾指针并再次尝试。如果第二个 CAS（D）失败，插入线程不需要重试 —— 因为其他线程已经在步骤（B）中替它完成了这个操作！</p>
-<img src="/2016/12/28/2016-12-27-java-SynchronousQueue/3.png" alt="3.png" title="">
+
 <p>幕后的非阻塞算法<br>如果深入 JVM 和操作系统，会发现非阻塞算法无处不在。垃圾收集器使用非阻塞算法加快并发和平行的垃圾搜集；调度器使用非阻塞算法有效地调度线程和进程，实现内在锁。在 Mustang（Java 6.0）中，基于锁的 SynchronousQueue 算法被新的非阻塞版本代替。很少有开发人员会直接使用 SynchronousQueue，但是通过 Executors.newCachedThreadPool() 工厂构建的线程池用它作为工作队列。比较缓存线程池性能的对比测试显示，新的非阻塞同步队列实现提供了几乎是当前实现 3 倍的速度。在 Mustang 的后续版本（代码名称为 Dolphin）中，已经规划了进一步的改进。</p>
 
                 <hr>
@@ -202,11 +201,12 @@
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/28/2016-12-27-java-SynchronousQueue/"
-                     data-title="java-SynchronousQueue (转)"
-                     data-url="http://happyer.github.io/2016/12/28/2016-12-27-java-SynchronousQueue/"
+                     data-thread-key="2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/"
+                     data-title=""
+                     data-url="http://happyer.github.io/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/"
                      data-images=""
-                     data-content="在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情... | chauncy&#39;s blog ">
+                     data-content="
+layout: defaulttitle: java-SynchronousQueuetag... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -224,6 +224,11 @@
 
                 <ul class="pager">
                     
+                    <li class="previous">
+                        <a href="/2016/12/30/2016-12-30-distributed-system-clock/" data-toggle="tooltip" data-placement="top"
+                           title="分布式一致算法 clock">&larr; Previous Post</a>
+                    </li>
+                    
                     
                     <li class="next">
                         <a href="/2016/12/24/2016-12-25-消息队列kafka/" data-toggle="tooltip" data-placement="top"
@@ -236,9 +241,9 @@
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/28/2016-12-27-java-SynchronousQueue/"
-                         data-title="java-SynchronousQueue (转)"
-                         data-url="http://happyer.github.io/2016/12/28/2016-12-27-java-SynchronousQueue/">
+                         data-thread-key="2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/"
+                         data-title=""
+                         data-url="http://happyer.github.io/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -271,9 +276,6 @@
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
-                        
-                        <a class="tag" href="/tags/#java"
-                           title="java">java</a>
                         
                     </div>
                 </section>
@@ -369,7 +371,7 @@
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; chauncy 2016
+                    Copyright &copy; chauncy 2017
                     <br>
                     <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
                     <br>

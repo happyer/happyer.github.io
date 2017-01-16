@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2017/01/16/2017-01-16-mapreduce/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1></h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2017-01-16
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h1 id="老司机带你用-Go-语言实现-MapReduce-框架"><a href="#老司机带你用-Go-语言实现-MapReduce-框架" class="headerlink" title="老司机带你用 Go 语言实现 MapReduce 框架"></a>老司机带你用 Go 语言实现 MapReduce 框架</h1><p>&emsp;&emsp;MapReduce 是 Google 提出的一个软件架构，用于大规模数据集（大于1TB）的并行运算。简而言之，就是将任务切分成很小的任务然后一个一个区的执行最后汇总，这就像小时候我们老师经常教育我们一样，大事化小，小事化了（瞬间感觉那时候老师好言简意赅啊!!!）思想就这么一个思想，那么按照这个思想在现代软件定义一切的世界里面，我们怎么运用这样的方式来解决海量数据的处理，这篇就告诉你一个这样的一个简单的实现使用 Go 语言。</p>
+<h2 id="上车了"><a href="#上车了" class="headerlink" title="上车了"></a>上车了</h2><p>&emsp;&emsp;简单介绍一下几个概念：</p>
+<p>&emsp;&emsp;概念“Map（映射）”和“Reduce（归纳）”，及他们的主要思想，都是从函数式编程语言借来的，还有从矢量编程语言借来的特性。当前的软件实现是指定一个 Map（映射）函数，用来把一组键值对映射成一组新的键值对，指定并发的 Reduce（归纳）函数，用来保证所有映射的键值对中的每一个共享相同的键组。</p>
+<p>&emsp;&emsp;以一个例子为简单的开始：</p>
+<p>&emsp;&emsp;词频的统计（WorldCount）,在现实的需求的上面可能我们可能有这样的一个需求，就是计算出一篇文章里面出现每个单词的个数。具体到生活就是，就算 Top N 的结果，比如全校要开表彰大会，找出 10 个好学生这样的 Top N 这样的例子比比皆是，而 World Count 就是他的一个实现，只是最终的结果只取出排在前面的结果而已。</p>
+<p>&emsp;&emsp;有了上面找出 10 个好学生的需求的时候，我们来想想怎么去实现它呢，很显然这个需求可能是校长在开会的时候提出来的，那么具体的实现就是每个年级组长是不是要把每个年级排名前 10 的学生找出来，然后年级组长的领导，将这些信息在汇总取出 前 10 的学生咯，那么具体的每个年级怎么做呢？同理，将每个班的前10名学生找出来，然后汇总到年级部门咯。</p>
+<h2 id="发车了"><a href="#发车了" class="headerlink" title="发车了"></a>发车了</h2><p>&emsp;&emsp;基本概览和思路已经明白了，现在开始构建整个 MapReduce 框架了，首先我们明确一个思想就是，将任务划分成合适的大小，然后对其进行计算，然后将每一步计算的的结果，进行一个汇总合并的过程。那么这两个过程我们先分别定义为Map 和Reduce 过程。</p>
+<p>&emsp;&emsp;还是以 World Count 这个为例子：</p>
+<p>&emsp;&emsp;Map 的处理过程就是读取给定的文件，将文件里面的每个单词的出现频率初始化为 1。</p>
+<p>&emsp;&emsp;Reduce 的处理过程就是将相同的单词，数据进行一个累加的过程。那么，我们 MapReduce 框架的目的是调用在合适的时候调用这个 Map 和 Reduce 的过程。<br>在 common_map.go 里面 doMap 方法就是给定文件，读取数据然后，调用 Map 这个过程,代码里面有注释，在这里进行一个简单概述一下主要有这几个步骤：</p>
+<ol>
+<li>读取文件；</li>
+<li>将读文件的内容，调用用户 Map 函数，生产对于的 KeyValue 值；</li>
+<li>最后按照 KeyValue 里面的 Key 进行分区，将内容写入到文件里面，以便于后面的 Reduce 过程执行；</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">doMap</span><span class="params">( </span></span></div><div class="line">jobName <span class="keyword">string</span>, // // the name of the MapReduce job</div><div class="line">mapTaskNumber <span class="keyword">int</span>, // which <span class="keyword">map</span> task this is</div><div class="line">inFile <span class="keyword">string</span>,</div><div class="line">nReduce <span class="keyword">int</span>, // the number of reduce task that will be run </div><div class="line">mapF <span class="keyword">func</span>(file <span class="keyword">string</span>, contents <span class="keyword">string</span>) []<span class="title">KeyValue</span>,</div><div class="line">) &#123;</div><div class="line">	</div><div class="line">	<span class="comment">//setp 1 read file</span></div><div class="line">	contents, err := ioutil.ReadFile(inFile)</div><div class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">		log.Fatal(<span class="string">"do map error for inFile "</span>,err)</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//setp 2 call user user-map method ,to get kv</span></div><div class="line">	kvResult := mapF(inFile, <span class="keyword">string</span>(contents))</div><div class="line"></div><div class="line">	<span class="comment">/**</span></div><div class="line">	 *   setp 3 use key of kv generator nReduce file ,partition</div><div class="line">	 *      a. create tmpFiles</div><div class="line">	 *      b. create encoder for tmpFile to write contents</div><div class="line">	 *      c. partition by key, then write tmpFile</div><div class="line">	 */</div><div class="line"></div><div class="line">	<span class="keyword">var</span> tmpFiles  [] *os.File = <span class="built_in">make</span>([] *os.File, nReduce)</div><div class="line">	<span class="keyword">var</span> encoders    [] *json.Encoder = <span class="built_in">make</span>([] *json.Encoder, nReduce)</div><div class="line"></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; nReduce; i++ &#123;</div><div class="line">		tmpFileName := reduceName(jobName,mapTaskNumber,i)</div><div class="line">		tmpFiles[i],err = os.Create(tmpFileName)</div><div class="line">		<span class="keyword">if</span> err!=<span class="literal">nil</span> &#123;</div><div class="line">			log.Fatal(err)</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">defer</span> tmpFiles[i].Close()</div><div class="line">		encoders[i] = json.NewEncoder(tmpFiles[i])</div><div class="line">		<span class="keyword">if</span> err!=<span class="literal">nil</span> &#123;</div><div class="line">			log.Fatal(err)</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">for</span> _ , kv := <span class="keyword">range</span> kvResult &#123;</div><div class="line">		hashKey := <span class="keyword">int</span>(ihash(kv.Key)) % nReduce</div><div class="line">		err := encoders[hashKey].Encode(&amp;kv)</div><div class="line">		<span class="keyword">if</span> err!=<span class="literal">nil</span> &#123;</div><div class="line">			log.Fatal(<span class="string">"do map encoders "</span>,err)</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;doReduce 函数在 common_reduce.go 里面，主要步骤:</p>
+<ol>
+<li>读取 doMap 过程中产生的中间文件；</li>
+<li>按照读取相同文件中的 Key 进新按照字典顺序进行排序；</li>
+<li>遍历读取的 KeyValue，并且调用用户的 Reduce 方法，将计算的结果继续写入到文件中；</li>
+</ol>
+<figure class="highlight"><table><tr><td class="code"><pre><div class="line">    func doReduce(</div><div class="line">	jobName string, // the name of the whole MapReduce job</div><div class="line">	reduceTaskNumber int, // which reduce task this is</div><div class="line">	nMap int, // the number of map tasks that were run ("M" in the paper)</div><div class="line">	reduceF func(key string, values []string) string,</div><div class="line">) &#123;</div><div class="line">	</div><div class="line">	// file.Close()</div><div class="line"></div><div class="line">	//setp 1,read map generator file ,same key merge put map[string][]string</div><div class="line"></div><div class="line">	kvs := make(map[string][]string)</div><div class="line"></div><div class="line">	for i := 0; i &lt; nMap; i++ &#123;</div><div class="line">		fileName := reduceName(jobName, i, reduceTaskNumber)</div><div class="line">		file, err := os.Open(fileName)</div><div class="line">		if err != nil &#123;</div><div class="line">			log.Fatal("doReduce1: ", err)</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		dec := json.NewDecoder(file)</div><div class="line"></div><div class="line">		for &#123;</div><div class="line">			var kv KeyValue</div><div class="line">			err = dec.Decode(&amp;kv)</div><div class="line">			if err != nil &#123;</div><div class="line">				break</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			_, ok := kvs[kv.Key]</div><div class="line">			if !ok &#123;</div><div class="line">				kvs[kv.Key] = []string&#123;&#125;</div><div class="line">			&#125;</div><div class="line">			kvs[kv.Key] = append(kvs[kv.Key], kv.Value)</div><div class="line">		&#125;</div><div class="line">		file.Close()</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	var keys []string</div><div class="line"></div><div class="line">	for k := range kvs &#123;</div><div class="line">		keys = append(keys, k)</div><div class="line">	&#125;</div><div class="line"></div><div class="line"></div><div class="line">	//setp 2 sort by keys</div><div class="line">	sort.Strings(keys)</div><div class="line"></div><div class="line">	//setp 3 create result file</div><div class="line">	p := mergeName(jobName, reduceTaskNumber)</div><div class="line">	file, err := os.Create(p)</div><div class="line">	if err != nil &#123;</div><div class="line">		log.Fatal("doReduce2: ceate ", err)</div><div class="line">	&#125;</div><div class="line">	enc := json.NewEncoder(file)</div><div class="line"></div><div class="line">	//setp 4 call user reduce each key of kvs</div><div class="line">	for _, k := range keys &#123;</div><div class="line">		res := reduceF(k, kvs[k])</div><div class="line">		enc.Encode(KeyValue&#123;k, res&#125;)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	file.Close()</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;Merge 过程</p>
+<p>&emsp;&emsp;当然最后就是将每个 Reduce 产生的结果进行一个Merge 的过程，在 merge 的过程中，同样也是需要进行按照 Key 进行字典顺序排列，然后写入到最终的文件中。代码跟 reduce 还是相似的，这里就不自爱赘述了。</p>
+<p>&emsp;&emsp;使用 go 的多线程来实现分布式的任务执行，这里主要是是 schedule.go 里面的 schedule 方法，主要是步骤：</p>
+<ol>
+<li>通过不同的阶段（ Map or Reduce ），获取到需要执行多少个 map (reduce)，然后调用远程的 worker.go 里面的 DoTask 方法；</li>
+<li>等待所有的任务完成，然后才结束。这里主要使用了go 语言的一些特性，<a href="https://golang.org/pkg/net/rpc/" target="_blank" rel="external">Go RPC documentation</a> 和 <a href="https://golang.org/doc/effective_go.html#concurrency" target="_blank" rel="external">Concurrency in Go</a>。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(mr *Master)</span> <span class="title">schedule</span><span class="params">(phase jobPhase)</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> ntasks <span class="keyword">int</span></div><div class="line">	<span class="keyword">var</span> nios <span class="keyword">int</span> <span class="comment">// number of inputs (for reduce) or outputs (for map)</span></div><div class="line">	<span class="keyword">switch</span> phase &#123;</div><div class="line">	<span class="keyword">case</span> mapPhase:</div><div class="line">		ntasks = <span class="built_in">len</span>(mr.files)</div><div class="line">		nios = mr.nReduce</div><div class="line">	<span class="keyword">case</span> reducePhase:</div><div class="line">		ntasks = mr.nReduce</div><div class="line">		nios = <span class="built_in">len</span>(mr.files)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	fmt.Printf(<span class="string">"Schedule: %v %v tasks (%d I/Os)\n"</span>, ntasks, phase, nios)</div><div class="line"></div><div class="line">	<span class="comment">//use go routing,worker rpc executor task,</span></div><div class="line">	done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)</div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; ntasks; i++ &#123;</div><div class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(number <span class="keyword">int</span>)</span></span> &#123;</div><div class="line"></div><div class="line">			args := DoTaskArgs&#123;mr.jobName, mr.files[ntasks], phase, number, nios&#125;</div><div class="line">			<span class="keyword">var</span> worker <span class="keyword">string</span></div><div class="line">			reply := <span class="built_in">new</span>(<span class="keyword">struct</span>&#123;&#125;)</div><div class="line">			ok := <span class="literal">false</span></div><div class="line">			<span class="keyword">for</span> ok != <span class="literal">true</span> &#123;</div><div class="line">				worker = &lt;- mr.registerChannel</div><div class="line">				ok = call(worker, <span class="string">"Worker.DoTask"</span>, args, reply)</div><div class="line">			&#125;</div><div class="line">			done &lt;- <span class="literal">true</span></div><div class="line">			mr.registerChannel &lt;- worker</div><div class="line">		&#125;(i)</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">//wait for  all task is complate</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i&lt; ntasks; i++ &#123;</div><div class="line">		&lt;- done</div><div class="line">	&#125;</div><div class="line">	fmt.Printf(<span class="string">"Schedule: %v phase done\n"</span>, phase)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="到站了"><a href="#到站了" class="headerlink" title="到站了"></a>到站了</h2><ul>
+<li>运行测试:</li>
+</ul>
+<p><img src="test.png" alt="运行测试"></p>
+<ul>
+<li>测试结果:</li>
+</ul>
+<p><img src="check.png" alt="测试结果"></p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2017/01/16/2017-01-16-mapreduce/"
+                     data-title=""
+                     data-url="http://happyer.github.io/2017/01/16/2017-01-16-mapreduce/"
+                     data-images=""
+                     data-content="老司机带你用 Go 语言实现 MapReduce 框架&emsp;&emsp;MapReduc... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2016/12/30/2016-12-30-distributed-system-clock/" data-toggle="tooltip" data-placement="top"
+                           title="分布式一致算法 clock">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2017/01/16/2017-01-16-mapreduce/"
+                         data-title=""
+                         data-url="http://happyer.github.io/2017/01/16/2017-01-16-mapreduce/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#老司机带你用-Go-语言实现-MapReduce-框架"><span class="toc-text">老司机带你用 Go 语言实现 MapReduce 框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#上车了"><span class="toc-text">上车了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发车了"><span class="toc-text">发车了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#到站了"><span class="toc-text">到站了</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2017
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>
