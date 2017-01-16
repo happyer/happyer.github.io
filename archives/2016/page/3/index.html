@@ -153,6 +153,78 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+        <h2 class="post-title">
+            事件驱动模型的角度来看 JAVA NIO
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2015-7-05-android-圆形进度条/">
+        <h2 class="post-title">
+            android圆形进度条自定义
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                之前在做一个一android项目的时候遇到了一个需要自定义控件的需求还时圆形的进度条，最终如下图
+核心代码主要是，extends View 然后是在构造函数里面初始化一些基本的数据，还可以读取xml配置的值，在ondraw 函数里面得到画布的中心点，计算坐标，根据API 在进行绘制
+public..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
+        <h2 class="post-title">
+            netty与protobuf生产者和消费者
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
+阻塞队列（BlockingQueue）是一个支持两..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2016-02-02-仿函数/">
         <h2 class="post-title">
             仿函数（functor function objects）
@@ -177,9 +249,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
+    <a href="/2016/12/09/2015-02-04-builder设计模式/">
         <h2 class="post-title">
-            java多线程CountDownLatch使用
+            buider设计模式
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -187,80 +259,7 @@
         
         <div class="post-content-preview">
             <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
-        <h2 class="post-title">
-            事件驱动模型的角度来看 JAVA NIO
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
-        <h2 class="post-title">
-            maven的聚合与继承的使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
-        <h2 class="post-title">
-            使用netty建立websocket进行群聊
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                WebSocket 简介:
-WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
-第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
+                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
             </p>
         </div>
     </a>
@@ -422,10 +421,6 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
-                    
-                    
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -433,6 +428,10 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
+                    
+                    
                     
                     
                     
