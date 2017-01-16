@@ -178,31 +178,6 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
-        <h2 class="post-title">
-            深入分析ConcurrentHashMap
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
-do {
-Entry&lt;K,V&gt; next = e.next; //..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
     <a href="/2016/12/09/2013-01-13-复制构造函数/">
         <h2 class="post-title">
             c++复制构造函数
@@ -218,6 +193,30 @@ class Widget  {
       public:
       Widget();   //default 构造函数
       Widget(const Widget &amp; rhs)..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
+        <h2 class="post-title">
+            netty与protobuf生产者和消费者
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
+阻塞队列（BlockingQueue）是一个支持两..
             </p>
         </div>
     </a>
@@ -300,9 +299,9 @@ class Widget  {
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
-            Java-AbstractQueuedSynchronizer
+            Netty的FastThreadLocal
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -310,8 +309,7 @@ class Widget  {
         
         <div class="post-content-preview">
             <p>
-                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
-从Reen..
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -450,8 +448,6 @@ public..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -459,6 +455,8 @@ public..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
                     
                     
                     
