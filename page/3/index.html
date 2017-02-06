@@ -298,6 +298,81 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+        <h2 class="post-title">
+            c++复制构造函数
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
+class Widget  {
+      public:
+      Widget();   //default 构造函数
+      Widget(const Widget &amp; rhs)..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
+        <h2 class="post-title">
+            java多线程CountDownLatch使用
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
+public static vo..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
+        <h2 class="post-title">
+            netty与protobuf生产者和消费者
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
+阻塞队列（BlockingQueue）是一个支持两..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2016-02-12-maven继承聚合/">
         <h2 class="post-title">
             maven的聚合与继承的使用
@@ -345,9 +420,9 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
+    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
         <h2 class="post-title">
-            java多线程CountDownLatch使用
+            使用netty建立websocket进行群聊
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -355,57 +430,9 @@ public..
         
         <div class="post-content-preview">
             <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-18-java gc总结/">
-        <h2 class="post-title">
-            进一步理解java垃圾收集器
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
-2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
-3..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
-        <h2 class="post-title">
-            netty与protobuf生产者和消费者
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
-阻塞队列（BlockingQueue）是一个支持两..
+                WebSocket 简介:
+WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
+第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
             </p>
         </div>
     </a>
@@ -439,37 +466,6 @@ public static vo..
 
 
 
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/03/19/media/联系方式/">
-        <h2 class="post-title">
-            未命名
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-03-19
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                联系方式
-​    电话：186-5711-5929
-​    邮箱：chauncy.ilife@gmail.com
-​    微信/QQ：734274006
-个人信息
-​    成旭/男/1992
-​    本科/闽江学院计算机系  ACM优胜奖
-​    工作年限：3年
-​    现居 杭州..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
@@ -479,6 +475,10 @@ public static vo..
         <a href="/page/2/">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page/4/">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 
@@ -569,8 +569,6 @@ public static vo..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -583,7 +581,18 @@ public static vo..
                     
                     
                     
+                    <a href="/tags/#go" title="go"
+                       rel="2">go</a>
                     
+                    
+                    
+                    <a href="/tags/#mapreduce" title="mapreduce"
+                       rel="2">mapreduce</a>
+                    
+                    
+                    
+                    <a href="/tags/#ds" title="ds"
+                       rel="2">ds</a>
                     
                     
                 </div>

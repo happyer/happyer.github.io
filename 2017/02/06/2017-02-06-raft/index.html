@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        The java.util.concurrent Synchronizer Framework（译）｜chauncy&#39;s blog
+        老司机带你用 Go 语言实现 Raft 分布式一致性协议｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2016-03-15-AQS/">
+    <link rel="canonical" href="http://happyer.github.io/2017/02/06/2017-02-06-raft/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,24 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>The java.util.concurrent Synchronizer Framework（译）</h1>
+                    <h1>老司机带你用 Go 语言实现 Raft 分布式一致性协议</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2017-02-06
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#go"
+                           title="go">go</a>
+                        
+                        <a class="tag" href="/tags/#mapreduce"
+                           title="mapreduce">mapreduce</a>
+                        
+                        <a class="tag" href="/tags/#ds"
+                           title="ds">ds</a>
                         
                     </div>
                 </div>
@@ -162,7 +171,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            The java.util.concurrent Synchronizer Framework（译）
+            老司机带你用 Go 语言实现 Raft 分布式一致性协议
         </span>
     </div>
 </header>
@@ -173,42 +182,49 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）<br>都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇文章主要描述框架的设计实现和用法已经性能呢的测试。</p>
-<p>设计与实现：</p>
-<p>同步背后的基本思想是你很简单的。acquire操作如下：</p>
-<pre><code>while (synchronization state does not allow acquire) {
-      enqueue current thread if not already queued;
-      possibly block current thread;
-}
-dequeue current thread if it was queued;
-</code></pre><p>release操作如下：</p>
-<pre><code>update synchronization state;
-if (state may permit a blocked thread to acquire)
-    unblock one or more queued threads;
-</code></pre><p>为了支持上面的操作，需要一下3个基本的组件互相协调：</p>
-<p>同步状态的原理管理<br>线程的阻塞和解除阻塞<br>队列的维护</p>
-<p>按照上面3组件来创造一个框架是有可能的。然而这样既没有效果有没有用。例如：存储在队列的节点信息必须与需要解除锁的信息一致，同时暴露方法的签名依赖与同步状态的特性</p>
-<p>同步框架的核心决策是为了这3个组件选择一个和具体的实现，同时在使用的时候有着大量的可选可用。有意地限制了其应用的范围，但是提供了足够的效率，使得在实践中没有理由去不去使用这个框架，再合适的地方运用的时候。</p>
-<p>同步状态：</p>
-<p>AQS类使用单个int（32位）来保存同步状态，并暴露出getState、setState以及compareAndSet操作来读取和更新这个状态。这些方法都依赖于j.u.c.atomic包的支持，这个包提供了兼容JSR133中volatile在读和写上的语义，并且通过使用本地的compare-and-swap或load-linked/store-conditional指令来实现compareAndSetState，使得仅当同步状态拥有一个期望值的时候，才会被原子地设置成新值。</p>
-<p>将同步状态限制为一个32位的整形是出于实践上的决定。虽然JSR166也提供了64位long字段的原子性操作，但这些操作在很多平台上还是使用内部锁的方式来模拟实现的，这会使同步器的性能可能不会很理想。将来可能会有一个类是专门使用64位的状态的。然而，32位的状态对大多数应用程序都是足够的。在j.u.c包中，只有一个同步器类可能需要多于32位来维持状态，那就是CyclicBarrier类，所以，它用了锁。</p>
-<p>基于AQS的具体实现类必须根据暴露出的状态相关的方法定义tryAcquire和tryRelease方法，以控制acquire和release操作。<br>当同步状态满足时，tryAcquire方法必须返回true，而当新的同步状态允许后续acquire时，tryRelease方法也必须返回true。这些方法都接受一个int类型的参数用于传递想要的状态。例如：可重入锁中，当某个线程从条件等待中返回，然后重新获取锁时，为了重新建立循环计数的场景。很多同步器并不需要这样一个参数，因此忽略它即可。</p>
-<p>阻塞：<br>直到JSR166之前，阻塞线程和解除线程阻塞都是基于Java内置管程，没有其它非基于Java内置管程的API可以用来创建同步器。唯一可以选的是Thread.suspend和Thread.resume，但是他们没有解决竞争的问题，因此没有作用。当一个非阻塞的线程在一个正准备阻塞的线程调用suspend前调用了resume，这个resume操作将不会有什么效果。</p>
-<p>j.u.c包有一个LockSuport类，这个类中包含了解决这个问题的方法。方法LockSupport.park阻塞当前线程除非/直到有个LockSupport.unpark方法被调用（unpark方法被提前调用也是可以的）。unpark的调用是没有被计数的，因此在一个park调用前多次调用unpark方法只会解除一个park操作。另外，它们作用于每个线程而不是每个同步器。一个线程在一个新的同步器上调用park操作可能会立即返回，因为在此之前可能有“剩余的”unpark操作。但是，在缺少一个unpark操作时，下一次调用park就会阻塞。虽然可以显式地消除这个状态（译者注：就是多余的unpark调用），但并不值得这样做。在需要的时候多次调用park会更高效。</p>
-<p>这个简单的机制与有些用法在某种程度上是相似的，例如Solaris-9的线程库，WIN32中的“可消费事件”，以及Linux中的NPTL线程库。因此最常见的运行Java的平台上都有相对应的有效实现。（但目前Solaris和Linux上的Sun Hotspot JVM参考实现实际上是使用一个pthread的condvar来适应目前的运行时设计的）。park方法同样支持可选的相对或绝对的超时设置，以及与JVM的Thread.interrupt结合 —— 可通过中断来unpark一个线程。</p>
-<p>持续更新中。。。</p>
-<p>参考文献：<br>  The java.util.concurrent Synchronizer Framework</p>
+                <h1 id="老司机带你用-Go-语言实现-Raft-分布式一致性协议"><a href="#老司机带你用-Go-语言实现-Raft-分布式一致性协议" class="headerlink" title="老司机带你用 Go 语言实现 Raft 分布式一致性协议"></a>老司机带你用 Go 语言实现 Raft 分布式一致性协议</h1><p>&emsp;&emsp;随着大型网站的各种高并发访问、海量数据处理等场景越来越多，如何实现网站的高可用、易伸缩、可扩展、安全等目标就显得越来越重要。</p>
+<p>&emsp;&emsp;为了解决这样一系列问题，大型网站的架构也在不断发展。提高大型网站的高可用架构，不得不提的就是分布式。任何一个分布式系统都无法同时满足 Consistency（一致性），Availability（可用性），Partition tolerance（分区容错性）这三个基本需求，最多只能满足其中两项。 但是，一个分布式系统无论在 CAP 三者之间如何权衡，都无法彻底放弃一致性（Consistency），如果真的放弃一致性，那么就说明这个系统中的数据根本不可信，数据也就没有意义，那么这个系统也就没有任何价值可言。所以，无论如何，分布式系统的一致性问题都需要重点关注。</p>
+<p>&emsp;&emsp;Raft 适用于一个管理日志一致性的协议，相比于 Paxos 协议 Raft 更易于理解和去实现它。</p>
+<h2 id="上车"><a href="#上车" class="headerlink" title="上车"></a>上车</h2><p>&emsp;&emsp;Raft 通过选举一个领导人，然后给予他全部的管理复制日志的责任来实现一致性。领导人从客户端接收日志条目，把日志条目复制到其他服务器上，并且当保证安全性的时候告诉其他的服务器应用日志条目到他们的状态机中。拥有一个领导人大大简化了对复制日志的管理。例如：领导人可以决定新的日志条目需要放在日志中的什么位置而不需要和其他服务器商议，并且数据都从领导人流向其他服务器。一个领导人可以宕机，可以和其他服务器失去连接，这时一个新的领导人会被选举出来。</p>
+<p>&emsp;&emsp;Raft 把时间分割成任意长度的任期，任期用连续的整数标记。每一段任期从一次选举开始，一个或者多个候选人尝试成为领导者。如果一个候选人赢得选举，然后他就在接下来的任期内充当领导人的职责。在某些情况下，一次选举过程会造成选票的瓜分。在这种情况下，这一任期会以没有领导人结束；一个新的任期（和一次新的选举）会很快重新开始。Raft 保证了在一个给定的任期内，最多只有一个领导者。</p>
+<p>&emsp;&emsp;要实现 Raft 协议，参见下图：</p>
+<p><img src="state.png" alt="状态机持有的变量"></p>
+<p><img src="rpc_vote.png" alt="投票请求"></p>
+<p><img src="appent_rpc.png" alt="日志发送"></p>
+<p><img src="rule.png" alt="服务器的应用规则"></p>
+<p>&emsp;&emsp;Raft 协议将整个过程分为主要3个步骤：</p>
+<ol>
+<li><p>领导者：和其他一致性算法相比，Raft 使用一种更强的领导能力形式。比如，日志条目只从领导者发送给其他的服务器。这种方式简化了对复制日志的管理并且使得 Raft 算法更加易于理解。</p>
+</li>
+<li><p>领导选举：Raft 算法使用一个随机计时器来选举领导者。这种方式只是在任何一致性算法都必须实现的心跳机制上增加了一点机制。在解决冲突的时候会更加简单快捷。</p>
+</li>
+<li><p>关系调整：Raft 使用一种共同一致的方法来处理集群成员变换的问题，在这种方法中，两种不同的配置都要求的大多数机器会重叠。这就使得集群在成员变换的时候依然可以继续工作。</p>
+</li>
+</ol>
+<p>&emsp;&emsp;后面将通过这3个主要过程进行展开。</p>
+<h2 id="发车（领导的选举）"><a href="#发车（领导的选举）" class="headerlink" title="发车（领导的选举）"></a>发车（领导的选举）</h2><p>&emsp;&emsp;Raft 使用一种心跳机制来触发领导人选举。当服务器程序启动时，他们都是跟随者身份。如果一个跟随者在一段时间里没有接收到任何消息，也就是选举超时，然后他就会认为系统中没有可用的领导者然后开始进行选举以选出新的领导者。要开始一次选举过程，跟随者先要增加自己的当前任期号并且转换到候选人状态。然后他会并行的向集群中的其他服务器节点发送请求投票的 RPCs 来给自己投票。候选人的状态维持直到发生以下任何一个条件发生的时候，(a) 他自己赢得了这次的选举，(b) 其他的服务器成为领导者，(c) 一段时间之后没有任何一个获胜的人。当一个候选人从整个集群的大多数服务器节点获得了针对同一个任期号的选票，那么他就赢得了这次选举并成为领导人。每一个服务器最多会对一个任期号投出一张选票，按照先来先服务的原则。</p>
+<p>&emsp;&emsp;Raft 使用投票的方式来阻止候选人赢得选举除非这个候选人包含了所有已经提交的日志条目。候选人为了赢得选举必须联系集群中的大部分节点，这意味着每一个已经提交的日志条目肯定在这些服务器节点中至少存在一个上面。如果候选人的日志至少和大多数的服务器节点一样新，那么他一定持有了所有已经提交的日志条目。请求投票 RPC 实现了这样的限制： RPC 中包含了候选人的日志信息，然后投票人会拒绝掉那些日志没有自己新的投票请求。</p>
+<p>&emsp;&emsp;Raft 通过比较两份日志中最后一条日志条目的索引值和任期号定义谁的日志比较新。如果两份日志最后的条目的任期号不同，那么任期号大的日志更加新。如果两份日志最后的条目任期号相同，那么日志比较长的那个就更加新。</p>
+<h2 id="到站（日志复制）"><a href="#到站（日志复制）" class="headerlink" title="到站（日志复制）"></a>到站（日志复制）</h2><p>&emsp;&emsp;一旦一个领导人被选举出来，他就开始为客户端提供服务。客户端的每一个请求都包含一条被复制状态机执行的指令。领导人把这条指令作为一条新的日志条目附加到日志中去，然后并行的发起附加条目 RPCs 给其他的服务器，让他们复制这条日志条目。当这条日志条目被安全的复制，领导人会应用这条日志条目到它的状态机中然后把执行的结果返回给客户端。如果跟随者崩溃或者运行缓慢，再或者网络丢包，领导人会不断的重复尝试附加日志条目 RPCs（尽管已经回复了客户端）直到所有的跟随者都最终存储了所有的日志条目。</p>
+<p>&emsp;&emsp;Raft 的日志机制来维护一个不同服务器的日志之间的高层次的一致性。这么做不仅简化了系统的行为也使得更加可预计，同时他也是安全性保证的一个重要组件。Raft 维护着以下的特性，这些同时也组成了的日志匹配特性：</p>
+<ol>
+<li>如果在不同的日志中的两个条目拥有相同的索引和任期号，那么他们存储了相同的指令。</li>
+<li>如果在不同的日志中的两个条目拥有相同的索引和任期号，那么他们之前的所有日志条目也全部相同。</li>
+</ol>
+<p>&emsp;&emsp;第一个特性来自这样的一个事实，领导人最多在一个任期里在指定的一个日志索引位置创建一条日志条目，同时日志条目在日志中的位置也从来不会改变。第二个特性由附加日志 RPC 的一个简单的一致性检查所保证。在发送附加日志 RPC 的时候，领导人会把新的日志条目紧接着之前的条目的索引位置和任期号包含在里面。如果跟随者在它的日志中找不到包含相同索引位置和任期号的条目，那么他就会拒绝接收新的日志条目。</p>
+<p>&emsp;&emsp;一致性检查就像一个归纳步骤：一开始空的日志状态肯定是满足日志匹配特性的，然后一致性检查保护了日志匹配特性当日志扩展的时候。因此，每当附加日志 RPC 返回成功时，领导人就知道跟随者的日志一定是和自己相同的了。</p>
+<h2 id="下车"><a href="#下车" class="headerlink" title="下车"></a>下车</h2><p>源于 MIT，然后用于自己学习，<a href="https://github.com/happyer/distributed-computing" target="_blank" rel="external">源码注释地址</a>。</p>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2016-03-15-AQS/"
-                     data-title="The java.util.concurrent Synchronizer Framework（译）"
-                     data-url="http://happyer.github.io/2016/12/09/2016-03-15-AQS/"
+                     data-thread-key="2017/02/06/2017-02-06-raft/"
+                     data-title="老司机带你用 Go 语言实现 Raft 分布式一致性协议"
+                     data-url="http://happyer.github.io/2017/02/06/2017-02-06-raft/"
                      data-images=""
-                     data-content="在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的... | chauncy&#39;s blog ">
+                     data-content="老司机带你用 Go 语言实现 Raft 分布式一致性协议&emsp;&emsp;随着大型网站的... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -226,15 +242,10 @@ if (state may permit a blocked thread to acquire)
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-12-09-java8 collector/" data-toggle="tooltip" data-placement="top"
-                           title="java 8 自定义 收集器（collector）">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/" data-toggle="tooltip" data-placement="top"
-                           title="深入分析ConcurrentHashMap">Next Post &rarr;</a>
+                        <a href="/2017/01/16/2017-01-16-mapreduce/" data-toggle="tooltip" data-placement="top"
+                           title="Go 语言实现 MapReduce 框架">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -243,9 +254,9 @@ if (state may permit a blocked thread to acquire)
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2016-03-15-AQS/"
-                         data-title="The java.util.concurrent Synchronizer Framework（译）"
-                         data-url="http://happyer.github.io/2016/12/09/2016-03-15-AQS/">
+                         data-thread-key="2017/02/06/2017-02-06-raft/"
+                         data-title="老司机带你用 Go 语言实现 Raft 分布式一致性协议"
+                         data-url="http://happyer.github.io/2017/02/06/2017-02-06-raft/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -257,7 +268,7 @@ if (state may permit a blocked thread to acquire)
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#老司机带你用-Go-语言实现-Raft-分布式一致性协议"><span class="toc-text">老司机带你用 Go 语言实现 Raft 分布式一致性协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#上车"><span class="toc-text">上车</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发车（领导的选举）"><span class="toc-text">发车（领导的选举）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#到站（日志复制）"><span class="toc-text">到站（日志复制）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#下车"><span class="toc-text">下车</span></a></li></ol></li></ol>
                 </div>
             </div>
         </div>
@@ -278,6 +289,15 @@ if (state may permit a blocked thread to acquire)
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#go"
+                           title="go">go</a>
+                        
+                        <a class="tag" href="/tags/#mapreduce"
+                           title="mapreduce">mapreduce</a>
+                        
+                        <a class="tag" href="/tags/#ds"
+                           title="ds">ds</a>
                         
                     </div>
                 </section>

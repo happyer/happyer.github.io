@@ -153,9 +153,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+    <a href="/2016/12/09/2016-03-15-AQS/">
         <h2 class="post-title">
-            c++复制构造函数
+            The java.util.concurrent Synchronizer Framework（译）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -163,11 +163,7 @@
         
         <div class="post-content-preview">
             <p>
-                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
-class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs)..
+                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
             </p>
         </div>
     </a>
@@ -205,9 +201,9 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
+    <a href="/2016/12/09/2015-02-04-builder设计模式/">
         <h2 class="post-title">
-            使用netty建立websocket进行群聊
+            buider设计模式
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -215,9 +211,7 @@ Entry&lt;K,V&gt; next = e.next; //..
         
         <div class="post-content-preview">
             <p>
-                WebSocket 简介:
-WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
-第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
+                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
             </p>
         </div>
     </a>
@@ -230,9 +224,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+    <a href="/2016/12/09/2016-02-18-java gc总结/">
         <h2 class="post-title">
-            Java-AbstractQueuedSynchronizer
+            进一步理解java垃圾收集器
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -240,8 +234,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
         
         <div class="post-content-preview">
             <p>
-                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
-从Reen..
+                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
+2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
+3..
             </p>
         </div>
     </a>
@@ -278,29 +273,6 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-15-AQS/">
-        <h2 class="post-title">
-            The java.util.concurrent Synchronizer Framework（译）
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
     <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
             Netty的FastThreadLocal
@@ -324,9 +296,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2015-02-04-builder设计模式/">
+    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
         <h2 class="post-title">
-            buider设计模式
+            spring 流程 （一）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -334,7 +306,32 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
         
         <div class="post-content-preview">
             <p>
-                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
+                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
+到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+        <h2 class="post-title">
+            Java-AbstractQueuedSynchronizer
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
+从Reen..
             </p>
         </div>
     </a>
@@ -448,8 +445,6 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -462,7 +457,18 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
+                    <a href="/tags/#go" title="go"
+                       rel="2">go</a>
                     
+                    
+                    
+                    <a href="/tags/#mapreduce" title="mapreduce"
+                       rel="2">mapreduce</a>
+                    
+                    
+                    
+                    <a href="/tags/#ds" title="ds"
+                       rel="2">ds</a>
                     
                     
                 </div>
