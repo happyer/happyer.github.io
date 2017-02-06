@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        chauncy&#39;s blog
+        java-SynchronousQueue｜chauncy&#39;s blog
         
     </title>
 
@@ -145,7 +145,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1></h1>
+                    <h1>java-SynchronousQueue</h1>
                     
                     <span class="meta">
                          作者 chauncy
@@ -155,6 +155,9 @@
                     </span>
                     <div class="tags text-center">
                         
+                        <a class="tag" href="/tags/#java"
+                           title="java">java</a>
+                        
                     </div>
                 </div>
             </div>
@@ -162,7 +165,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            
+            java-SynchronousQueue
         </span>
     </div>
 </header>
@@ -173,9 +176,7 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <hr>
-<p>layout: default<br>title: java-SynchronousQueue<br>tags: [java ]<br>—<a href="media/%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F.md">联系方式</a></p>
-<p>在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称为内在锁），它强制实行互斥，确保执行 synchronized 块的线程的动作，能够被后来执行受相同锁保护的 synchronized 块的其他线程看到。在使用得当的时候，内在锁可以让程序做到线程安全，但是在使用锁定保护短的代码路径，而且线程频繁地争用锁的时候，锁定可能成为相当繁重的操作。</p>
+                <p>在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情。Java 语言中主要的同步手段就是 synchronized 关键字（也称为内在锁），它强制实行互斥，确保执行 synchronized 块的线程的动作，能够被后来执行受相同锁保护的 synchronized 块的其他线程看到。在使用得当的时候，内在锁可以让程序做到线程安全，但是在使用锁定保护短的代码路径，而且线程频繁地争用锁的时候，锁定可能成为相当繁重的操作。</p>
 <p>非阻塞的计数器<br>清单 1 中的 Counter 是线程安全的，但是使用锁的需求带来的性能成本困扰了一些开发人员。但是锁是必需的，因为虽然增加看起来是单一操作，但实际是三个独立操作的简化：检索值，给值加 1，再写回值。（在 getValue 方法上也需要同步，以保证调用 getValue 的线程看到的是最新的值。虽然许多开发人员勉强地使自己相信忽略锁定需求是可以接受的，但忽略锁定需求并不是好策略。）<br>在多个线程同时请求同一个锁时，会有一个线程获胜并得到锁，而其他线程被阻塞。JVM 实现阻塞的方式通常是挂起阻塞的线程，过一会儿再重新调度它。由此造成的上下文切换相对于锁保护的少数几条指令来说，会造成相当大的延迟。<br>清单 1. 使用同步的线程安全的计数器</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Counter</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">long</span> value = <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">long</span> <span class="title">increment</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> ++value;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>清单 2 中的 NonblockingCounter 显示了一种最简单的非阻塞算法：使用 AtomicInteger 的 compareAndSet() （CAS）方法的计数器。compareAndSet() 方法规定 “将这个变量更新为新值，但是如果从我上次看到这个变量之后其他线程修改了它的值，那么更新就失败”</p>
@@ -202,11 +203,10 @@
                 <div class="ds-share"
                      style="text-align: right"
                      data-thread-key="2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/"
-                     data-title=""
+                     data-title="java-SynchronousQueue"
                      data-url="http://happyer.github.io/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/"
                      data-images=""
-                     data-content="
-layout: defaulttitle: java-SynchronousQueuetag... | chauncy&#39;s blog ">
+                     data-content="在不只一个线程访问一个互斥的变量时，所有线程都必须使用同步，否则就可能会发生一些非常糟糕的事情... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -242,7 +242,7 @@ layout: defaulttitle: java-SynchronousQueuetag... | chauncy&#39;s blog ">
                 <div class="comment">
                     <div class="ds-thread"
                          data-thread-key="2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/"
-                         data-title=""
+                         data-title="java-SynchronousQueue"
                          data-url="http://happyer.github.io/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/">
                     </div>
                 </div>
@@ -276,6 +276,9 @@ layout: defaulttitle: java-SynchronousQueuetag... | chauncy&#39;s blog ">
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#java"
+                           title="java">java</a>
                         
                     </div>
                 </section>
