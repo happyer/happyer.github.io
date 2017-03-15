@@ -300,9 +300,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
+    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
         <h2 class="post-title">
-            深入分析ConcurrentHashMap
+            Java-AbstractQueuedSynchronizer
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -310,9 +310,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
-do {
-Entry&lt;K,V&gt; next = e.next; //..
+                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
+从Reen..
             </p>
         </div>
     </a>
@@ -447,16 +446,6 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     
                     
-                    <a href="/tags/#scala" title="scala"
-                       rel="2">scala</a>
-                    
-                    
-                    
-                    <a href="/tags/#mq" title="mq"
-                       rel="2">mq</a>
-                    
-                    
-                    
                     <a href="/tags/#go" title="go"
                        rel="3">go</a>
                     
@@ -469,6 +458,18 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     <a href="/tags/#ds" title="ds"
                        rel="3">ds</a>
+                    
+                    
+                    
+                    <a href="/tags/#scala" title="scala"
+                       rel="2">scala</a>
+                    
+                    
+                    
+                    <a href="/tags/#mq" title="mq"
+                       rel="2">mq</a>
+                    
+                    
                     
                     
                     
