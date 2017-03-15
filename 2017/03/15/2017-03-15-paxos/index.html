@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        老司机带你用 Go 语言实现 Paxos 算法｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2017/03/15/2017-03-15-paxos/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>老司机带你用 Go 语言实现 Paxos 算法</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2017-03-15
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#go"
+                           title="go">go</a>
+                        
+                        <a class="tag" href="/tags/#ds"
+                           title="ds">ds</a>
+                        
+                        <a class="tag" href="/tags/#paxos"
+                           title="paxos">paxos</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            老司机带你用 Go 语言实现 Paxos 算法
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h1 id="老司机带你用-Go-语言实现-Paxos-算法"><a href="#老司机带你用-Go-语言实现-Paxos-算法" class="headerlink" title="老司机带你用 Go 语言实现 Paxos 算法"></a>老司机带你用 Go 语言实现 Paxos 算法</h1><p>&emsp;&emsp;在理论计算机科学中，CAP定理（CAP theorem），又被称作布鲁尔定理（Brewer’s theorem），它指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
+<ol>
+<li>一致性（Consistence），等同于所有节点访问同一份最新的数据副本；</li>
+<li>可用性（Availability），每次请求都能获取到非错的响应——但是不保证获取的数据为最新数据；</li>
+<li>分区容错性（Network partitioning），以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在 C 和 A 之间做出选择。</li>
+</ol>
+<h2 id="上车"><a href="#上车" class="headerlink" title="上车"></a>上车</h2><p>&emsp;&emsp;今天说说一致性，分布式系统中的节点通信存在两种模型：共享内存（Shared memory）和消息传递（Messages passing）。</p>
+<p>&emsp;&emsp;基于消息传递通信模型的分布式系统，不可避免的会发生以下错误：进程可能会慢、被杀死或者重启，消息可能会延迟、丢失、重复。在基础 Paxos 场景中，先不考虑可能出现消息篡改即拜占庭错误的情况。Paxos 算法解决的问题是在一个可能发生上述异常的分布式系统中如何就某个值达成一致，保证不论发生以上任何异常，都不会破坏决议的一致性。一个典型的场景是，在一个分布式数据库系统中，如果各节点的初始状态一致，每个节点都执行相同的操作序列，那么他们最后能得到一个一致的状态。为保证每个节点执行相同的命令序列，需要在每一条指令上执行一个“一致性算法”以保证每个节点看到的指令一致。一个通用的一致性算法可以应用在许多场景中，是分布式计算中的重要问题，因此从 20 世纪 80 年代起对于一致性算法的研究就没有停止过。</p>
+<h2 id="发车-（Paxos-算法）"><a href="#发车-（Paxos-算法）" class="headerlink" title="发车 （Paxos 算法）"></a>发车 （Paxos 算法）</h2><p>&emsp;&emsp;Paxos 算法就是通过两个阶段确定一个决议：</p>
+<ul>
+<li>Phase1：确定谁的编号最高，只有编号最高者才有权利提交 Proposal（提议：给定的具体值）；</li>
+<li>Phase2：编号最高者提交 Proposal，如果没有其他节点提出更高编号的 Proposal，则该提案会被顺利通过，否则整个过程就会重来。</li>
+</ul>
+<p>&emsp;&emsp;结论就是这个结论，至于整个过程的推导，就不在这里展开细说了。但是有一点需要注意的是，在过程第一阶段，可能会出现活锁。你编号高，我比你更高，反复如此，算法永远无法结束。可使用一个“Leader”来解决问题,这个 Leader 并非我们刻意去选出来一个，而是自然形成出来的。同样再次也不展开讨论了，本篇主要是以 Code 为主的哈！</p>
+<h3 id="Phase1"><a href="#Phase1" class="headerlink" title="Phase1"></a>Phase1</h3><figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(px *Paxos)</span><span class="title">Prepare</span><span class="params">(args *PrepareArgs, reply *PrepareReply)</span> <span class="title">error</span></span> &#123;</div><div class="line">	px.mu.Lock()</div><div class="line">	<span class="keyword">defer</span> px.mu.Unlock()</div><div class="line">	round, exist := px.rounds[args.Seq]</div><div class="line">	<span class="keyword">if</span> !exist &#123;</div><div class="line">		<span class="comment">//new seq  of commit,so need new</span></div><div class="line">		px.rounds[args.Seq] = px.newInstance()</div><div class="line">		round, _ = px.rounds[args.Seq]</div><div class="line">		reply.Err = OK</div><div class="line">	&#125;<span class="keyword">else</span> &#123;</div><div class="line">		<span class="keyword">if</span> args.PNum &gt; round.proposeNumber &#123;</div><div class="line">			reply.Err = OK</div><div class="line">		&#125;<span class="keyword">else</span> &#123;</div><div class="line">			reply.Err = Reject</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> reply.Err == OK &#123;</div><div class="line">		reply.AcceptPnum = round.acceptorNumber</div><div class="line">		reply.AcceptValue = round.acceptValue</div><div class="line">		px.rounds[args.Seq].proposeNumber = args.PNum</div><div class="line">	&#125;<span class="keyword">else</span> &#123;</div><div class="line">		<span class="comment">//reject</span></div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="literal">nil</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;在 Prepare 阶段，主要是通过 RPC 调用，询问每一台机器，当前的这个提议能不能通过，判断的条件就是，当前提交的编号大于之前的其他机器 Prepare 的编号，代码 <code>if args.PNum &gt; round.proposeNumber</code> 的判断。还有一个就是，如果之前一台机器都没有通过，即使当前是第一个提交 Prepare 的机器，那就直接同意通过了。代码片段：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line">round, exist := px.rounds[args.Seq]</div><div class="line">	<span class="keyword">if</span> !exist &#123;</div><div class="line">		<span class="comment">//new seq  of commit,so need new</span></div><div class="line">		px.rounds[args.Seq] = px.newInstance()</div><div class="line">		round, _ = px.rounds[args.Seq]</div><div class="line">		reply.Err = OK</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;在完成逻辑判断过后，如果本次提议是通过的，那么还需返回给提议者，已经通过提议和确定的值。代码片段：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="keyword">if</span> reply.Err == OK &#123;</div><div class="line">	reply.AcceptPnum = round.acceptorNumber</div><div class="line">	reply.AcceptValue = round.acceptValue</div><div class="line">	px.rounds[args.Seq].proposeNumber = args.PNum</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Phase2"><a href="#Phase2" class="headerlink" title="Phase2"></a>Phase2</h3><figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(px Paxos)</span><span class="title">Accept</span><span class="params">(args *AcceptArgs, reply *AcceptReply)</span> <span class="title">error</span></span> &#123;</div><div class="line">	px.mu.Lock()</div><div class="line">	<span class="keyword">defer</span> px.mu.Unlock()</div><div class="line">	round, exist := px.rounds[args.Seq]</div><div class="line">	<span class="keyword">if</span> !exist &#123;</div><div class="line">		px.rounds[args.Seq] = px.newInstance()</div><div class="line">		reply.Err = OK</div><div class="line">	&#125;<span class="keyword">else</span> &#123;</div><div class="line">		<span class="keyword">if</span> args.PNum &gt;= round.proposeNumber &#123;</div><div class="line">			reply.Err = OK</div><div class="line">		&#125;<span class="keyword">else</span> &#123;</div><div class="line">			reply.Err = Reject</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> reply.Err == OK &#123;</div><div class="line">		px.rounds[args.Seq].acceptorNumber = args.PNum</div><div class="line">		px.rounds[args.Seq].proposeNumber = args.PNum</div><div class="line">		px.rounds[args.Seq].acceptValue = args.Value</div><div class="line">	&#125;<span class="keyword">else</span> &#123;</div><div class="line">		<span class="comment">//reject</span></div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="literal">nil</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;在 Accept 阶段基本和 Prepare 阶段如出一辙咯。判断当前的提议是否存在，如果不纯在表明是新的，那就直接返回 OK 咯！</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line">round, exist := px.rounds[args.Seq]</div><div class="line"><span class="keyword">if</span> !exist &#123;</div><div class="line">	px.rounds[args.Seq] = px.newInstance()</div><div class="line">	reply.Err = OK</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;然后同样判断提议号是否大于等于当前的提议编号，如果是，那同样也返回 OK 咯，否者就拒绝。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="keyword">if</span> args.PNum &gt;= round.proposeNumber &#123;</div><div class="line">	reply.Err = OK</div><div class="line">&#125;<span class="keyword">else</span> &#123;</div><div class="line">	reply.Err = Reject</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;与此重要的一点就是，如果提议通过，那么就需设置当轮的提议编号和提议的值。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line"><span class="keyword">if</span> reply.Err == OK &#123;</div><div class="line">	px.rounds[args.Seq].acceptorNumber = args.PNum</div><div class="line">	px.rounds[args.Seq].proposeNumber = args.PNum</div><div class="line">	px.rounds[args.Seq].acceptValue = args.Value</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;整个使用过程中使用了 Map 和数组来存储一些辅助信息，Map 主要存储的是，每一轮的投票被确定的结果，Key 表示每一轮的投票编号，Round 表示存储已经接受的值。Completes 数组主要是用于存储在使用的过程中，已经确定完成了的最小的编号。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><div class="line">	rounds     <span class="keyword">map</span>[<span class="keyword">int</span>]*Round <span class="comment">//cache each round  paxos result key is seq value is value</span></div><div class="line">	completes  [] <span class="keyword">int</span>         <span class="comment">//maintain peer min seq of completed</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(px *Paxos)</span><span class="title">Decide</span><span class="params">(args *DecideArgs, reply *DecideReply)</span> <span class="title">error</span></span> &#123;</div><div class="line">	px.mu.Lock()</div><div class="line">	<span class="keyword">defer</span> px.mu.Unlock()</div><div class="line">	_, exist := px.rounds[args.Seq]</div><div class="line">	<span class="keyword">if</span> !exist &#123;</div><div class="line">		px.rounds[args.Seq] = px.newInstance()</div><div class="line">	&#125;</div><div class="line">	px.rounds[args.Seq].acceptorNumber = args.PNum</div><div class="line">	px.rounds[args.Seq].acceptValue = args.Value</div><div class="line">	px.rounds[args.Seq].proposeNumber = args.PNum</div><div class="line">	px.rounds[args.Seq].state = Decided</div><div class="line">	px.completes[args.Me] = args.Done</div><div class="line">	<span class="keyword">return</span> <span class="literal">nil</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;同时 Decide 方法，用于提议者来确定某个值，这个映射到分布式里面的状态机的应用。</p>
+<p><img src="m.png" alt="日志的复制"></p>
+<p>&emsp;&emsp;客户段通过提交指令给服务器，服务器通过 Paxos 算法是现在多台机器上面，所有的服务器按照顺序执行相同的指令，然后状态机对指令进行执行最后每台机器的结果都是一样的。</p>
+<p><img src="select.png" alt="日志的修复"></p>
+<h2 id="到站"><a href="#到站" class="headerlink" title="到站"></a>到站</h2><p>&emsp;&emsp;在分布式环境之中，网络故障宕机属于正常现象。如果一台机器宕机了，过了一段时间又恢复了，那么他宕机的时间之中，怎么将之前的指令恢复回来？当他提交一个 jmp 指令的时候，索引 1、2 都是已经确定了的指令，所以可以直接从索引 3 开始，当他提交 Propser（jmp）的时候，会收到 s1、s3 的返回值（cmp），根据 Paxos 算法后者认同前者的原则，所以他会在 Phase2 阶段提交一个值为 cmp accept 的请求，最后索引为 3 的就变成了 cmp，如果说在这个阶段没有返回值，那么就选择客户端的返回值就可以了，最后就达成了一致。</p>
+<p>源于 MIT，然后用于自己学习，<a href="https://github.com/happyer/distributed-computing" target="_blank" rel="external">源码注释地址</a>。</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2017/03/15/2017-03-15-paxos/"
+                     data-title="老司机带你用 Go 语言实现 Paxos 算法"
+                     data-url="http://happyer.github.io/2017/03/15/2017-03-15-paxos/"
+                     data-images=""
+                     data-content="老司机带你用 Go 语言实现 Paxos 算法&emsp;&emsp;在理论计算机科学中，CA... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/03/15/KDataCenter/" data-toggle="tooltip" data-placement="top"
+                           title="">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/02/06/2017-02-06-raft/" data-toggle="tooltip" data-placement="top"
+                           title="老司机带你用 Go 语言实现 Raft 分布式一致性协议">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2017/03/15/2017-03-15-paxos/"
+                         data-title="老司机带你用 Go 语言实现 Paxos 算法"
+                         data-url="http://happyer.github.io/2017/03/15/2017-03-15-paxos/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#老司机带你用-Go-语言实现-Paxos-算法"><span class="toc-text">老司机带你用 Go 语言实现 Paxos 算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#上车"><span class="toc-text">上车</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#发车-（Paxos-算法）"><span class="toc-text">发车 （Paxos 算法）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Phase1"><span class="toc-text">Phase1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Phase2"><span class="toc-text">Phase2</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#到站"><span class="toc-text">到站</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#go"
+                           title="go">go</a>
+                        
+                        <a class="tag" href="/tags/#ds"
+                           title="ds">ds</a>
+                        
+                        <a class="tag" href="/tags/#paxos"
+                           title="paxos">paxos</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2017
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>

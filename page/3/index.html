@@ -273,9 +273,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
+    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
         <h2 class="post-title">
-            maven的聚合与继承的使用
+            使用netty建立websocket进行群聊
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -283,79 +283,9 @@
         
         <div class="post-content-preview">
             <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
-        <h2 class="post-title">
-            事件驱动模型的角度来看 JAVA NIO
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
-        <h2 class="post-title">
-            java多线程CountDownLatch使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-02-仿函数/">
-        <h2 class="post-title">
-            仿函数（functor function objects）
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
-.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
+                WebSocket 简介:
+WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
+第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
             </p>
         </div>
     </a>
@@ -380,31 +310,6 @@ public static vo..
             <p>
                 Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
 阻塞队列（BlockingQueue）是一个支持两..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
-        <h2 class="post-title">
-            使用netty建立websocket进行群聊
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                WebSocket 简介:
-WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
-第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
             </p>
         </div>
     </a>
@@ -442,9 +347,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/hello-world/">
+    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
         <h2 class="post-title">
-            Hello World
+            事件驱动模型的角度来看 JAVA NIO
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -452,7 +357,106 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
         
         <div class="post-content-preview">
             <p>
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer i..
+                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
+        <h2 class="post-title">
+            maven的聚合与继承的使用
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
+在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+        <h2 class="post-title">
+            c++复制构造函数
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
+class Widget  {
+      public:
+      Widget();   //default 构造函数
+      Widget(const Widget &amp; rhs)..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-02-仿函数/">
+        <h2 class="post-title">
+            仿函数（functor function objects）
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
+.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
+        <h2 class="post-title">
+            java多线程CountDownLatch使用
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
+public static vo..
             </p>
         </div>
     </a>
@@ -579,7 +583,7 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     <a href="/tags/#go" title="go"
-                       rel="2">go</a>
+                       rel="3">go</a>
                     
                     
                     
@@ -589,7 +593,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     <a href="/tags/#ds" title="ds"
-                       rel="2">ds</a>
+                       rel="3">ds</a>
+                    
+                    
                     
                     
                 </div>
