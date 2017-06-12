@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        c++复制构造函数｜chauncy&#39;s blog
+        chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+    <link rel="canonical" href="http://happyer.github.io/archives/2017/06/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -43,7 +43,7 @@
 <!-- hack iOS CSS :active style -->
 <body ontouchstart="" class="animated fadeIn">
 <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "false" data-istags="false
 " data-ishome = "false" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -124,192 +124,192 @@
 
 <!-- Main Content -->
 
-<!--only post-->
 
-
-<img class="wechat-title-img"
-     src="">
-
-
-<style>
-    
-    header.intro-header {
-        background-image: url('')
-    }
-
-    
-</style>
-
-<header class="intro-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
-                <div class="post-heading">
-                    <h1>c++复制构造函数</h1>
-                    
-                    <span class="meta">
-                         作者 chauncy
-                        <span>
-                          日期 2016-12-09
-                         </span>
-                    </span>
-                    <div class="tags text-center">
-                        
+<!-- Page Header -->
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 visible-xs-block visible-sm-block">
+    <div class="row">
+        <header class="intro-header">
+            <div class="container">
+                <div class="site-heading text-center">
+                    <div class="about-me">
+                        <!--移动端头部显示-->
+                        <img src="null"/>
+                        <h5><a href="/about/">chauncy</a></h5>
+                        <p>null</p>
                     </div>
                 </div>
             </div>
+        </header>
+    </div>
+</div>
+<!-- Main Content -->
+<div class="container custom-haojen-container">
+    <!-- Post Container -->
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-1 col-md-8 col-md-offset-1 col-sm-12 col-xs-12 post-container">
+            <!-- Main Content -->
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2017/06/12/2017-06-12-kafka-server-network-framwork/">
+        <h2 class="post-title">
+            Kafka 服务端 网络层 架构
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-06-12
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Kafka 服务端 网络层 架构
+1，Reactor 模式    Kafka 网络层采用的是Reactor模式，是一种基于事件驱动模式。对应于Java的NIO 提供了Reactor模式的API.常见的单线程Java NIO 的线程模型为
+流程：首先创建ServerSocketChannel 对象..
+            </p>
         </div>
-    </div>
-    <div class="post-title-haojen">
-        <span>
-            c++复制构造函数
-        </span>
-    </div>
-</header>
+    </a>
 
-<!-- Post Content -->
-<article>
-    <div class="container">
-        <div class="row">
-            <!-- Post Container -->
-            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下</p>
-<pre><code>class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs);   //copy 构造函数
-      Widget&amp; operator=(const Widget&amp; rhs);  //copy assignment 操作符
-      ~Widget{};();
-};
+</div>
 
-Widget w1;       //default 构造函数
-Widget w2(w1);  //调用copy构造函数
-w1 = w2;        //调用copy assignment操作符
-</code></pre><p>当你看到赋值操作符小心,因为”=”语法可以用来调用copy构造函数</p>
-<pre><code>Widget w3 = w1    //copy 构造函数
-</code></pre><p>copy 构造,和copy 赋值,很容易区分,幸好,如果一个新的对象别定义(与上面的w3),则调用copy构造,反之则赋值.看到很多网上的资料都是说,只要一看到对象赋值另外一个同类型的对象,就是copy 构造,这是错误的现在来看</p>
-<p>至于我当初学习copy构造的时候,为什么要引用来作为传递了??</p>
-<p>传入参数用const类型的引用，可以节省参数赋值的开支，最后赋值给的是this指针指向的对象，复制构造函数会默认的进行简单变量的赋值。<br>另外重要的原因就是：避免递归调用！<br>如果定义如下的构造函数：</p>
-<pre><code>Widget:: Widget( Widget rhs);
-</code></pre><p>那么当用一个 Widget对象初始化另一个 Widget对象时，如</p>
-<pre><code>Widget w4=w4; //假设w4是一个已存在Widget对象
-</code></pre><p>该复制构造函数就会被无限制地递归下去：调用WIdget(Widgetr)</p>
+<hr>
 
-                <hr>
-                
-                <!-- 多说 Share start -->
-                <div class="ds-share"
-                     style="text-align: right"
-                     data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                     data-title="c++复制构造函数"
-                     data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/"
-                     data-images=""
-                     data-content="今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一... | chauncy&#39;s blog ">
-                    <div class="ds-share-inline">
-                        <ul class="ds-share-icons-16">
-                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
-                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
-                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
-                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
-                        </ul>
-                        <div class="ds-share-icons-more">
-                        </div>
-                    </div>
+
+
+
+<!-- 翻页 pager -->
+
+<ul class="pager">
+    
+    
+</ul>
+
+
+        </div>
+        <!-- Sidebar Container -->
+        <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+
+            <!-- About Me -->
+            <section class="visible-md visible-lg" style="padding: 0 18px">
+                <div class="short-about">
+                    <!--侧边栏头像-->
+                    
+                    <h5><a href="/about/">chauncy</a></h5>
+                    
                     <hr>
-                </div>
-                <!-- 多说 Share end-->
-                
-
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/" data-toggle="tooltip" data-placement="top"
-                           title="Netty的FastThreadLocal">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2016/12/09/2016-03-15-AQS/" data-toggle="tooltip" data-placement="top"
-                           title="The java.util.concurrent Synchronizer Framework（译）">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-                
-                <!-- 多说评论框 start -->
-                <div class="comment">
-                    <div class="ds-thread"
-                         data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                         data-title="c++复制构造函数"
-                         data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
-                    </div>
-                </div>
-                <!-- 多说评论框 end -->
-                
-
-                
-
-            </div>
-
-            <div class="hidden-xs col-sm-3 toc-col">
-                <div class="toc-wrap">
-                    
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Sidebar Container -->
-
-            <div class="
-                col-lg-8 col-lg-offset-2
-                col-md-10 col-md-offset-1
-                sidebar-container">
-
-                <!-- Featured Tags -->
-                
-                <section>
-                    <!-- no hr -->
-                    <h5 class="text-center">
-                        <a href="/tags/">FEATURED TAGS</a>
-                    </h5>
-                    <div class="tags">
+                    <!-- SNS Link 社交 -->
+                    <ul class="list-inline">
                         
-                    </div>
-                </section>
-                
+                        
+                        <li>
+                            <a target="_blank" href="https://twitter.com/chauncy">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                        </span>
+                            </a>
+                        </li>
+                        
+                        
+                        <li>
+                            <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa  fa-stack-1x fa-inverse">知</i>
+                                        </span>
+                            </a>
+                        </li>
+                        
 
-                <!-- Friends Blog -->
-                
-            </div>
+                        
+                        <li>
+                            <a target="_blank" href="http://weibo.com/chauncy">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                                        </span>
+                            </a>
+                        </li>
+                        
+
+                        
+
+                        
+                        <li>
+                            <a target="_blank" href="https://github.com/chauncy">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                        </span>
+                            </a>
+                        </li>
+                        
+
+                        
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Featured Tags  标签 -->
+            
+            <section>
+                <div class="tags">
+                    
+                    
+                    <a href="/tags/#java" title="java"
+                       rel="5">java</a>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a href="/tags/#scala" title="scala"
+                       rel="2">scala</a>
+                    
+                    
+                    
+                    <a href="/tags/#mq" title="mq"
+                       rel="2">mq</a>
+                    
+                    
+                    
+                    <a href="/tags/#go" title="go"
+                       rel="3">go</a>
+                    
+                    
+                    
+                    <a href="/tags/#mapreduce" title="mapreduce"
+                       rel="2">mapreduce</a>
+                    
+                    
+                    
+                    <a href="/tags/#ds" title="ds"
+                       rel="3">ds</a>
+                    
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </section>
+            
+
+            
+
         </div>
-
     </div>
-</article>
-
-
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    // dynamic User by Hux
-    var _user = 'chauncy';
-
-    // duoshuo comment query.
-    var duoshuoQuery = {short_name: _user};
-    (function () {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';
-        ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0]
-        || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-</script>
-<!-- 多说公共JS代码 end -->
-
-
-
-
+</div>
 
 <!-- Footer -->
 <!-- Footer -->

@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        c++复制构造函数｜chauncy&#39;s blog
+        Kafka 服务端 网络层 架构｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+    <link rel="canonical" href="http://happyer.github.io/2017/06/12/2017-06-12-kafka-server-network-framwork/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,18 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>c++复制构造函数</h1>
+                    <h1>Kafka 服务端 网络层 架构</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2017-06-12
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#kafka"
+                           title="kafka">kafka</a>
                         
                     </div>
                 </div>
@@ -162,7 +165,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            c++复制构造函数
+            Kafka 服务端 网络层 架构
         </span>
     </div>
 </header>
@@ -173,38 +176,29 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下</p>
-<pre><code>class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs);   //copy 构造函数
-      Widget&amp; operator=(const Widget&amp; rhs);  //copy assignment 操作符
-      ~Widget{};();
-};
-
-Widget w1;       //default 构造函数
-Widget w2(w1);  //调用copy构造函数
-w1 = w2;        //调用copy assignment操作符
-</code></pre><p>当你看到赋值操作符小心,因为”=”语法可以用来调用copy构造函数</p>
-<pre><code>Widget w3 = w1    //copy 构造函数
-</code></pre><p>copy 构造,和copy 赋值,很容易区分,幸好,如果一个新的对象别定义(与上面的w3),则调用copy构造,反之则赋值.看到很多网上的资料都是说,只要一看到对象赋值另外一个同类型的对象,就是copy 构造,这是错误的现在来看</p>
-<p>至于我当初学习copy构造的时候,为什么要引用来作为传递了??</p>
-<p>传入参数用const类型的引用，可以节省参数赋值的开支，最后赋值给的是this指针指向的对象，复制构造函数会默认的进行简单变量的赋值。<br>另外重要的原因就是：避免递归调用！<br>如果定义如下的构造函数：</p>
-<pre><code>Widget:: Widget( Widget rhs);
-</code></pre><p>那么当用一个 Widget对象初始化另一个 Widget对象时，如</p>
-<pre><code>Widget w4=w4; //假设w4是一个已存在Widget对象
-</code></pre><p>该复制构造函数就会被无限制地递归下去：调用WIdget(Widgetr)</p>
+                <p>Kafka 服务端 网络层 架构</p>
+<p>1，Reactor 模式<br>    Kafka 网络层采用的是Reactor模式，是一种基于事件驱动模式。对应于Java的NIO 提供了Reactor模式的API.常见的单线程Java NIO 的线程模型为<br><img src="1.png" alt="1"></p>
+<p>流程：<br>首先创建ServerSocketChannel 对象并在Selector 上注册OP_ACCEPT 事件，ServerSockeChannel 负责监听指定网络端口上的连接请求。<br>当客户端发起到服务端的网络连接时，服务端的Selector监听到此OP_ACCEPT事件，会触发Acceptor 来处理OP_ACCEPT。<br>当Acceptor 收到来自客户端的Socket 连接请求时会为这个练剑创建相应的SocketChannel,将SocketChannel 设置为非阻塞模式，并在Selector上注册其关注的I/O事件，例如OP_READ OP_WRITE .此时客户端服务端之间socket 连接正式建立完成<br>当客户端通过上面建立的socket连接向服务端发送请求时，服务端的selector 会监听到OP_READ事件，并触发执行相应处理逻辑（上图的ReaderHandler）</p>
+<p>这里的所有事件处理逻辑都是在同一线程中完成的，这种设计适合并发连接数较小，数据量较小的场景，对于服务端来说就有些缺点，例如某请求的处理过程比较复杂会造成线程阻塞，那么所有后续<br>  请求无法被处理，就会导致大量的请求超时。为了避免这种情况，要求服务端在读取请求，处理请求已经发送响应等各个环节迅速完成。为了解决这种问题，服务端引入了多线程来满足高并发的需求。将网络读写逻辑与业务处理逻辑进行拆分，让其由不同的线程池来处理，从而实现多线程处理。</p>
+<p>  <img src="2.png" alt="2"></p>
+<p>  Acceptor 单独运行在一个线程中，也可以使用单线程的ExecutorService 实现，因为ExecutorService 会在线程异常退出时，创建新的线程进行补偿，所以可以防止出现线程异常退出后整个服务端不能接收请求<br>  的异常情况。ReaderThreadPool 线程池中的所有线程都会在Selector 上注册OP_READ 事件，负责服务端读取请求逻辑，当然也是一个线程对应多个socket 连接。ReaderThreadPool中的线程成功读取请求过后,<br>  将请求组放入MessageQueue这个共享队列之中，HandlerTreadPool 线程池中的线程会从MessageQueue 取出请求，然后执行业务逻辑请求处理。在中模式下，即使摸个业务请求的线程阻塞了，池中还有其他线程继续从<br>  MessageQueue 中获取请求并进行处理，从而避免整个服务端阻塞。Handler 线程还负责产生响应并发送给客户端，这就要求Handler ThreadPool 中的线程在Selector 中注册OP_WRITE 事件，实现发送响应的功能。<br>  同时这里需要注意，当读取与处理的速度不配时候，MessageQueue 的队列长度尤为重要。</p>
+<p>  <img src="3.png" alt="3"></p>
+<p>  一般情况，Acceptor 单独占用一个Selector.当AcceptorSelector 监听到OP_ACCEPT时，会创建个相应的socketchannel ,使用一定的策略例如轮休 selector 集合或者选择最少的selector 让不同的连接不同的selector上<br>  注册I/0事件，之后就有此Selector 负责监听此socketchannel 上的事件</p>
+<p>2,SocketServer-kafka</p>
+<p>  1,kafka 的网络层采用的是多线程，多个selector 的设计实现的。核心类是SocketServer，其中包含一个Acceptor 用于接受并处理所有的新连接，每个Acceptor对应多个Processor线程，每个Processor线程拥有自己的Selector,主要用于<br>  从连接中读取请求和写回响应。每个Acceptor对多个Handler线程，主要用于处理请求并将产生响应返回Processor线程。Processor 线程与Handler 线程之间通过RequestChannel 进行通讯。</p>
+<p>  <img src="4.png" alt="4"></p>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                     data-title="c++复制构造函数"
-                     data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/"
+                     data-thread-key="2017/06/12/2017-06-12-kafka-server-network-framwork/"
+                     data-title="Kafka 服务端 网络层 架构"
+                     data-url="http://happyer.github.io/2017/06/12/2017-06-12-kafka-server-network-framwork/"
                      data-images=""
-                     data-content="今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一... | chauncy&#39;s blog ">
+                     data-content="Kafka 服务端 网络层 架构
+1，Reactor 模式    Kafka 网络层采用的是R... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -222,15 +216,10 @@ w1 = w2;        //调用copy assignment操作符
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/" data-toggle="tooltip" data-placement="top"
-                           title="Netty的FastThreadLocal">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2016/12/09/2016-03-15-AQS/" data-toggle="tooltip" data-placement="top"
-                           title="The java.util.concurrent Synchronizer Framework（译）">Next Post &rarr;</a>
+                        <a href="/2017/03/15/2017-03-15-paxos/" data-toggle="tooltip" data-placement="top"
+                           title="老司机带你用 Go 语言实现 Paxos 算法">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -239,9 +228,9 @@ w1 = w2;        //调用copy assignment操作符
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                         data-title="c++复制构造函数"
-                         data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+                         data-thread-key="2017/06/12/2017-06-12-kafka-server-network-framwork/"
+                         data-title="Kafka 服务端 网络层 架构"
+                         data-url="http://happyer.github.io/2017/06/12/2017-06-12-kafka-server-network-framwork/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -274,6 +263,9 @@ w1 = w2;        //调用copy assignment操作符
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#kafka"
+                           title="kafka">kafka</a>
                         
                     </div>
                 </section>
