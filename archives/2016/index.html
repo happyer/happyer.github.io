@@ -300,9 +300,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-15-AQS/">
+    <a href="/2016/12/09/2015-02-04-builder设计模式/">
         <h2 class="post-title">
-            The java.util.concurrent Synchronizer Framework（译）
+            buider设计模式
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -310,7 +310,7 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
+                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
             </p>
         </div>
     </a>
@@ -323,9 +323,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
         <h2 class="post-title">
-            Netty的FastThreadLocal
+            Java-AbstractQueuedSynchronizer
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -333,7 +333,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
+                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
+从Reen..
             </p>
         </div>
     </a>
@@ -443,6 +444,16 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
                     
                     
                     
+                    <a href="/tags/#go" title="go"
+                       rel="3">go</a>
+                    
+                    
+                    
+                    
+                    
+                    <a href="/tags/#ds" title="ds"
+                       rel="3">ds</a>
+                    
                     
                     
                     <a href="/tags/#scala" title="scala"
@@ -455,24 +466,14 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
                     
                     
                     
-                    <a href="/tags/#go" title="go"
-                       rel="3">go</a>
+                    
+                    
+                    
                     
                     
                     
                     <a href="/tags/#mapreduce" title="mapreduce"
                        rel="2">mapreduce</a>
-                    
-                    
-                    
-                    <a href="/tags/#ds" title="ds"
-                       rel="3">ds</a>
-                    
-                    
-                    
-                    
-                    
-                    
                     
                     
                 </div>

@@ -176,8 +176,7 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>Kafka 服务端 网络层 架构</p>
-<h1 id="老司机带你用-Go-语言实现分布式数据库"><a href="#老司机带你用-Go-语言实现分布式数据库" class="headerlink" title="老司机带你用 Go 语言实现分布式数据库"></a>老司机带你用 Go 语言实现分布式数据库</h1><p>该分布式数据使用了raft 协议作为一致性协议为基础，<a href="http://happyer.github.io/2017/02/06/2017-02-06-raft/">raft 协议的实现在这里</a><br>一个良好的分布式数据实现包括以下几个方面：<br>    1 可用性，即是在一些机器各种故障的情况下是否能够继续提供服务   (a)<br>    2 在分布式环境中，机器之间通过网络通信，他们是否能容忍网络分区  (p）<br>    3 在数据分布到各个机器之中，他们的数据是否能够保持一致        （c）<br>    4 在前的大数据环境之中，对于分布式是否支持水平扩展（Shard）也成为了一个必不可少的<br>上术的即是CAP 何以一些现在分布式系统基本的属性，当然在也不都能满足，在很多系统里面在一致性上面做了一些妥协，使用了若一致性协议<br>当然像Dynamo 这样提供W +R &gt; N 这种协议，让用户选择 一致性 也是一种新的思路,对应的开源版本，Cassandra。</p>
+                <h1 id="老司机带你用-Go-语言实现分布式数据库"><a href="#老司机带你用-Go-语言实现分布式数据库" class="headerlink" title="老司机带你用 Go 语言实现分布式数据库"></a>老司机带你用 Go 语言实现分布式数据库</h1><p>该分布式数据使用了raft 协议作为一致性协议为基础，<a href="http://happyer.github.io/2017/02/06/2017-02-06-raft/">raft 协议的实现在这里</a><br>一个良好的分布式数据实现包括以下几个方面：<br>    1 可用性，即是在一些机器各种故障的情况下是否能够继续提供服务   (a)<br>    2 在分布式环境中，机器之间通过网络通信，他们是否能容忍网络分区  (p）<br>    3 在数据分布到各个机器之中，他们的数据是否能够保持一致        （c）<br>    4 在前的大数据环境之中，对于分布式是否支持水平扩展（Shard）也成为了一个必不可少的<br>上术的即是CAP 何以一些现在分布式系统基本的属性，当然在也不都能满足，在很多系统里面在一致性上面做了一些妥协，使用了若一致性协议<br>当然像Dynamo 这样提供W +R &gt; N 这种协议，让用户选择 一致性 也是一种新的思路,对应的开源版本，Cassandra。</p>
 <p>shard<br>    分区作为分布式里面一个重要的的特性，他可以通过增加机器来达到增加吞吐量的目的。与此同时也带了一些对于每一个shard的负载的挑战<br>  所以一般在提供接口的客户端使用的接口都一个Partition 这样的接口，让客户按照自己的需求去复写Partition</p>
 <p>架构<br><img src="kv-fram.png" alt="分布式数据库架构"></p>
 <p>sharemaster 主要负责根据client 提供的分区规则，将数据储存在不同的group 中，为了sharemaster 有多台机器组成，他们之间使用raft协议来保证一致性<br>每一个 group 由多台机器组成，他们之间也是通过raft 协议来保证一致性。</p>
@@ -193,8 +192,7 @@
                      data-title="Go 语言实现分布式数据库"
                      data-url="http://happyer.github.io/2017/06/26/2017-06-26-sharekv/"
                      data-images=""
-                     data-content="Kafka 服务端 网络层 架构
-老司机带你用 Go 语言实现分布式数据库该分布式数据使用了r... | chauncy&#39;s blog ">
+                     data-content="老司机带你用 Go 语言实现分布式数据库该分布式数据使用了raft 协议作为一致性协议为基础，... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
