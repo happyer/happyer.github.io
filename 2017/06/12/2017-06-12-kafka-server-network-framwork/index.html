@@ -187,6 +187,7 @@
 <p>2,SocketServer-kafka</p>
 <p>  1,kafka 的网络层采用的是多线程，多个selector 的设计实现的。核心类是SocketServer，其中包含一个Acceptor 用于接受并处理所有的新连接，每个Acceptor对应多个Processor线程，每个Processor线程拥有自己的Selector,主要用于<br>  从连接中读取请求和写回响应。每个Acceptor对多个Handler线程，主要用于处理请求并将产生响应返回Processor线程。Processor 线程与Handler 线程之间通过RequestChannel 进行通讯。</p>
 <p>  <img src="4.png" alt="4"></p>
+<p>  <img src="qc.jpg" alt="公众号"></p>
 
                 <hr>
                 

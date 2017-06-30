@@ -202,9 +202,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
+    <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
         <h2 class="post-title">
-            maven的聚合与继承的使用
+            深入分析ConcurrentHashMap
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -212,8 +212,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
         
         <div class="post-content-preview">
             <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
+                再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
+do {
+Entry&lt;K,V&gt; next = e.next; //..
             </p>
         </div>
     </a>
@@ -251,9 +252,9 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
-            spring 流程 （一）
+            Netty的FastThreadLocal
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -261,8 +262,7 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
         
         <div class="post-content-preview">
             <p>
-                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
-到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -426,16 +426,6 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
-                    <a href="/tags/#go" title="go"
-                       rel="3">go</a>
-                    
-                    
-                    
-                    
-                    
-                    <a href="/tags/#ds" title="ds"
-                       rel="3">ds</a>
-                    
                     
                     
                     <a href="/tags/#scala" title="scala"
@@ -448,14 +438,24 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
-                    
-                    
-                    
+                    <a href="/tags/#go" title="go"
+                       rel="3">go</a>
                     
                     
                     
                     <a href="/tags/#mapreduce" title="mapreduce"
                        rel="2">mapreduce</a>
+                    
+                    
+                    
+                    <a href="/tags/#ds" title="ds"
+                       rel="3">ds</a>
+                    
+                    
+                    
+                    
+                    
+                    
                     
                     
                 </div>
