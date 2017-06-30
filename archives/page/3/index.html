@@ -153,30 +153,6 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
-        <h2 class="post-title">
-            spring 流程 （一）
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
-到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
     <a href="/2016/12/09/2016-02-02-仿函数/">
         <h2 class="post-title">
             仿函数（functor function objects）
@@ -248,54 +224,6 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
-        <h2 class="post-title">
-            java多线程CountDownLatch使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
-        <h2 class="post-title">
-            netty与protobuf生产者和消费者
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
-阻塞队列（BlockingQueue）是一个支持两..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
     <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
         <h2 class="post-title">
             使用netty建立websocket进行群聊
@@ -334,6 +262,78 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                 再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
 do {
 Entry&lt;K,V&gt; next = e.next; //..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-18-java gc总结/">
+        <h2 class="post-title">
+            进一步理解java垃圾收集器
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
+2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
+3..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
+        <h2 class="post-title">
+            netty与protobuf生产者和消费者
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
+阻塞队列（BlockingQueue）是一个支持两..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+        <h2 class="post-title">
+            Netty的FastThreadLocal
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -447,8 +447,6 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -456,6 +454,8 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
                     
                     
                     

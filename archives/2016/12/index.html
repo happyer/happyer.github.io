@@ -300,9 +300,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
         <h2 class="post-title">
-            c++复制构造函数
+            spring 流程 （一）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -310,11 +310,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
-class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs)..
+                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
+到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
             </p>
         </div>
     </a>
@@ -327,9 +324,9 @@ class Widget  {
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+    <a href="/2016/12/09/2016-03-15-AQS/">
         <h2 class="post-title">
-            Java-AbstractQueuedSynchronizer
+            The java.util.concurrent Synchronizer Framework（译）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -337,8 +334,7 @@ class Widget  {
         
         <div class="post-content-preview">
             <p>
-                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
-从Reen..
+                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
             </p>
         </div>
     </a>
@@ -448,8 +444,6 @@ class Widget  {
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -457,6 +451,8 @@ class Widget  {
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
                     
                     
                     

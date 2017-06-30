@@ -349,9 +349,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
         <h2 class="post-title">
-            c++复制构造函数
+            spring 流程 （一）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -359,35 +359,8 @@
         
         <div class="post-content-preview">
             <p>
-                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
-class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs)..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
-        <h2 class="post-title">
-            Java-AbstractQueuedSynchronizer
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
-从Reen..
+                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
+到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
             </p>
         </div>
     </a>
@@ -411,6 +384,33 @@ class Widget  {
         <div class="post-content-preview">
             <p>
                 在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+        <h2 class="post-title">
+            c++复制构造函数
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
+class Widget  {
+      public:
+      Widget();   //default 构造函数
+      Widget(const Widget &amp; rhs)..
             </p>
         </div>
     </a>
@@ -448,9 +448,9 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2015-02-04-builder设计模式/">
+    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
         <h2 class="post-title">
-            buider设计模式
+            java多线程CountDownLatch使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -458,7 +458,8 @@ public..
         
         <div class="post-content-preview">
             <p>
-                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
+                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
+public static vo..
             </p>
         </div>
     </a>
@@ -572,8 +573,6 @@ public..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -581,6 +580,8 @@ public..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
                     
                     
                     
