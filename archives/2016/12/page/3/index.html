@@ -153,9 +153,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-18-java gc总结/">
+    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
         <h2 class="post-title">
-            进一步理解java垃圾收集器
+            maven的聚合与继承的使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -163,9 +163,33 @@
         
         <div class="post-content-preview">
             <p>
-                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
-2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
-3..
+                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
+在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
+        <h2 class="post-title">
+            深入分析ConcurrentHashMap
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
+do {
+Entry&lt;K,V&gt; next = e.next; //..
             </p>
         </div>
     </a>
@@ -202,9 +226,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+    <a href="/2016/12/09/2016-02-18-java gc总结/">
         <h2 class="post-title">
-            Netty的FastThreadLocal
+            进一步理解java垃圾收集器
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -212,7 +236,9 @@
         
         <div class="post-content-preview">
             <p>
-                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
+                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
+2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
+3..
             </p>
         </div>
     </a>
@@ -225,9 +251,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
         <h2 class="post-title">
-            Java-AbstractQueuedSynchronizer
+            使用netty建立websocket进行群聊
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -235,31 +261,9 @@
         
         <div class="post-content-preview">
             <p>
-                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
-从Reen..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2015-02-04-builder设计模式/">
-        <h2 class="post-title">
-            buider设计模式
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
+                WebSocket 简介:
+WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
+第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
             </p>
         </div>
     </a>
@@ -392,6 +396,8 @@
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -399,8 +405,6 @@
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
-                    
-                    
                     
                     
                     

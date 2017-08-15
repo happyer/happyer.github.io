@@ -349,9 +349,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
-            spring 流程 （一）
+            Netty的FastThreadLocal
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -359,8 +359,7 @@
         
         <div class="post-content-preview">
             <p>
-                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
-到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -396,6 +395,53 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
+        <h2 class="post-title">
+            Java-AbstractQueuedSynchronizer
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
+从Reen..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2015-02-04-builder设计模式/">
+        <h2 class="post-title">
+            buider设计模式
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2013-01-13-复制构造函数/">
         <h2 class="post-title">
             c++复制构造函数
@@ -411,55 +457,6 @@ class Widget  {
       public:
       Widget();   //default 构造函数
       Widget(const Widget &amp; rhs)..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2015-7-05-android-圆形进度条/">
-        <h2 class="post-title">
-            android圆形进度条自定义
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                之前在做一个一android项目的时候遇到了一个需要自定义控件的需求还时圆形的进度条，最终如下图
-核心代码主要是，extends View 然后是在构造函数里面初始化一些基本的数据，还可以读取xml配置的值，在ondraw 函数里面得到画布的中心点，计算坐标，根据API 在进行绘制
-public..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
-        <h2 class="post-title">
-            java多线程CountDownLatch使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
             </p>
         </div>
     </a>
@@ -573,6 +570,8 @@ public static vo..
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -580,8 +579,6 @@ public static vo..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
-                    
-                    
                     
                     
                     
