@@ -300,9 +300,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+    <a href="/2016/12/09/2016-02-18-java gc总结/">
         <h2 class="post-title">
-            Netty的FastThreadLocal
+            进一步理解java垃圾收集器
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -310,7 +310,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
+                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
+2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
+3..
             </p>
         </div>
     </a>
@@ -323,9 +325,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-15-AQS/">
+    <a href="/2016/12/09/2016-03-14-Java-AbstractQueuedSynchronizer/">
         <h2 class="post-title">
-            The java.util.concurrent Synchronizer Framework（译）
+            Java-AbstractQueuedSynchronizer
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -333,7 +335,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
+                Java 中的 ReentrantLock Semaphore ReentrantReadWriteLock等  这些同步的基础都是依靠AbstractQueuedSynchronizer的类来实现。为了方便起见下面使用AQS代替AbstractQueuedSynchronizer。
+从Reen..
             </p>
         </div>
     </a>
@@ -441,10 +444,6 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
                     
                     
                     
-                    
-                    
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -452,6 +451,10 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
+                    
+                    
                     
                     
                     
@@ -467,6 +470,8 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
                     
                     <a href="/tags/#ds" title="ds"
                        rel="3">ds</a>
+                    
+                    
                     
                     
                     
@@ -543,7 +548,7 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; chauncy 2017
+                    Copyright &copy; chauncy 2018
                     <br>
                     <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
                     <br>

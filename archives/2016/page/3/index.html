@@ -153,9 +153,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
+    <a href="/2016/12/09/2013-01-13-复制构造函数/">
         <h2 class="post-title">
-            maven的聚合与继承的使用
+            c++复制构造函数
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -163,8 +163,11 @@
         
         <div class="post-content-preview">
             <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
+                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
+class Widget  {
+      public:
+      Widget();   //default 构造函数
+      Widget(const Widget &amp; rhs)..
             </p>
         </div>
     </a>
@@ -202,9 +205,9 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
-            netty与protobuf生产者和消费者
+            Netty的FastThreadLocal
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -212,8 +215,7 @@ Entry&lt;K,V&gt; next = e.next; //..
         
         <div class="post-content-preview">
             <p>
-                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
-阻塞队列（BlockingQueue）是一个支持两..
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -226,9 +228,9 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-18-java gc总结/">
+    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
         <h2 class="post-title">
-            进一步理解java垃圾收集器
+            事件驱动模型的角度来看 JAVA NIO
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -236,9 +238,7 @@ Entry&lt;K,V&gt; next = e.next; //..
         
         <div class="post-content-preview">
             <p>
-                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
-2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
-3..
+                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
             </p>
         </div>
     </a>
@@ -251,9 +251,9 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
+    <a href="/2016/12/09/2016-03-15-AQS/">
         <h2 class="post-title">
-            使用netty建立websocket进行群聊
+            The java.util.concurrent Synchronizer Framework（译）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -261,9 +261,7 @@ Entry&lt;K,V&gt; next = e.next; //..
         
         <div class="post-content-preview">
             <p>
-                WebSocket 简介:
-WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
-第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
+                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
             </p>
         </div>
     </a>
@@ -425,10 +423,6 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
-                    
-                    
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -436,6 +430,10 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
+                    
+                    
                     
                     
                     
@@ -451,6 +449,8 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     <a href="/tags/#ds" title="ds"
                        rel="3">ds</a>
+                    
+                    
                     
                     
                     
@@ -527,7 +527,7 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; chauncy 2017
+                    Copyright &copy; chauncy 2018
                     <br>
                     <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
                     <br>
