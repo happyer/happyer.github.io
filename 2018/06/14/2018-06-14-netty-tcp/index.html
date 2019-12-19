@@ -189,7 +189,8 @@
 <p>  1:判断bytebuf 的大小是大我们协议里面的header 大小,header的大小是固定的<br>  2:寻找 bytebuf里面的第一个 以flag 开始的位置,记录startIndex<br>  3:以startIndex开始,继续寻找后面一个flag 的位置,记录为endIndex,如果当bytebuf里面最后一个都不是flag那么将直接返回null<br>  4:将bytebuf里面重 [startIndex , endIndex] 这个区间里面的数据拷贝出来生成一个新的bytebuf<br>  5:将拷贝出来的bytebuf 进行一个转码操作<br>  6:进行一个协议的解析业务处理(crc 校验,加密,解密 …)</p>
 <p>在netty 的实践之中,我们需要对bytebuf 的一下操作,为了更加进一步的提高性能,netty默认使用direct buf对外内存. 我们在实际的使用过程中未能更够尽可能的降低gc压力以及影响我们推荐使用Pooled 进行一个池化操作同时我们在进行一个bytebuf 拷贝的时候尽可能的是slice 因为本质还是使用原来的对象,只是索引变化而已,从而减少数据的拷贝,当然这一点也要注意如果一个更改也会同发生变化</p>
 <p><a href="https://github.com/happyer/netty-tcp" target="_blank" rel="external">源码注释地址</a>。</p>
-<p><img src="qc.jpg" alt="公众号"></p>
+<p>![公众号](q</p>
+<p>c.jpg)</p>
 
                 <hr>
                 
@@ -369,7 +370,7 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; chauncy 2018
+                    Copyright &copy; chauncy 2019
                     <br>
                     <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
                     <br>

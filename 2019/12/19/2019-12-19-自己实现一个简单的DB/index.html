@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        自己实现一个简单的DB｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2019/12/19/2019-12-19-自己实现一个简单的DB/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>自己实现一个简单的DB</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2019-12-19
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            自己实现一个简单的DB
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h1 id="自己实现一个简单的DB"><a href="#自己实现一个简单的DB" class="headerlink" title="自己实现一个简单的DB"></a>自己实现一个简单的DB</h1><p>  传统的RDBMS 在存储表格数据数据的时候,是以row 单位的,而row 的存储就是一个多元的tuple,<br>tuple 里面存储的就是我们每个字段 字段的值 (Filed name Filed Value),然后Field 它又是有类型的,对应到我们的字段就是int varchar 等各种类型 因此我们需要有一个共用的Field 接口</p>
+<h3 id="字段Field-的定义"><a href="#字段Field-的定义" class="headerlink" title="字段Field 的定义"></a>字段Field 的定义</h3><figure class="highlight java"><table><tr><td class="code"><pre><div class="line">		<span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Field</span> <span class="keyword">extends</span> <span class="title">Serializable</span></span>&#123;</div><div class="line">  	</div><div class="line">      <span class="comment">//序列化接口,用于存放在disk上面需要</span></div><div class="line">      <span class="function"><span class="keyword">void</span> <span class="title">serialize</span><span class="params">(DataOutputStream dos)</span> <span class="keyword">throws</span> IOException</span>;</div><div class="line">    </div><div class="line">      <span class="comment">//比较接口,用于我们需要按照字段进行排序sql order by foo</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compare</span><span class="params">(Predicate.Op op, Field value)</span></span>;</div><div class="line">    </div><div class="line">      <span class="comment">//表示我们field 的类型,int varchar etc</span></div><div class="line">      <span class="function"><span class="keyword">public</span> Type <span class="title">getType</span><span class="params">()</span></span>;</div><div class="line">      </div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object field)</span></span>;</div><div class="line">      <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Int类型的Field-的定义"><a href="#Int类型的Field-的定义" class="headerlink" title="Int类型的Field 的定义"></a>Int类型的Field 的定义</h3><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IntField</span> <span class="keyword">implements</span> <span class="title">Field</span> </span>&#123;</div><div class="line"></div><div class="line">      <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">    </div><div class="line">      <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> value;</div><div class="line">    </div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</div><div class="line">          <span class="keyword">return</span> value;</div><div class="line">      &#125;</div><div class="line"></div><div class="line"></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="title">IntField</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">          value = i;</div><div class="line">      &#125;</div><div class="line">    </div><div class="line">      <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">          <span class="keyword">return</span> Integer.toString(value);</div><div class="line">      &#125;</div><div class="line">    </div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">          <span class="keyword">return</span> value;</div><div class="line">      &#125;</div><div class="line">    </div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object field)</span> </span>&#123;</div><div class="line">          <span class="keyword">return</span> ((IntField) field).value == value;</div><div class="line">      &#125;</div><div class="line">    		<span class="comment">//就直接使用DateOutputStream 的 writeInt 直接写入</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(DataOutputStream dos)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">          dos.writeInt(value);</div><div class="line">      &#125;</div><div class="line">    </div><div class="line">    		<span class="comment">//一些比较操作,大于 等于 各种</span></div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compare</span><span class="params">(Predicate.Op op, Field val)</span> </span>&#123;</div><div class="line">    </div><div class="line">          IntField iVal = (IntField) val;</div><div class="line">    </div><div class="line">          <span class="keyword">switch</span> (op) &#123;</div><div class="line">              <span class="keyword">case</span> EQUALS:</div><div class="line">                  <span class="keyword">return</span> value == iVal.value;</div><div class="line">              <span class="keyword">case</span> NOT_EQUALS:</div><div class="line">                  <span class="keyword">return</span> value != iVal.value;</div><div class="line">    </div><div class="line">              <span class="keyword">case</span> GREATER_THAN:</div><div class="line">                  <span class="keyword">return</span> value &gt; iVal.value;</div><div class="line">    </div><div class="line">              <span class="keyword">case</span> GREATER_THAN_OR_EQ:</div><div class="line">                  <span class="keyword">return</span> value &gt;= iVal.value;</div><div class="line">    </div><div class="line">              <span class="keyword">case</span> LESS_THAN:</div><div class="line">                  <span class="keyword">return</span> value &lt; iVal.value;</div><div class="line">    </div><div class="line">              <span class="keyword">case</span> LESS_THAN_OR_EQ:</div><div class="line">                  <span class="keyword">return</span> value &lt;= iVal.value;</div><div class="line">    </div><div class="line">              <span class="keyword">case</span> LIKE:</div><div class="line">                  <span class="keyword">return</span> value == iVal.value;</div><div class="line">          &#125;</div><div class="line">    </div><div class="line">          <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">      &#125;</div><div class="line">    </div><div class="line">    		<span class="comment">//类型,我们目前支持2 种就可以了,一个是int,一个是string </span></div><div class="line">      <span class="function"><span class="keyword">public</span> Type <span class="title">getType</span><span class="params">()</span> </span>&#123;</div><div class="line">          <span class="keyword">return</span> Type.INT_TYPE;</div><div class="line">      &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="string-类型的Field-的定义"><a href="#string-类型的Field-的定义" class="headerlink" title="string 类型的Field 的定义"></a>string 类型的Field 的定义</h3><p>需要指定长度,对应数据库里面的varchar<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringField</span> <span class="keyword">implements</span> <span class="title">Field</span> </span>&#123;</div><div class="line"></div><div class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">	</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> String value;</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> maxSize;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getValue</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> value;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">//需要指定长度</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">StringField</span><span class="params">(String s, <span class="keyword">int</span> maxSize)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.maxSize = maxSize;</div><div class="line">	</div><div class="line">		<span class="keyword">if</span> (s.length() &gt; maxSize)</div><div class="line">			value = s.substring(<span class="number">0</span>, maxSize);</div><div class="line">		<span class="keyword">else</span></div><div class="line">			value = s;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> value;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> value.hashCode();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object field)</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> ((StringField) field).value.equals(value);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="comment">//这里需要注意一下,我们仅仅保存固定的长度,在写内容之前先写入长度4个字节,然后就是指定长度的数据</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(DataOutputStream dos)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">		String s = value;</div><div class="line">		<span class="keyword">int</span> overflow = maxSize - s.length();</div><div class="line">		<span class="keyword">if</span> (overflow &lt; <span class="number">0</span>) &#123;</div><div class="line">			String news = s.substring(<span class="number">0</span>, maxSize);</div><div class="line">			s = news;</div><div class="line">		&#125;</div><div class="line">		dos.writeInt(s.length());</div><div class="line">		dos.writeBytes(s);</div><div class="line">		<span class="keyword">while</span> (overflow-- &gt; <span class="number">0</span>)</div><div class="line">			dos.write((<span class="keyword">byte</span>) <span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compare</span><span class="params">(Predicate.Op op, Field val)</span> </span>&#123;</div><div class="line">	</div><div class="line">		StringField iVal = (StringField) val;</div><div class="line">		<span class="keyword">int</span> cmpVal = value.compareTo(iVal.value);</div><div class="line">	</div><div class="line">		<span class="keyword">switch</span> (op) &#123;</div><div class="line">		<span class="keyword">case</span> EQUALS:</div><div class="line">			<span class="keyword">return</span> cmpVal == <span class="number">0</span>;</div><div class="line">	</div><div class="line">		<span class="keyword">case</span> NOT_EQUALS:</div><div class="line">			<span class="keyword">return</span> cmpVal != <span class="number">0</span>;</div><div class="line">	</div><div class="line">		<span class="keyword">case</span> GREATER_THAN:</div><div class="line">			<span class="keyword">return</span> cmpVal &gt; <span class="number">0</span>;</div><div class="line">	</div><div class="line">		<span class="keyword">case</span> GREATER_THAN_OR_EQ:</div><div class="line">			<span class="keyword">return</span> cmpVal &gt;= <span class="number">0</span>;</div><div class="line">	</div><div class="line">		<span class="keyword">case</span> LESS_THAN:</div><div class="line">			<span class="keyword">return</span> cmpVal &lt; <span class="number">0</span>;</div><div class="line">	</div><div class="line">		<span class="keyword">case</span> LESS_THAN_OR_EQ:</div><div class="line">			<span class="keyword">return</span> cmpVal &lt;= <span class="number">0</span>;</div><div class="line">	</div><div class="line">		<span class="keyword">case</span> LIKE:</div><div class="line">			<span class="keyword">return</span> value.indexOf(iVal.value) &gt;= <span class="number">0</span>;</div><div class="line">		&#125;</div><div class="line">	</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="function"><span class="keyword">public</span> Type <span class="title">getType</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">return</span> Type.STRING_TYPE;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="Field的反序列化"><a href="#Field的反序列化" class="headerlink" title="Field的反序列化"></a>Field的反序列化</h3><p>不同类型,反序列化是不一样的,我们目前仅仅只有int 和varchar,分别通过 INT_TYPE 和STRING_TYPE<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Type implements Serializable &#123;</div><div class="line">    INT_TYPE() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getLen</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="number">4</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> Field <span class="title">parse</span><span class="params">(DataInputStream dis)</span> <span class="keyword">throws</span> ParseException </span>&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> IntField(dis.readInt());</div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ParseException(<span class="string">"couldn't parse"</span>, <span class="number">0</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">    &#125;, STRING_TYPE() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getLen</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> STRING_LEN + <span class="number">4</span>;</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> Field <span class="title">parse</span><span class="params">(DataInputStream dis)</span> <span class="keyword">throws</span> ParseException </span>&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="keyword">int</span> strLen = dis.readInt();</div><div class="line">                <span class="keyword">byte</span> bs[] = <span class="keyword">new</span> <span class="keyword">byte</span>[strLen];</div><div class="line">                dis.read(bs);</div><div class="line">                dis.skipBytes(STRING_LEN - strLen);</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> StringField(<span class="keyword">new</span> String(bs), STRING_LEN);</div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ParseException(<span class="string">"couldn't parse"</span>, <span class="number">0</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    </div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STRING_LEN = <span class="number">128</span>;</div><div class="line"></div><div class="line">  	<span class="comment">//返回字节数</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">getLen</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Field <span class="title">parse</span><span class="params">(DataInputStream dis)</span> <span class="keyword">throws</span> ParseException</span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="谓词Predicate"><a href="#谓词Predicate" class="headerlink" title="谓词Predicate"></a>谓词Predicate</h3><p>对应sql里面就是条件过滤的,我们在实现Field compare 的时候需要传入Predicate</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Predicate</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">    </div><div class="line">    <span class="comment">// op 类型,都是一些常用的 &gt; &lt; &gt;= 等</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">enum</span> Op implements Serializable &#123;</div><div class="line">        EQUALS, GREATER_THAN, LESS_THAN, LESS_THAN_OR_EQ, GREATER_THAN_OR_EQ, LIKE, NOT_EQUALS;</div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Op <span class="title">getOp</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> values()[i];</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == EQUALS)</div><div class="line">                <span class="keyword">return</span> <span class="string">"="</span>;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == GREATER_THAN)</div><div class="line">                <span class="keyword">return</span> <span class="string">"&gt;"</span>;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == LESS_THAN)</div><div class="line">                <span class="keyword">return</span> <span class="string">"&lt;"</span>;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == LESS_THAN_OR_EQ)</div><div class="line">                <span class="keyword">return</span> <span class="string">"&lt;="</span>;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == GREATER_THAN_OR_EQ)</div><div class="line">                <span class="keyword">return</span> <span class="string">"&gt;="</span>;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == LIKE)</div><div class="line">                <span class="keyword">return</span> <span class="string">"LIKE"</span>;</div><div class="line">            <span class="keyword">if</span> (<span class="keyword">this</span> == NOT_EQUALS)</div><div class="line">                <span class="keyword">return</span> <span class="string">"&lt;&gt;"</span>;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"impossible to reach here"</span>);</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> field;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Op op;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Field operand;</div><div class="line">       </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Predicate</span><span class="params">(<span class="keyword">int</span> field, Op op, Field operand)</span> </span>&#123;</div><div class="line">    </div><div class="line">        <span class="keyword">this</span>.field = field;</div><div class="line">        <span class="keyword">this</span>.op = op;</div><div class="line">        <span class="keyword">this</span>.operand = operand;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getField</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> field;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Op <span class="title">getOp</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> op;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Field <span class="title">getOperand</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> operand;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   <span class="comment">//根据我们的操作符op,进行一个过滤</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">filter</span><span class="params">(Tuple t)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> t.getField(field).compare(op, operand);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="单行row的定义"><a href="#单行row的定义" class="headerlink" title="单行row的定义"></a>单行row的定义</h3><p>多个field 的组合构造成为一个tuple,就成为了我们rdbms里面的一行(row)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Tuple</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> TupleDesc tupleDesc;  <span class="comment">//我们数据的schema,描述field </span></div><div class="line">    <span class="keyword">private</span> ArrayList&lt;Field&gt; tupleFields;  <span class="comment">//用户存储我们各个field 的list,这样就组成了一个row</span></div><div class="line">    <span class="keyword">private</span> RecordId recordId;  <span class="comment">//单个row 的一个逻辑id,它对应到page id</span></div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Tuple</span><span class="params">(TupleDesc td)</span> </span>&#123;</div><div class="line">        resetTupleDesc(td);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> TupleDesc <span class="title">getTupleDesc</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> tupleDesc;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> RecordId <span class="title">getRecordId</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> recordId;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRecordId</span><span class="params">(RecordId rid)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.recordId = rid;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setField</span><span class="params">(<span class="keyword">int</span> i, Field f)</span> </span>&#123;</div><div class="line">        tupleFields.set(i, f);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Field <span class="title">getField</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> tupleFields.get(i);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        String column = <span class="keyword">new</span> String();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; tupleFields.size() - <span class="number">1</span>; i++) &#123;</div><div class="line">            column += tupleFields.get(i).toString() + <span class="string">"\t"</span>;</div><div class="line">        &#125;</div><div class="line">        column += tupleFields.get(tupleFields.size() - <span class="number">1</span>) + <span class="string">"\n"</span>;</div><div class="line">        <span class="keyword">return</span> column;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> 		<span class="comment">//通过迭代器,获取field</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;Field&gt; <span class="title">fields</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> tupleFields.iterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">resetTupleDesc</span><span class="params">(TupleDesc td)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.tupleDesc = td;</div><div class="line">        <span class="keyword">this</span>.tupleFields = <span class="keyword">new</span> ArrayList&lt;Field&gt;(td.numFields());</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; td.numFields(); i++) &#123;</div><div class="line">            <span class="keyword">this</span>.tupleFields.add(<span class="keyword">null</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="数据表的schema"><a href="#数据表的schema" class="headerlink" title="数据表的schema"></a>数据表的schema</h3><p>包括FieldName FieldType ,字段的name 和字段的名字这是最基础的,所以定义一个TDItem (tuple 的描述项)来单独描述</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TDItem</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">final</span> Type fieldType;</div><div class="line">        <span class="keyword">public</span> <span class="keyword">final</span> String fieldName;</div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">TDItem</span><span class="params">(Type t, String n)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.fieldName = n;</div><div class="line">            <span class="keyword">this</span>.fieldType = t;</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> fieldName + <span class="string">"("</span> + fieldType + <span class="string">")"</span>;</div><div class="line">        &#125;</div><div class="line">    </div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (obj != <span class="keyword">null</span> &amp;&amp; obj <span class="keyword">instanceof</span> TDItem) &#123;</div><div class="line">                <span class="keyword">return</span> fieldType.equals(((TDItem) obj).fieldType);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>每一个Row 是有多个field 的,所以需啊哟多个TDItem ,TupleDesc 是一个完整的schema</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TupleDesc</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line">		<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</div><div class="line">    <span class="keyword">private</span> List&lt;TDItem&gt; items;  <span class="comment">//存储多个field 的描述</span></div><div class="line">    </div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TupleDesc</span><span class="params">(Type[] typeAr, String[] fieldAr)</span> </span>&#123;</div><div class="line">        items = <span class="keyword">new</span> ArrayList&lt;TDItem&gt;(typeAr.length);</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; typeAr.length; i++) &#123;</div><div class="line">            items.add(<span class="keyword">new</span> TDItem(typeAr[i], fieldAr[i]));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//得到某个特定的field name </span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getFieldName</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> NoSuchElementException </span>&#123;</div><div class="line">        <span class="keyword">if</span> (i &gt;= items.size()) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> items.get(i).fieldName;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//得到某个特定field type</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Type <span class="title">getFieldType</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> NoSuchElementException </span>&#123;</div><div class="line">        <span class="keyword">if</span> (i &gt;= items.size()) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> items.get(i).fieldType;</div><div class="line">    &#125;</div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">fieldNameToIndex</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchElementException </span>&#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; items.size(); i++) &#123;</div><div class="line">            String field = items.get(i).fieldName;</div><div class="line">            <span class="keyword">if</span> (field != <span class="keyword">null</span> &amp;&amp; field.equals(name)) &#123;</div><div class="line">                <span class="keyword">return</span> i;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</div><div class="line">    &#125;</div><div class="line">    	 </div><div class="line">    	 <span class="comment">//返回一个迭代器关于tditem 的,在数据库里面都是直接返回一个iterator,因为他是一个流,有可能数据会很多,需要以部分一部分的返回,而不是全部一起返回,所以在整个设计中,都是以iterator 的形式</span></div><div class="line">    	 <span class="function"><span class="keyword">public</span> Iterator&lt;TDItem&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> items.iterator();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="buffer-的存储结构"><a href="#buffer-的存储结构" class="headerlink" title="buffer 的存储结构"></a>buffer 的存储结构</h3><p> 我们仅仅讨论单表的情况,以及数据接口实现上的层级定义,事务,lock 不在考虑范围之内,我们先从最简单的开始,然后慢慢的叠加,这才是一个事物的发展正常顺序规律</p>
+<p> <img src="buffer.png" alt="buffer page 图"></p>
+<p> buffer 里面包含了很多的page,每一个page 里面包含了很多的tuple,每一个tuple 就是我们每一行的字段,因为我们每一账表的一行数据都会有多个,所以每一个tuple 就会有多个field<br> 执行引擎,在获取数据的时候通过buffer 获取page,然后我们在通过page 获取我们对应的 tuple,最后得filter 我们想要的字段,这里需要注意的是就是buffer 里面没有的我们要获取的page 的时候,需要从disk 里面load 到buffer 里面<br> 下面是整个流程需要的一些接口,这些接口后面我会去实现他,先有一个总体的认识</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BufferPool</span> </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PAGE_SIZE = <span class="number">4096</span>;</div><div class="line">    </div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_PAGES = <span class="number">50</span>;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> numPages;</div><div class="line">    <span class="keyword">private</span> ConcurrentHashMap&lt;PageId, Page&gt; bufferPool;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BufferPool</span><span class="params">(<span class="keyword">int</span> numPages)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.numPages = numPages;</div><div class="line">        <span class="keyword">this</span>.bufferPool = <span class="keyword">new</span> ConcurrentHashMap(numPages);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getPageSize</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> PAGE_SIZE;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">   </div><div class="line">   <span class="function"><span class="keyword">public</span> Page <span class="title">getPage</span><span class="params">(TransactionId tid, PageId pid, Permissions perm)</span></span></div><div class="line">       <span class="keyword">throws</span> TransactionAbortedException, DbException &#123;</div><div class="line">       <span class="comment">// some code goes here</span></div><div class="line">       <span class="keyword">if</span> (bufferPool.containsKey(pid)) &#123;</div><div class="line">           <span class="keyword">return</span> bufferPool.get(pid);</div><div class="line">       &#125; <span class="keyword">else</span> &#123;</div><div class="line">           <span class="keyword">if</span> (bufferPool.size() &lt; numPages) &#123;</div><div class="line">              Page page =Database.getCatalog()</div><div class="line">                      .getDatabaseFile(pid.getTableId())</div><div class="line">                       .readPage(pid);</div><div class="line">               bufferPool.put(pid, page);</div><div class="line">               <span class="keyword">return</span> page;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"BufferPool: BufferPool is full"</span>);</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line">  	&#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">releasePage</span><span class="params">(TransactionId tid, PageId pid)</span> </span>&#123;</div><div class="line">       </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transactionComplete</span><span class="params">(TransactionId tid)</span> <span class="keyword">throws</span> IOException</span>&#123;</div><div class="line">      </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">holdsLock</span><span class="params">(TransactionId tid, PageId p)</span> </span>&#123;</div><div class="line">        </div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">   </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transactionComplete</span><span class="params">(TransactionId tid, <span class="keyword">boolean</span> commit)</span></span></div><div class="line">        <span class="keyword">throws</span> IOException &#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertTuple</span><span class="params">(TransactionId tid, <span class="keyword">int</span> tableId, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, IOException, TransactionAbortedException &#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteTuple</span><span class="params">(TransactionId tid, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, TransactionAbortedException &#123;</div><div class="line">       </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">flushAllPages</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">discardPage</span><span class="params">(PageId pid)</span> </span>&#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">flushPage</span><span class="params">(PageId pid)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">flushPages</span><span class="params">(TransactionId tid)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">       </div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">evictPage</span><span class="params">()</span> <span class="keyword">throws</span> DbException </span>&#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> BufferPool 这个在我们整个db 里面,是很重要,先把接口的签名先定义出来,其实对数据有点了解的话,这些方法理解起来也是和容易的,在后面在进行详细的说明</p>
+ <figure class="highlight java"><table><tr><td class="code"><pre><div class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DbFile</span> </span>&#123;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Page <span class="title">readPage</span><span class="params">(PageId id)</span></span>;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writePage</span><span class="params">(Page p)</span> <span class="keyword">throws</span> IOException</span>;</div><div class="line"></div><div class="line"></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> ArrayList&lt;Page&gt; <span class="title">insertTuple</span><span class="params">(TransactionId tid, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, IOException, TransactionAbortedException;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Page <span class="title">deleteTuple</span><span class="params">(TransactionId tid, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, TransactionAbortedException;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> DbFileIterator <span class="title">iterator</span><span class="params">(TransactionId tid)</span></span>;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> TupleDesc <span class="title">getTupleDesc</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>DbFile 负责就是持久化我们的数据,他的读写都是一个page 为单位的,当然不是他是真个db 都是以page 为单位,所以我们还需要描述page 的接口,为后面的B+tree Page Heap Page 做基础</p>
+ <figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Page</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> PageId <span class="title">getId</span><span class="params">()</span></span>;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> TransactionId <span class="title">isDirty</span><span class="params">()</span></span>;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">markDirty</span><span class="params">(<span class="keyword">boolean</span> dirty, TransactionId tid)</span></span>;</div><div class="line">    </div><div class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] getPageData();</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Page <span class="title">getBeforeImage</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBeforeImage</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>pageId 作为一个单独一个interface,因为很多地方需要通过他来进行关联传递<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PageId</span> </span>&#123;</div><div class="line">    </div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] serialize();</div><div class="line"></div><div class="line"></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getTableId</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span></span>;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">pageNumber</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>以及我们还需要一个读取数据文件的iterator ,为后面的顺序读取,tuple 读取做准备<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DbIterator</span> <span class="keyword">extends</span> <span class="title">Serializable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Tuple <span class="title">next</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException, NoSuchElementException</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rewind</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> TupleDesc <span class="title">getTupleDesc</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>后面会实现这些接口,先给一个大体框架</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2019/12/19/2019-12-19-自己实现一个简单的DB/"
+                     data-title="自己实现一个简单的DB"
+                     data-url="http://happyer.github.io/2019/12/19/2019-12-19-自己实现一个简单的DB/"
+                     data-images=""
+                     data-content="自己实现一个简单的DB  传统的RDBMS 在存储表格数据数据的时候,是以row 单位的,而r... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/08/08/2018-08-08-flink-output/" data-toggle="tooltip" data-placement="top"
+                           title="Flink 数据的发送">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2019/12/19/2019-12-19-自己实现一个简单的DB/"
+                         data-title="自己实现一个简单的DB"
+                         data-url="http://happyer.github.io/2019/12/19/2019-12-19-自己实现一个简单的DB/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#自己实现一个简单的DB"><span class="toc-text">自己实现一个简单的DB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#字段Field-的定义"><span class="toc-text">字段Field 的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Int类型的Field-的定义"><span class="toc-text">Int类型的Field 的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#string-类型的Field-的定义"><span class="toc-text">string 类型的Field 的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Field的反序列化"><span class="toc-text">Field的反序列化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#谓词Predicate"><span class="toc-text">谓词Predicate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#单行row的定义"><span class="toc-text">单行row的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据表的schema"><span class="toc-text">数据表的schema</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#buffer-的存储结构"><span class="toc-text">buffer 的存储结构</span></a></li></ol></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2019
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>
