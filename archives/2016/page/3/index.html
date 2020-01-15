@@ -153,9 +153,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/">
+    <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
         <h2 class="post-title">
-            使用netty建立websocket进行群聊
+            深入分析ConcurrentHashMap
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -163,9 +163,9 @@
         
         <div class="post-content-preview">
             <p>
-                WebSocket 简介:
-WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建立“套接字”连接。简单地说：客户端和服务器之间存在持久的连接，而且双方都可以随时开始发送数据。
-第一次请求客户端发送的是http请求，请求头中包含websocket相关的信息，服务器端对请求进行验..
+                再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
+do {
+Entry&lt;K,V&gt; next = e.next; //..
             </p>
         </div>
     </a>
@@ -404,21 +404,8 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
-                    
-                    
-                    
-                    
-                    
-                    
                     <a href="/tags/#go" title="go"
                        rel="3">go</a>
-                    
-                    
-                    
-                    
-                    
-                    <a href="/tags/#ds" title="ds"
-                       rel="3">ds</a>
                     
                     
                     
@@ -427,7 +414,23 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                     
                     
                     
+                    <a href="/tags/#ds" title="ds"
+                       rel="3">ds</a>
                     
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a href="/tags/#db" title="db"
+                       rel="2">db</a>
                     
                     
                 </div>
@@ -498,7 +501,7 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; chauncy 2019
+                    Copyright &copy; chauncy 2020
                     <br>
                     <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
                     <br>

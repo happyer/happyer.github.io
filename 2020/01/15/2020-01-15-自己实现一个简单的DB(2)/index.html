@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        自己实现一个简单的DB(二)｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>自己实现一个简单的DB(二)</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2020-01-15
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            自己实现一个简单的DB(二)
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <p>###自己实现一个简单的DB(2) -底层的存储</p>
+<p>数据库为了能够高效的吞吐，同时也要能够持久化数据，而持久化数据就是将我们的<br>数据放入到我们的磁盘（机械磁盘，ssd nvme 等）</p>
+<p>为了能够适应不同的存储获取方式我们需要一个接口来进行一个定义，然后子类自己去实现各种具体的存储</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DbFile</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 通过pageId,读取磁盘里面的数据，每次读取一个page</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> Page <span class="title">readPage</span><span class="params">(PageId id)</span></span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 将 一个page 的内容写入到磁盘</div><div class="line">     * <span class="doctag">@param</span> p</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writePage</span><span class="params">(Page p)</span> <span class="keyword">throws</span> IOException</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 通过事务将一个tuple 插入到 db file 里面，这个是需要获取一个lock，来讲进行报货并发的错误</div><div class="line">     * <span class="doctag">@param</span> tid</div><div class="line">     * <span class="doctag">@param</span> t</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     * <span class="doctag">@throws</span> DbException</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     * <span class="doctag">@throws</span> TransactionAbortedException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> ArrayList&lt;Page&gt; <span class="title">insertTuple</span><span class="params">(TransactionId tid, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, IOException, TransactionAbortedException;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 删除指定tuple,在一个事务里面，同理也需要获取一个lock</div><div class="line">     * <span class="doctag">@param</span> tid</div><div class="line">     * <span class="doctag">@param</span> t</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     * <span class="doctag">@throws</span> DbException</div><div class="line">     * <span class="doctag">@throws</span> TransactionAbortedException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> Page <span class="title">deleteTuple</span><span class="params">(TransactionId tid, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, TransactionAbortedException;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 获取一个 iterator,在获取数据的db file 里面，都是通过buffer pool,来获取，</div><div class="line">     * buffer pool 则是通过 iterator 来一个一个tuple 进行的获取，所以返回的是一个iterator</div><div class="line">     * <span class="doctag">@param</span> tid</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> DbFileIterator <span class="title">iterator</span><span class="params">(TransactionId tid)</span></span>;</div><div class="line"></div><div class="line">   </div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回 db file 的id,这个id与 catalog 进行，管理这个到后面会进行实现，先明白他是一个唯一表示服务就行</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回这个db file 的一个描述信息，即是数据库的字段描述</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> TupleDesc <span class="title">getTupleDesc</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Db File 是数据库与磁盘的一个交互定义，定义了怎么获取在磁盘中的信息，然后db file 的访问都是通过 Buffer Pool 进行访问的，访问的方式是通过iterator 迭代器的模式，这个可以直接联系到就是我们在使用sql 查询的时候是需要limit 操作一样，如果数据类容过多不可能一次返回所有数据，需要分批获取，数据获取主要是通过Buffer Pool 获取主要是db 需要有一个自己的淘汰策略和数据的事务，这样就不依赖与操作系统的，因为他不是可控。</p>
+<p>在目前的RDBMS 中，DBfile 表现的形式有 B+ tree 类型，也有直接在堆 上面的 Heap 的形式</p>
+<p>简单一点，先从Heap 开始</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * heap 实现的Db File</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeapFile</span> <span class="keyword">implements</span> <span class="title">DbFile</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> File dbFile;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> TupleDesc tupleDesc;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * construction</div><div class="line">     * <span class="doctag">@param</span> f</div><div class="line">     * <span class="doctag">@param</span> td</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HeapFile</span><span class="params">(File f, TupleDesc td)</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="keyword">this</span>.dbFile = f;</div><div class="line">        <span class="keyword">this</span>.tupleDesc = td;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回 heap file</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> File <span class="title">getFile</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> dbFile;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回一个id,每次都返回同样的一个 id,这里简单一点直接返回绝对路径的 hash code</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> dbFile.getAbsoluteFile().hashCode();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回描述符</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> TupleDesc <span class="title">getTupleDesc</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> tupleDesc;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 读取db file 里面的一页数据</div><div class="line">     * pageId，里面获取 读取第几页pageNo</div><div class="line">     * 通过buffer pool 获得 每一页的大小 pageSize</div><div class="line">     * 读取 pageNo * pageSize 之后的数据，因为我们是分页读取的，所以需要skip 掉</div><div class="line">     * pageNo * pageSize</div><div class="line">     * <span class="doctag">@param</span> pid</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> Page <span class="title">readPage</span><span class="params">(PageId pid)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> tableid = pid.getTableId();</div><div class="line">        <span class="keyword">int</span> pgNo = pid.pageNumber();</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> pageSize = Database.getBufferPool().getPageSize();</div><div class="line">        <span class="keyword">byte</span>[] rawPgData = HeapPage.createEmptyPageData();</div><div class="line"></div><div class="line">        <span class="comment">// random access read from disk</span></div><div class="line">        FileInputStream in = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            in = <span class="keyword">new</span> FileInputStream(dbFile);</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                in.skip(pgNo * pageSize);</div><div class="line">                in.read(rawPgData);</div><div class="line">                <span class="keyword">return</span> <span class="keyword">new</span> HeapPage(<span class="keyword">new</span> HeapPageId(tableid, pgNo), rawPgData);</div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"HeapFile: readPage:"</span>);</div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                in.close();</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"HeapFile: readPage: file not found"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 这里和读取类似，需要做一个分页处理，写在特定的位置上面</div><div class="line">     * <span class="doctag">@param</span> page</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writePage</span><span class="params">(Page page)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        PageId pid = page.getId();</div><div class="line">        <span class="keyword">int</span> pgNo = pid.pageNumber();</div><div class="line"></div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> pageSize = Database.getBufferPool().getPageSize();</div><div class="line">        <span class="keyword">byte</span>[] pgData = page.getPageData();</div><div class="line"></div><div class="line">        RandomAccessFile dbfile = <span class="keyword">new</span> RandomAccessFile(dbFile, <span class="string">"rws"</span>);</div><div class="line">        dbfile.skipBytes(pgNo * pageSize);</div><div class="line">        dbfile.write(pgData);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 返回该文件的多少页</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">numPages</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="keyword">int</span> fileSizeinByte = (<span class="keyword">int</span>) dbFile.length();</div><div class="line">        <span class="keyword">return</span> fileSizeinByte / Database.getBufferPool().getPageSize();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *</div><div class="line">     * 在一个事务里面，添加一个tuple</div><div class="line">     * 首先我们去 buffer pool 里面寻找一个page ,如果找不到</div><div class="line">     * page 我们就新建一个page</div><div class="line">     * 然后在page里面插入 tuple</div><div class="line">     * 如果我们的page 还么有溢出那么就需要记录起来，通过list 记录起来，等待后面进行flush 刷新</div><div class="line">     * 如果超过我们现在buffer 了，则直接进行append，到file 里面</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     * <span class="doctag">@throws</span> DbException</div><div class="line">     * <span class="doctag">@throws</span> IOException</div><div class="line">     * <span class="doctag">@throws</span> TransactionAbortedException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> ArrayList&lt;Page&gt; <span class="title">insertTuple</span><span class="params">(TransactionId tid, Tuple t)</span></span></div><div class="line">            <span class="keyword">throws</span> DbException, IOException, TransactionAbortedException &#123;</div><div class="line">        ArrayList&lt;Page&gt; affected = <span class="keyword">new</span> ArrayList(<span class="number">1</span>);</div><div class="line">        <span class="keyword">int</span> numPages = numPages();</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> pgNo = <span class="number">0</span>; pgNo &lt;= numPages; pgNo++) &#123;</div><div class="line">            HeapPageId pid = <span class="keyword">new</span> HeapPageId(getId(), pgNo);</div><div class="line">            HeapPage pg;</div><div class="line">            <span class="keyword">if</span> (pgNo &lt; numPages) &#123;</div><div class="line">                pg = (HeapPage) Database.getBufferPool().getPage(tid, pid, Permissions.READ_WRITE);</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">// pgNo = numpages -&gt; we need add new page</span></div><div class="line">                pg = <span class="keyword">new</span> HeapPage(pid, HeapPage.createEmptyPageData());</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (pg.getNumEmptySlots() &gt; <span class="number">0</span>) &#123;</div><div class="line">                <span class="comment">// insert will update tuple when inserted</span></div><div class="line">                pg.insertTuple(t);</div><div class="line">                <span class="comment">// writePage(pg);</span></div><div class="line">                <span class="keyword">if</span> (pgNo &lt; numPages) &#123;</div><div class="line">                    pg.markDirty(<span class="keyword">true</span>, tid);</div><div class="line">                    affected.add(pg);</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="comment">// should append the dbfile</span></div><div class="line">                    writePage(pg);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> affected;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"HeapFile: InsertTuple: Tuple can not be added"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 跟上插入tuple 有一定的类同</div><div class="line">     * 只是这里不会新建一个page,同时也需要记录更改过的page,方便后续进行flush 操作</div><div class="line">     * <span class="doctag">@param</span> tid</div><div class="line">     * <span class="doctag">@param</span> t</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     * <span class="doctag">@throws</span> DbException</div><div class="line">     * <span class="doctag">@throws</span> TransactionAbortedException</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> ArrayList&lt;Page&gt; <span class="title">deleteTuple</span><span class="params">(TransactionId tid, Tuple t)</span> <span class="keyword">throws</span> DbException,</span></div><div class="line">            TransactionAbortedException &#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// not necessary for lab1</span></div><div class="line">        ArrayList&lt;Page&gt; affected = <span class="keyword">new</span> ArrayList(<span class="number">1</span>);</div><div class="line">        RecordId rid = t.getRecordId();</div><div class="line">        HeapPageId pid = (HeapPageId) rid.getPageId();</div><div class="line">        <span class="keyword">if</span> (pid.getTableId() == getId()) &#123;</div><div class="line">            <span class="comment">// int pgNo = pid.pageNumber();</span></div><div class="line">            HeapPage pg = (HeapPage) Database.getBufferPool().getPage(tid, pid, Permissions.READ_WRITE);</div><div class="line">            pg.deleteTuple(t);</div><div class="line">            <span class="comment">// writePage(pg);</span></div><div class="line">            pg.markDirty(<span class="keyword">true</span>, tid);</div><div class="line">            affected.add(pg);</div><div class="line">            <span class="keyword">return</span> affected;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"HeapFile: deleteTuple: tuple.tableid != getId"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * DB File iterator 的迭代器，之前说过，db 的获取是通过 iterator 获取的</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">HeapFileIterator</span> <span class="keyword">implements</span> <span class="title">DbFileIterator</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> Integer pgCursor;</div><div class="line">        <span class="keyword">private</span> Iterator&lt;Tuple&gt; tupleIter;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> TransactionId transactionId;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> tableId;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> numPages;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">HeapFileIterator</span><span class="params">(TransactionId tid)</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.pgCursor = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">this</span>.tupleIter = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">this</span>.transactionId = tid;</div><div class="line">            <span class="keyword">this</span>.tableId = getId();</div><div class="line">            <span class="keyword">this</span>.numPages = numPages();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException </span>&#123;</div><div class="line">            pgCursor = <span class="number">0</span>;</div><div class="line">            tupleIter = getTupleIter(pgCursor);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException </span>&#123;</div><div class="line">            <span class="comment">// &lt; numpage - 1</span></div><div class="line">            <span class="keyword">if</span> (pgCursor != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">while</span> (pgCursor &lt; numPages - <span class="number">1</span>) &#123;</div><div class="line">                    <span class="keyword">if</span> (tupleIter.hasNext()) &#123;</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        pgCursor += <span class="number">1</span>;</div><div class="line">                        tupleIter = getTupleIter(pgCursor);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> tupleIter.hasNext();</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> Tuple <span class="title">next</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException, NoSuchElementException </span>&#123;</div><div class="line">            <span class="keyword">if</span> (hasNext())  &#123;</div><div class="line">                <span class="keyword">return</span> tupleIter.next();</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"HeapFileIterator: error: next: no more elemens"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rewind</span><span class="params">()</span> <span class="keyword">throws</span> DbException, TransactionAbortedException </span>&#123;</div><div class="line">            close();</div><div class="line">            open();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</div><div class="line">            pgCursor = <span class="keyword">null</span>;</div><div class="line">            tupleIter = <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">private</span> Iterator&lt;Tuple&gt; <span class="title">getTupleIter</span><span class="params">(<span class="keyword">int</span> pgNo)</span></span></div><div class="line">                <span class="keyword">throws</span> TransactionAbortedException, DbException &#123;</div><div class="line">            PageId pid = <span class="keyword">new</span> HeapPageId(tableId, pgNo);</div><div class="line">            <span class="keyword">return</span> ((HeapPage)</div><div class="line">                    Database</div><div class="line">                    .getBufferPool()</div><div class="line">                    .getPage(transactionId,Permissions.READ_ONLY))</div><div class="line">                    .iterator();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//</span></div><div class="line">    <span class="function"><span class="keyword">public</span> DbFileIterator <span class="title">iterator</span><span class="params">(TransactionId tid)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HeapFileIterator(tid);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Db File 存储的是真是数据库的数据，读取他的方式是通过 iterator 迭代器的方式，通过buffer pool 进行获取，每一次读取Db File 的最小大小是page 为单位，并且是他的整数倍，page 里面存储的就是数据是tuple ,tuple里面存储的是数值字段值</p>
+<p>page 里面也有HeapPage 的实现,它主要是用于存储 Db File 里面的数据读入到这个page 里面来</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeapPage</span> <span class="keyword">implements</span> <span class="title">Page</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> HeapPageId pid;   <span class="comment">//page Id，一种heap 的形式</span></div><div class="line">    <span class="keyword">final</span> TupleDesc td;    <span class="comment">//tuple 的desc</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">byte</span> header[];   <span class="comment">//头信息</span></div><div class="line">    <span class="keyword">final</span> Tuple tuples[]; <span class="comment">//tuple 的元素</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> numSlots;</div><div class="line"></div><div class="line">    <span class="keyword">byte</span>[] oldData;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Byte oldDataLock = <span class="keyword">new</span> Byte((<span class="keyword">byte</span>) <span class="number">0</span>);</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Create a HeapPage from a set of bytes of data read from disk.</div><div class="line">     * The format of a HeapPage is a set of header bytes indicating</div><div class="line">     * the slots of the page that are in use, some number of tuple slots.</div><div class="line">     * Specifically, the number of tuples is equal to: &lt;p&gt;</div><div class="line">     * floor((BufferPool.getPageSize()*8) / (tuple size * 8 + 1))</div><div class="line">     * &lt;p&gt; where tuple size is the size of tuples in this</div><div class="line">     * database table, which can be determined via &#123;<span class="doctag">@link</span> Catalog#getTupleDesc&#125;.</div><div class="line">     * The number of 8-bit header words is equal to:</div><div class="line">     * &lt;p&gt;</div><div class="line">     * ceiling(no. tuple slots / 8)</div><div class="line">     * &lt;p&gt;</div><div class="line">     *</div><div class="line">     * <span class="doctag">@see</span> Database#getCatalog</div><div class="line">     * <span class="doctag">@see</span> Catalog#getTupleDesc</div><div class="line">     * <span class="doctag">@see</span> BufferPool#getPageSize()</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HeapPage</span><span class="params">(HeapPageId id, <span class="keyword">byte</span>[] data)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">        <span class="keyword">this</span>.pid = id;</div><div class="line">        <span class="keyword">this</span>.td = Database.getCatalog().getTupleDesc(id.getTableId());</div><div class="line">        <span class="keyword">this</span>.numSlots = getNumTuples();</div><div class="line">        DataInputStream dis = <span class="keyword">new</span> DataInputStream(<span class="keyword">new</span> ByteArrayInputStream(data));</div><div class="line"></div><div class="line">        <span class="comment">// allocate and read the header slots of this page</span></div><div class="line">        header = <span class="keyword">new</span> <span class="keyword">byte</span>[getHeaderSize()];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; header.length; i++)</div><div class="line">            header[i] = dis.readByte();</div><div class="line"></div><div class="line">        tuples = <span class="keyword">new</span> Tuple[numSlots];</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="comment">// allocate and read the actual records of this page</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; tuples.length; i++)</div><div class="line">                tuples[i] = readNextTuple(dis, i);</div><div class="line">        &#125; <span class="keyword">catch</span> (NoSuchElementException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        dis.close();</div><div class="line"></div><div class="line">        setBeforeImage();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Retrieve the number of tuples on this page.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> the number of tuples on this page</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getNumTuples</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> (BufferPool.getPageSize() * <span class="number">8</span>) / (td.getSize() * <span class="number">8</span> + <span class="number">1</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Computes the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getHeaderSize</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> (getNumTuples() + <span class="number">7</span>) / <span class="number">8</span>;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Return a view of this page before it was modified</div><div class="line">     * -- used by recovery</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> HeapPage <span class="title">getBeforeImage</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">byte</span>[] oldDataRef = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">synchronized</span> (oldDataLock) &#123;</div><div class="line">                oldDataRef = oldData;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> HeapPage(pid, oldDataRef);</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">            <span class="comment">//should never happen -- we parsed it OK before!</span></div><div class="line">            System.exit(<span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBeforeImage</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (oldDataLock) &#123;</div><div class="line">            oldData = getPageData().clone();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * <span class="doctag">@return</span> the PageId associated with this page.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> HeapPageId <span class="title">getId</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.pid;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Suck up tuples from the source file.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> Tuple <span class="title">readNextTuple</span><span class="params">(DataInputStream dis, <span class="keyword">int</span> slotId)</span> <span class="keyword">throws</span> NoSuchElementException </span>&#123;</div><div class="line">        <span class="comment">// if associated bit is not set, read forward to the next tuple, and</span></div><div class="line">        <span class="comment">// return null.</span></div><div class="line">        <span class="keyword">if</span> (!isSlotUsed(slotId)) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; td.getSize(); i++) &#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    dis.readByte();</div><div class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"error reading empty tuple"</span>);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// read fields in the tuple</span></div><div class="line">        Tuple t = <span class="keyword">new</span> Tuple(td);</div><div class="line">        RecordId rid = <span class="keyword">new</span> RecordId(pid, slotId);</div><div class="line">        t.setRecordId(rid);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; td.numFields(); j++) &#123;</div><div class="line">                Field f = td.getFieldType(j).parse(dis);</div><div class="line">                t.setField(j, f);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (java.text.ParseException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"parsing error!"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> t;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Generates a byte array representing the contents of this page.</div><div class="line">     * Used to serialize this page to disk.</div><div class="line">     * &lt;p&gt;</div><div class="line">     * The invariant here is that it should be possible to pass the byte</div><div class="line">     * array generated by getPageData to the HeapPage constructor and</div><div class="line">     * have it produce an identical HeapPage object.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> A byte array correspond to the bytes of this page.</div><div class="line">     * <span class="doctag">@see</span> #HeapPage</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] getPageData() &#123;</div><div class="line">        <span class="keyword">int</span> len = BufferPool.getPageSize();</div><div class="line">        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream(len);</div><div class="line">        DataOutputStream dos = <span class="keyword">new</span> DataOutputStream(baos);</div><div class="line"></div><div class="line">        <span class="comment">// create the header of the page</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; header.length; i++) &#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                dos.writeByte(header[i]);</div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                <span class="comment">// this really shouldn't happen</span></div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// create the tuples</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; tuples.length; i++) &#123;</div><div class="line"></div><div class="line">            <span class="comment">// empty slot</span></div><div class="line">            <span class="keyword">if</span> (!isSlotUsed(i)) &#123;</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; td.getSize(); j++) &#123;</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        dos.writeByte(<span class="number">0</span>);</div><div class="line">                    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                &#125;</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// non-empty slot</span></div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; td.numFields(); j++) &#123;</div><div class="line">                Field f = tuples[i].getField(j);</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    f.serialize(dos);</div><div class="line"></div><div class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// padding</span></div><div class="line">        <span class="keyword">int</span> zerolen = BufferPool.getPageSize() - (header.length + td.getSize() * tuples.length); <span class="comment">//- numSlots * td.getSize();</span></div><div class="line">        <span class="keyword">byte</span>[] zeroes = <span class="keyword">new</span> <span class="keyword">byte</span>[zerolen];</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            dos.write(zeroes, <span class="number">0</span>, zerolen);</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            dos.flush();</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> baos.toByteArray();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Static method to generate a byte array corresponding to an empty</div><div class="line">     * HeapPage.</div><div class="line">     * Used to add new, empty pages to the file. Passing the results of</div><div class="line">     * this method to the HeapPage constructor will create a HeapPage with</div><div class="line">     * no valid tuples in it.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> The returned ByteArray.</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] createEmptyPageData() &#123;</div><div class="line">        <span class="keyword">int</span> len = BufferPool.getPageSize();</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">byte</span>[len]; <span class="comment">//all 0</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Delete the specified tuple from the page;  the tuple should be updated to reflect</div><div class="line">     * that it is no longer stored on any page.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> t The tuple to delete</div><div class="line">     * <span class="doctag">@throws</span> DbException if this tuple is not on this page, or tuple slot is</div><div class="line">     *                     already empty.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteTuple</span><span class="params">(Tuple t)</span> <span class="keyword">throws</span> DbException </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// not necessary for lab1</span></div><div class="line">        <span class="keyword">assert</span> t != <span class="keyword">null</span>;</div><div class="line">        RecordId recToDelete = t.getRecordId();</div><div class="line">        <span class="keyword">if</span> (recToDelete != <span class="keyword">null</span> &amp;&amp; pid.equals(recToDelete.pageId)) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numSlots; i++) &#123;</div><div class="line">                <span class="keyword">if</span> (isSlotUsed(i) &amp;&amp; t.getRecordId().equals(tuples[i].getRecordId())) &#123;</div><div class="line">                    markSlotUsed(i, <span class="keyword">false</span>);</div><div class="line">                    <span class="comment">// t.setRecordId(null);</span></div><div class="line">                    tuples[i] = <span class="keyword">null</span>;</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"deleteTuple: Error: tuple slot is empty"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"deleteTuple: Error: tuple is not on this page"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Adds the specified tuple to the page;  the tuple should be updated to reflect</div><div class="line">     * that it is now stored on this page.</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> t The tuple to add.</div><div class="line">     * <span class="doctag">@throws</span> DbException if the page is full (no empty slots) or tupledesc</div><div class="line">     *                     is mismatch.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertTuple</span><span class="params">(Tuple t)</span> <span class="keyword">throws</span> DbException </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// not necessary for lab1</span></div><div class="line">        <span class="keyword">assert</span> t != <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">if</span> (td.equals(t.getTupleDesc())) &#123;</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numSlots; i++) &#123;</div><div class="line">                <span class="keyword">if</span> (!isSlotUsed(i)) &#123;</div><div class="line">                    <span class="comment">// insert and update header</span></div><div class="line">                    markSlotUsed(i, <span class="keyword">true</span>);</div><div class="line">                    t.setRecordId(<span class="keyword">new</span> RecordId(pid, i));</div><div class="line">                    tuples[i] = t;</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"insertTuple: ERROR: no tuple is inserted"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> DbException(<span class="string">"insertTuple: no empty slots or tupledesc is mismatch"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// private boolean dirty;</span></div><div class="line">    <span class="keyword">private</span> TransactionId dirtier;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Marks this page as dirty/not dirty and record that transaction</div><div class="line">     * that did the dirtying</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">markDirty</span><span class="params">(<span class="keyword">boolean</span> dirty, TransactionId tid)</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// not necessary for lab1</span></div><div class="line">        <span class="keyword">if</span> (dirty) &#123;</div><div class="line">            <span class="comment">// this.dirty = dirty;</span></div><div class="line">            <span class="keyword">this</span>.dirtier = tid;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// this.dirty = false;</span></div><div class="line">            <span class="keyword">this</span>.dirtier = <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Returns the tid of the transaction that last dirtied this page, or null if the page is not dirty</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> TransactionId <span class="title">isDirty</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// Not necessary for lab1</span></div><div class="line">        <span class="keyword">return</span> dirtier;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Returns the number of empty slots on this page.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getNumEmptySlots</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="keyword">int</span> numEmptSlot = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numSlots; i++) &#123;</div><div class="line">            <span class="keyword">if</span> (!isSlotUsed(i)) &#123;</div><div class="line">                numEmptSlot += <span class="number">1</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> numEmptSlot;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Returns true if associated slot on this page is filled.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isSlotUsed</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// big endian most significant in lower address</span></div><div class="line">        <span class="keyword">if</span> (i &lt; numSlots) &#123;</div><div class="line">            <span class="keyword">int</span> hdNo = i / <span class="number">8</span>;</div><div class="line">            <span class="keyword">int</span> offset = i % <span class="number">8</span>;</div><div class="line">            <span class="keyword">return</span> (header[hdNo] &amp; (<span class="number">0x1</span> &lt;&lt; offset)) != <span class="number">0</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Abstraction to fill or clear a slot on this page.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">markSlotUsed</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">boolean</span> value)</span> </span>&#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line">        <span class="comment">// not necessary for lab1</span></div><div class="line">        <span class="keyword">if</span> (i &lt; numSlots) &#123;</div><div class="line">            <span class="keyword">int</span> hdNo = i / <span class="number">8</span>;</div><div class="line">            <span class="keyword">int</span> offset = i % <span class="number">8</span>;</div><div class="line"></div><div class="line">            <span class="keyword">byte</span> mask = (<span class="keyword">byte</span>) (<span class="number">0x1</span> &lt;&lt; offset);</div><div class="line">            <span class="keyword">if</span> (value) &#123;</div><div class="line">                header[hdNo] |= mask;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                header[hdNo] &amp;= ~mask;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">protected</span> <span class="class"><span class="keyword">class</span> <span class="title">HeapPageTupleIterator</span> <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">Tuple</span>&gt; </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Iterator&lt;Tuple&gt; iter;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">HeapPageTupleIterator</span><span class="params">()</span> </span>&#123;</div><div class="line">            ArrayList&lt;Tuple&gt; tupleArrayList = <span class="keyword">new</span> ArrayList&lt;Tuple&gt;(numSlots);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numSlots; i++) &#123;</div><div class="line">                <span class="keyword">if</span> (isSlotUsed(i)) &#123;</div><div class="line">                    tupleArrayList.add(i, tuples[i]);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            iter = tupleArrayList.iterator();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"TupleIterator: remove not supported"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> iter.hasNext();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> Tuple <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> iter.next();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * <span class="doctag">@return</span> an iterator over all tuples on this page (calling remove on this iterator throws an UnsupportedOperationException)</div><div class="line">     * (note that this iterator shouldn't return tuples in empty slots!)</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;Tuple&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HeapPageTupleIterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>HeapPage 里面分为 header 和tuples numSlots 描述整个可以使用tuple 的个数，剩下的就是进本的io 操作</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2020/01/15/2020-01-15-自己实现一个简单的DB(2)/"
+                     data-title="自己实现一个简单的DB(二)"
+                     data-url="http://happyer.github.io/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/"
+                     data-images=""
+                     data-content="###自己实现一个简单的DB(2) -底层的存储
+数据库为了能够高效的吞吐，同时也要能够持久化... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/12/19/2019-12-19-自己实现一个简单的DB/" data-toggle="tooltip" data-placement="top"
+                           title="自己实现一个简单的DB">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2020/01/15/2020-01-15-自己实现一个简单的DB(2)/"
+                         data-title="自己实现一个简单的DB(二)"
+                         data-url="http://happyer.github.io/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2020
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>
