@@ -323,9 +323,9 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2013-01-13-复制构造函数/">
+    <a href="/2016/12/09/2015-02-04-builder设计模式/">
         <h2 class="post-title">
-            c++复制构造函数
+            buider设计模式
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -333,11 +333,7 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
         
         <div class="post-content-preview">
             <p>
-                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
-class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs)..
+                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
             </p>
         </div>
     </a>
@@ -451,8 +447,6 @@ class Widget  {
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -460,6 +454,8 @@ class Widget  {
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
                     
                     
                     
