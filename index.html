@@ -273,6 +273,55 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2020/04/07/2020-04-07-自己实现数据库（4）优化器/">
+        <h2 class="post-title">
+            自己实现数据库（4）优化器
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-07
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                自己实现数据库（4）优化器join cast核心
+类 JoinOptimizer
+public double estimateJoinCost(LogicalJoinNode j, int card1, int card2,            double cost1, double cos..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/">
+        <h2 class="post-title">
+            自己实现数据库（3）BufferPool
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-07
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                自己实现数据库（3）BufferPoolBufferPool 在数据的重要性不证明自明，素有的数据IO 都需通过BufferPool 来获取，同时系统也要保证多个线程并发访问的正确性，已经也要负责将BufferPool 的数据进行flush 到磁盘持久化的过程
+BufferPool 的基本变量p..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/">
         <h2 class="post-title">
             自己实现一个简单的DB(二)
@@ -415,55 +464,6 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
 
 
 
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2017/03/15/2017-03-15-paxos/">
-        <h2 class="post-title">
-            老司机带你用 Go 语言实现 Paxos 算法
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-03-15
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                老司机带你用 Go 语言实现 Paxos 算法&emsp;&emsp;在理论计算机科学中，CAP定理（CAP theorem），又被称作布鲁尔定理（Brewer’s theorem），它指出对于一个分布式计算系统来说，不可能同时满足以下三点：
-
-一致性（Consistence），等同于所有节点访..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2017/02/06/2017-02-06-raft/">
-        <h2 class="post-title">
-            老司机带你用 Go 语言实现 Raft 分布式一致性协议
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-02-06
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                老司机带你用 Go 语言实现 Raft 分布式一致性协议&emsp;&emsp;随着大型网站的各种高并发访问、海量数据处理等场景越来越多，如何实现网站的高可用、易伸缩、可扩展、安全等目标就显得越来越重要。
-&emsp;&emsp;为了解决这样一系列问题，大型网站的架构也在不断发展。提高大型网站的..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
@@ -563,6 +563,8 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -572,6 +574,17 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
                        rel="2">mq</a>
                     
                     
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a href="/tags/#db" title="db"
+                       rel="4">db</a>
                     
                     
                     
@@ -589,19 +602,6 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
                        rel="3">ds</a>
                     
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <a href="/tags/#db" title="db"
-                       rel="2">db</a>
                     
                     
                 </div>

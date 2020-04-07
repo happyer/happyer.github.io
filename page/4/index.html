@@ -273,6 +273,30 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-14-netty与protobuf/">
+        <h2 class="post-title">
+            netty与protobuf生产者和消费者
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。
+阻塞队列（BlockingQueue）是一个支持两..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2016-02-18-java gc总结/">
         <h2 class="post-title">
             进一步理解java垃圾收集器
@@ -286,6 +310,52 @@
                 1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
 2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
 3..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+        <h2 class="post-title">
+            事件驱动模型的角度来看 JAVA NIO
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+        <h2 class="post-title">
+            Netty的FastThreadLocal
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -323,29 +393,6 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-15-AQS/">
-        <h2 class="post-title">
-            The java.util.concurrent Synchronizer Framework（译）
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
     <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
         <h2 class="post-title">
             spring 流程 （一）
@@ -370,9 +417,9 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+    <a href="/2016/12/09/2016-03-15-AQS/">
         <h2 class="post-title">
-            Netty的FastThreadLocal
+            The java.util.concurrent Synchronizer Framework（译）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -380,7 +427,7 @@ Entry&lt;K,V&gt; next = e.next; //..
         
         <div class="post-content-preview">
             <p>
-                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
+                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
             </p>
         </div>
     </a>
@@ -415,29 +462,6 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 
 
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/hello-world/">
-        <h2 class="post-title">
-            Hello World
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer i..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
@@ -447,6 +471,10 @@ Entry&lt;K,V&gt; next = e.next; //..
         <a href="/page/3/">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page/5/">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 
@@ -537,6 +565,8 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -546,6 +576,17 @@ Entry&lt;K,V&gt; next = e.next; //..
                        rel="2">mq</a>
                     
                     
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <a href="/tags/#db" title="db"
+                       rel="4">db</a>
                     
                     
                     
@@ -563,19 +604,6 @@ Entry&lt;K,V&gt; next = e.next; //..
                        rel="3">ds</a>
                     
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    <a href="/tags/#db" title="db"
-                       rel="2">db</a>
                     
                     
                 </div>

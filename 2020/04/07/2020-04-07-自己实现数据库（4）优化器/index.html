@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        netty与protobuf生产者和消费者｜chauncy&#39;s blog
+        自己实现数据库（4）优化器｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2016-02-14-netty与protobuf/">
+    <link rel="canonical" href="http://happyer.github.io/2020/04/07/2020-04-07-自己实现数据库（4）优化器/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,18 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>netty与protobuf生产者和消费者</h1>
+                    <h1>自己实现数据库（4）优化器</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2020-04-07
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
                         
                     </div>
                 </div>
@@ -162,7 +165,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            netty与protobuf生产者和消费者
+            自己实现数据库（4）优化器
         </span>
     </div>
 </header>
@@ -173,69 +176,26 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作为一个异步NIO框架，Netty的所有IO操作都是异步非阻塞的，通过Event-Loop机制，用户可以方便的主动获取或者通过通知机制获得IO操作结果。</p>
-<p>阻塞队列（BlockingQueue）是一个支持两个附加操作的队列。这两个附加的操作是：在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列可用。阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。</p>
-<p>生产者使用netty 来通过网络获取数据，放入到BlockingQueue中，并且同时使用 protobuf封装数据返回给客户端，消费者从BlockingQueue取得数据。</p>
-<p>server 代码</p>
-<pre><code>EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-EventLoopGroup workerGroup = new NioEventLoopGroup();
-
-try {
-    ServerBootstrap b = new ServerBootstrap();
-    b.group(bossGroup, workerGroup)
-            .channel(NioServerSocketChannel.class)
-            .option(ChannelOption.SO_BACKLOG, 100)
-            .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(new ChildChannelHandler(dataQueueCache));
-
-    // Start the server.
-    ChannelFuture f = b.bind(port).sync();
-
-    // Wait until the server socket is closed.
-    f.channel().closeFuture().sync();
-</code></pre><p>测试发送过来的数据是字符串的类型，需要添加一个字符串的解码器，在ChildChannelHandler 类中</p>
-<pre><code>protected void initChannel(SocketChannel ch) throws Exception {
-    ch.pipeline().addLast(new StringDecoder(Charset.forName(&quot;utf-8&quot;)));
-    ch.pipeline().addLast(new MyHandler(dataQueueCache));
-}
-</code></pre><p>MyHandler处理客户端发送过来的数据，在channelRead方法中。同时使用protobuf 封装数据，并且进行数据的存储放在BlockingQueue中</p>
-<pre><code>public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-       String ip = ctx.channel().localAddress().toString();
-       String data = msg.toString();
-       DataDO dataDO = new DataDO();
-       dataDO.setIp(ip);
-       dataDO.setData(data);
-       this.dataQueueCache.putData(dataDO);
-
-       //使用protobuf 返回数据
-       Msg.msgInfo msgInfo = Msg.msgInfo.newBuilder().setData(&quot;data&quot;).setID(1).build();
-       ByteBuf byteBuf = Unpooled.buffer(msgInfo.toByteArray().length);
-       byteBuf.writeBytes(msgInfo.toByteArray());
-       ctx.writeAndFlush(byteBuf);
-
-
-   }
-</code></pre><p>消费者就是只负责从BlockingQueue去出数据进行处理</p>
-<pre><code>while (true){
-     if (this.dataQueueCache.getCount() &gt; 0){
-           DataDO dataDO = dataQueueCache.pollData();
-           //do something
-           System.out.println(&quot;data:&quot;+ dataDO.toString());
-
-          }
-       }
-</code></pre><p><a href="https://github.com/happyer/NettyProtobuf" target="_blank" rel="external">代码地址</a></p>
+                <h3 id="自己实现数据库（4）优化器"><a href="#自己实现数据库（4）优化器" class="headerlink" title="自己实现数据库（4）优化器"></a>自己实现数据库（4）优化器</h3><h4 id="join-cast"><a href="#join-cast" class="headerlink" title="join cast"></a>join cast</h4><p>核心</p>
+<p>类 JoinOptimizer</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">estimateJoinCost</span><span class="params">(LogicalJoinNode j, <span class="keyword">int</span> card1, <span class="keyword">int</span> card2,</span></span></div><div class="line">            <span class="keyword">double</span> cost1, <span class="keyword">double</span> cost2) &#123;</div><div class="line">        <span class="keyword">if</span> (j <span class="keyword">instanceof</span> LogicalSubplanJoinNode) &#123;</div><div class="line">           </div><div class="line">            <span class="keyword">return</span> card1 + cost1 + cost2;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// TODO IMPORTANT compare IO cost with CPU cost</span></div><div class="line">            <span class="comment">/*</span></div><div class="line">             *   joincost(t1 join t2) = scancost(t1) + ntups(t1) x scancost(t2) //IO cost</div><div class="line">             *                          + ntups(t1) x ntups(t2)  //CPU cost</div><div class="line">             */</div><div class="line">            <span class="comment">// Insert your code here.</span></div><div class="line">            <span class="comment">// HINT: You may need to use the variable "j" if you implemented</span></div><div class="line">            <span class="comment">// a join algorithm that's more complicated than a basic</span></div><div class="line">            <span class="comment">// nested-loops join.</span></div><div class="line">            <span class="keyword">return</span> cost1 + card1 * cost2 + card1 * card2;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这个是评估 join 的cost</p>
+<p>joincost(t1 join t2) =  （io cost + cpu cost ） scancost(t1) + ntups(t1) x scancost(t2)   +  ntups(t1) x ntups(t2)  </p>
+<p>这些 cost 的计算就是需要统计信息 IntHistogram 直方图 </p>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzI1NzY3NzU1Nw==&amp;mid=2247483756&amp;idx=1&amp;sn=9469acad3d0fe196a4943e18a2beb197&amp;chksm=ea1280f6dd6509e0ad0fa19b0df509803f3958faed1918298cd1e559467a2219720cb071a53f&amp;token=1156959211&amp;lang=zh_CN#rd" target="_blank" rel="external">点击这里查看查询优化器</a></p>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2016-02-14-netty与protobuf/"
-                     data-title="netty与protobuf生产者和消费者"
-                     data-url="http://happyer.github.io/2016/12/09/2016-02-14-netty与protobuf/"
+                     data-thread-key="2020/04/07/2020-04-07-自己实现数据库（4）优化器/"
+                     data-title="自己实现数据库（4）优化器"
+                     data-url="http://happyer.github.io/2020/04/07/2020-04-07-自己实现数据库（4）优化器/"
                      data-images=""
-                     data-content="Netty是一个高性能、异步事件驱动的NIO框架，它提供了对TCP、UDP和文件传输的支持，作... | chauncy&#39;s blog ">
+                     data-content="自己实现数据库（4）优化器join cast核心
+类 JoinOptimizer
+public... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -253,15 +213,10 @@ try {
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-02-17-使用netty建立websocket聊天/" data-toggle="tooltip" data-placement="top"
-                           title="使用netty建立websocket进行群聊">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2016/12/09/2016-02-18-java gc总结/" data-toggle="tooltip" data-placement="top"
-                           title="进一步理解java垃圾收集器">Next Post &rarr;</a>
+                        <a href="/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/" data-toggle="tooltip" data-placement="top"
+                           title="自己实现数据库（3）BufferPool">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -270,9 +225,9 @@ try {
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2016-02-14-netty与protobuf/"
-                         data-title="netty与protobuf生产者和消费者"
-                         data-url="http://happyer.github.io/2016/12/09/2016-02-14-netty与protobuf/">
+                         data-thread-key="2020/04/07/2020-04-07-自己实现数据库（4）优化器/"
+                         data-title="自己实现数据库（4）优化器"
+                         data-url="http://happyer.github.io/2020/04/07/2020-04-07-自己实现数据库（4）优化器/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -284,7 +239,7 @@ try {
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#自己实现数据库（4）优化器"><span class="toc-text">自己实现数据库（4）优化器</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#join-cast"><span class="toc-text">join cast</span></a></li></ol></li></ol>
                 </div>
             </div>
         </div>
@@ -305,6 +260,9 @@ try {
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
                         
                     </div>
                 </section>

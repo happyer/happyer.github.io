@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        自己实现数据库（3）BufferPool｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>自己实现数据库（3）BufferPool</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2020-04-07
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            自己实现数据库（3）BufferPool
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h3 id="自己实现数据库（3）BufferPool"><a href="#自己实现数据库（3）BufferPool" class="headerlink" title="自己实现数据库（3）BufferPool"></a>自己实现数据库（3）BufferPool</h3><p>BufferPool 在数据的重要性不证明自明，素有的数据IO 都需通过BufferPool 来获取，同时系统也要保证多个线程并发访问的正确性，已经也要负责将BufferPool 的数据进行flush 到磁盘持久化的过程</p>
+<h4 id="BufferPool-的基本变量"><a href="#BufferPool-的基本变量" class="headerlink" title="BufferPool 的基本变量"></a>BufferPool 的基本变量</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PAGE_SIZE = <span class="number">4096</span>; <span class="comment">// 4096</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> pageSize = PAGE_SIZE;</div><div class="line"></div><div class="line"><span class="comment">/** Default number of pages passed to the constructor. This is used by</span></div><div class="line">other classes. BufferPool should use the numPages argument to the</div><div class="line">constructor instead. */</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_PAGES = <span class="number">500</span>;</div><div class="line"></div><div class="line"><span class="comment">// page buffer; PageId -&gt; page</span></div><div class="line"><span class="keyword">private</span> ConcurrentHashMap&lt;PageId, Page&gt; pgBufferPool;</div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> capacity;</div><div class="line"></div><div class="line"><span class="keyword">private</span> LockManager lockMgr;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> TRANSATION_FACTOR = <span class="number">2</span>;</div><div class="line"><span class="comment">// timeout 1s for deadlock detection</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> DEFAUT_MAXTIMEOUT = <span class="number">5000</span>;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>pageSize  每一页的大小，数据库在读取数据的时候都是通过最小单位page 进行读取</p>
+</li>
+<li><p>pgBufferPool 里面存储了 pageId,page    的映射关系</p>
+</li>
+<li><p>lockMgr lock 是用于在多线程下面进行访问的时候对锁的管理</p>
+</li>
+</ul>
+<h4 id="获取pgae"><a href="#获取pgae" class="headerlink" title="获取pgae"></a>获取pgae</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Page <span class="title">getPage</span><span class="params">(TransactionId tid, PageId pid, Permissions perm)</span></span></div><div class="line">        <span class="keyword">throws</span> TransactionAbortedException, DbException &#123;</div><div class="line">        <span class="comment">// some code goes here</span></div><div class="line"></div><div class="line">        LockManager.LockType lockType;</div><div class="line">        <span class="keyword">if</span> (perm == Permissions.READ_ONLY) &#123;</div><div class="line">            lockType = LockManager.LockType.SLock;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            lockType = LockManager.LockType.XLock;</div><div class="line">        &#125;</div><div class="line">        Debug.log(pid.toString() + <span class="string">": before acquire lock\n"</span>);</div><div class="line">        lockMgr.acquireLock(tid, pid, lockType, DEFAUT_MAXTIMEOUT);</div><div class="line">        Debug.log(pid.toString() + <span class="string">": acquired the lock\n"</span>);</div><div class="line"></div><div class="line">        Page pg;</div><div class="line">        <span class="keyword">if</span> (pgBufferPool.containsKey(pid)) &#123;</div><div class="line">            pg = pgBufferPool.get(pid);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">if</span> (pgBufferPool.size() &gt;= capacity) &#123;</div><div class="line">                evictPage();</div><div class="line">            &#125;</div><div class="line">            pg = Database</div><div class="line">                    .getCatalog()</div><div class="line">                    .getDatabaseFile(pid.getTableId())</div><div class="line">                    .readPage(pid);</div><div class="line">            pgBufferPool.put(pid, pg);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> pg;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>getPage 是通过 事务的id(TransactionId) ,pageId，读写权限（就是获取锁那种类型的锁，共享or 排它）</p>
+<ul>
+<li><p>首先通过lockMgr，获取lock（lockMgr 等会再说）</p>
+</li>
+<li><p>通过pageId 从 pgBufferPool 获取 page</p>
+</li>
+<li><p>如果pgBufferPool 里面没有当前的pageId，同时pgBufferPool 已经满了，则需要淘汰一部分page，否则通过 DbFile（之前说过了）获取一个page,然后在放入到buffer pool 里面</p>
+</li>
+</ul>
+<h4 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertTuple</span><span class="params">(TransactionId tid, <span class="keyword">int</span> tableId, Tuple t)</span></span></div><div class="line">        <span class="keyword">throws</span> DbException, IOException, TransactionAbortedException &#123;</div><div class="line">        DbFile tableFile = Database.getCatalog().getDatabaseFile(tableId);</div><div class="line">        ArrayList&lt;Page&gt; affected = tableFile.insertTuple(tid, t);</div><div class="line">        <span class="keyword">for</span> (Page newPg : affected) &#123;</div><div class="line">            newPg.markDirty(<span class="keyword">true</span>, tid);</div><div class="line">            pgBufferPool.remove(newPg.getId());</div><div class="line">            pgBufferPool.put(newPg.getId(), newPg);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>插入一个数据 一按照一个tuple 进行插入的，逻辑还是比较清楚简单的</p>
+<ul>
+<li>获取的dbfile</li>
+<li>通过db file 获取需要变更的 page</li>
+<li>需要变更的page 从 buffer pool 里面移除，这里需要将page 标记为dirty,因为flush 是通过判断是和否进行了更改，从而判断是和否需要数据落盘</li>
+<li>同时也需要更新buffer pool 里面的page 等待后面的flush</li>
+</ul>
+<h4 id="flush-数据"><a href="#flush-数据" class="headerlink" title="flush 数据"></a>flush 数据</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">flushPage</span><span class="params">(PageId pid)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">      </div><div class="line">       <span class="keyword">if</span> (pgBufferPool.containsKey(pid)) &#123;</div><div class="line">           Page p = pgBufferPool.get(pid);</div><div class="line">           TransactionId dirtier = p.isDirty();</div><div class="line">           <span class="keyword">if</span> (dirtier != <span class="keyword">null</span>) &#123;</div><div class="line">               Database.getLogFile().logWrite(dirtier, p.getBeforeImage(), p);</div><div class="line">               Database.getLogFile().force();</div><div class="line"></div><div class="line">               DbFile tb = Database.getCatalog().getDatabaseFile(p.getId().getTableId());</div><div class="line">               p.markDirty(<span class="keyword">false</span>, <span class="keyword">null</span>);</div><div class="line">               tb.writePage(p);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>flushPage，就是将page flush 到磁盘</p>
+<ul>
+<li>通过 pageId，从buffer pool 里面获取 page</li>
+<li>判断page 的标记文dirty,是否存在（每一次更改会更改这个bit 位）</li>
+<li>然后写入到getLogFile 记录 log, 之后调用force 进行存储到磁盘</li>
+<li>最后写入到DbFile  里面</li>
+</ul>
+<h4 id="lock"><a href="#lock" class="headerlink" title="lock"></a>lock</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">acquireLock</span><span class="params">(TransactionId tid, PageId pid, LockType reqLock, <span class="keyword">int</span> maxTimeout)</span></span></div><div class="line">            <span class="keyword">throws</span> TransactionAbortedException &#123;</div><div class="line">        <span class="comment">// boolean isAcquired = false;</span></div><div class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</div><div class="line">        Random rand = <span class="keyword">new</span> Random();</div><div class="line">        <span class="keyword">long</span> randomTimeout = rand.nextInt((maxTimeout - <span class="number">0</span>) + <span class="number">1</span>) + <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (lockTable.containsKey(pid)) &#123;</div><div class="line">                <span class="comment">// page is locked by some transaction</span></div><div class="line">                <span class="keyword">if</span> (lockTable.get(pid).getType() == LockType.SLock) &#123;</div><div class="line">                    <span class="keyword">if</span> (reqLock == LockType.SLock) &#123;</div><div class="line">                        updateTransactionTable(tid, pid);</div><div class="line">                        <span class="keyword">assert</span> lockTable.get(pid).addHolder(tid) != <span class="keyword">null</span>;</div><div class="line">                        <span class="comment">// isAcquired = true;</span></div><div class="line">                        <span class="keyword">return</span>;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        <span class="comment">// request XLock</span></div><div class="line">                        <span class="keyword">if</span> (transactionTable.containsKey(tid) &amp;&amp; transactionTable.get(tid).contains(pid)</div><div class="line">                                &amp;&amp; lockTable.get(pid).getHolders().size() == <span class="number">1</span>) &#123;</div><div class="line">                            <span class="comment">// sanity check</span></div><div class="line">                            <span class="keyword">assert</span> lockTable.get(pid).getHolders().get(<span class="number">0</span>) == tid;</div><div class="line">                            <span class="comment">// this is a combined case when lock on pid hold only by one trans (which is exactly tid)</span></div><div class="line">                            lockTable.get(pid).tryUpgradeLock(tid);</div><div class="line">                            <span class="comment">// isAcquired = true;</span></div><div class="line">                            <span class="keyword">return</span>;</div><div class="line">                        &#125; <span class="keyword">else</span> &#123;</div><div class="line">                            <span class="comment">// all need to do is just blocking</span></div><div class="line">                            block(pid, start, randomTimeout);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="comment">// already get a Xlock on pid</span></div><div class="line">                    <span class="keyword">if</span> (lockTable.get(pid).getHolders().get(<span class="number">0</span>) == tid) &#123;</div><div class="line">                        <span class="comment">// Xlock means only one holder</span></div><div class="line">                        <span class="comment">// request xlock or slock on the pid with that tid</span></div><div class="line">                        <span class="comment">// sanity check</span></div><div class="line">                        <span class="keyword">assert</span> lockTable.get(pid).getHolders().size() == <span class="number">1</span>;</div><div class="line">                        <span class="comment">// isAcquired = true;</span></div><div class="line">                        <span class="keyword">return</span>;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        <span class="comment">// otherwise block</span></div><div class="line">                        block(pid, start, randomTimeout);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                ArrayList&lt;TransactionId&gt; initialHolders = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">                initialHolders.add(tid);</div><div class="line">                lockTable.put(pid, <span class="keyword">new</span> ObjLock(reqLock, pid, initialHolders));</div><div class="line">                updateTransactionTable(tid, pid);</div><div class="line">                <span class="comment">// isAcquired = true;</span></div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>lock 使用了一个 ConcurrentHashMap<pageid, objlock=""> lockTable 用于存储每一个page 他使用锁的情况</pageid,></p>
+<p>同时锁分为 SLock XLock 分别为 共享锁，排它锁 就读写锁 读写冲突，写写冲突 </p>
+<p>ObjLock 里面使用了 一个list 用于存储那些transaction 正在使用它的lock</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ObjLock</span> </span>&#123;</div><div class="line">        LockType type;</div><div class="line">        PageId obj;</div><div class="line">        ArrayList&lt;TransactionId&gt; holders;</div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ObjLock</span><span class="params">(LockType t, PageId obj, ArrayList&lt;TransactionId&gt; holders)</span> </span>&#123;</div><div class="line">            <span class="comment">// this.blocked = false;</span></div><div class="line">            <span class="keyword">this</span>.type = t;</div><div class="line">            <span class="keyword">this</span>.obj = obj;</div><div class="line">            <span class="keyword">this</span>.holders = holders;</div><div class="line">        &#125;</div><div class="line"></div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryUpgradeLock</span><span class="params">(TransactionId tid)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (type == LockType.SLock &amp;&amp; holders.size() == <span class="number">1</span> &amp;&amp; holders.get(<span class="number">0</span>).equals(tid)) &#123;</div><div class="line">                type = LockType.XLock;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> TransactionId <span class="title">addHolder</span><span class="params">(TransactionId tid)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (type == LockType.SLock) &#123;</div><div class="line">                <span class="keyword">if</span> (!holders.contains(tid)) &#123;</div><div class="line">                    holders.add(tid);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> tid;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>获取锁的流程</p>
+<ul>
+<li><p>通过 pageId 获取lockTable 里面的 ObjLock 对象</p>
+</li>
+<li><p>判断lock 的类型 读or 写</p>
+</li>
+<li><p>如果是共享锁，调用 objlock 里面的addHolder 将 当前的transactionId 添加到list 里面 然后返回</p>
+</li>
+<li><p>如果是写锁，需要进行判断 holder 里面的transaction id 与当前的tranasactionid 进行比较，如果是当前的事务，则需要进行锁的升级（有可能之前的事务，是read lock,现在需要写数据，所以需要进行一个锁升级）</p>
+</li>
+<li><p>如果 当前的lock的transaction 与当前的transaction 不等，或者已经有其他的写死已经在holder 里面则，需要等待 block，block 的方法其实就是调用一个wait 方法</p>
+</li>
+</ul>
+<p>释放锁<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">releaseLock</span><span class="params">(TransactionId tid, PageId pid)</span> </span>&#123;</div><div class="line"></div><div class="line">       <span class="comment">// remove from trans table</span></div><div class="line">       <span class="keyword">if</span> (transactionTable.containsKey(tid)) &#123;</div><div class="line">           transactionTable.get(tid).remove(pid);</div><div class="line">           <span class="keyword">if</span> (transactionTable.get(tid).size() == <span class="number">0</span>) &#123;</div><div class="line">               transactionTable.remove(tid);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="comment">// remove from locktable</span></div><div class="line">       <span class="keyword">if</span> (lockTable.containsKey(pid)) &#123;</div><div class="line">           lockTable.get(pid).getHolders().remove(tid);</div><div class="line">           <span class="keyword">if</span> (lockTable.get(pid).getHolders().size() == <span class="number">0</span>) &#123;</div><div class="line">               <span class="comment">// no more threads are waiting here</span></div><div class="line">               lockTable.remove(pid);</div><div class="line">           &#125; <span class="keyword">else</span> &#123;</div><div class="line">               <span class="comment">// ObjLock lock = lockTable.get(pid);</span></div><div class="line">               <span class="comment">// synchronized (lock) &#123;</span></div><div class="line">               notifyAll();</div><div class="line">               <span class="comment">//&#125;</span></div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>释放比较简单，将obj lock 里面的holder 移除，如果里面还有其他的lock，则调用notifyall 对之前的 wait 进行唤醒</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/"
+                     data-title="自己实现数据库（3）BufferPool"
+                     data-url="http://happyer.github.io/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/"
+                     data-images=""
+                     data-content="自己实现数据库（3）BufferPoolBufferPool 在数据的重要性不证明自明，素有的... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/04/07/2020-04-07-自己实现数据库（4）优化器/" data-toggle="tooltip" data-placement="top"
+                           title="自己实现数据库（4）优化器">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/" data-toggle="tooltip" data-placement="top"
+                           title="自己实现一个简单的DB(二)">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/"
+                         data-title="自己实现数据库（3）BufferPool"
+                         data-url="http://happyer.github.io/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#自己实现数据库（3）BufferPool"><span class="toc-text">自己实现数据库（3）BufferPool</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferPool-的基本变量"><span class="toc-text">BufferPool 的基本变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#获取pgae"><span class="toc-text">获取pgae</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#插入数据"><span class="toc-text">插入数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#flush-数据"><span class="toc-text">flush 数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#lock"><span class="toc-text">lock</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#db"
+                           title="db">db</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2020
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>
