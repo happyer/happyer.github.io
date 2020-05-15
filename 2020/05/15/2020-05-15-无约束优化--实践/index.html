@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        c++复制构造函数｜chauncy&#39;s blog
+        无约束优化--实践｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+    <link rel="canonical" href="http://happyer.github.io/2020/05/15/2020-05-15-无约束优化--实践/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,18 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>c++复制构造函数</h1>
+                    <h1>无约束优化--实践</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2020-05-15
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#math"
+                           title="math">math</a>
                         
                     </div>
                 </div>
@@ -162,7 +165,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            c++复制构造函数
+            无约束优化--实践
         </span>
     </div>
 </header>
@@ -173,38 +176,37 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下</p>
-<pre><code>class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs);   //copy 构造函数
-      Widget&amp; operator=(const Widget&amp; rhs);  //copy assignment 操作符
-      ~Widget{};();
-};
-
-Widget w1;       //default 构造函数
-Widget w2(w1);  //调用copy构造函数
-w1 = w2;        //调用copy assignment操作符
-</code></pre><p>当你看到赋值操作符小心,因为”=”语法可以用来调用copy构造函数</p>
-<pre><code>Widget w3 = w1    //copy 构造函数
-</code></pre><p>copy 构造,和copy 赋值,很容易区分,幸好,如果一个新的对象别定义(与上面的w3),则调用copy构造,反之则赋值.看到很多网上的资料都是说,只要一看到对象赋值另外一个同类型的对象,就是copy 构造,这是错误的现在来看</p>
-<p>至于我当初学习copy构造的时候,为什么要引用来作为传递了??</p>
-<p>传入参数用const类型的引用，可以节省参数赋值的开支，最后赋值给的是this指针指向的对象，复制构造函数会默认的进行简单变量的赋值。<br>另外重要的原因就是：避免递归调用！<br>如果定义如下的构造函数：</p>
-<pre><code>Widget:: Widget( Widget rhs);
-</code></pre><p>那么当用一个 Widget对象初始化另一个 Widget对象时，如</p>
-<pre><code>Widget w4=w4; //假设w4是一个已存在Widget对象
-</code></pre><p>该复制构造函数就会被无限制地递归下去：调用WIdget(Widgetr)</p>
+                <h3 id="无约束优化–实践"><a href="#无约束优化–实践" class="headerlink" title="无约束优化–实践"></a>无约束优化–实践</h3><p>假设满足如下方程</p>
+<p> f(x,y) = x² + 3y²</p>
+<p>需要求得改方程的最小值<br>使用梯度下降法进行求解</p>
+<p><img src="1.png" alt="推导"></p>
+<p>我们使用MATLAB 进行一个梯度下降求解<br>一些初始化代码<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">x=-3:0.1:3;</div><div class="line">y=-3:0.1:3;</div><div class="line">[X,Y]=meshgrid(x,y);    </div><div class="line">fsurf=X.^2+3*Y.^2;</div><div class="line">surf(X,Y,fsurf),hold on;</div><div class="line">clear x;</div><div class="line">clear y;</div><div class="line">x(1) = 3; y(1) = 2;             %guess</div><div class="line">f(1) = x(1)^2+3*y(1)^2;         %init value</div><div class="line">plot3(x,y,f,&apos;ko&apos;,&apos;Linewidth&apos;,[3])</div></pre></td></tr></table></figure></p>
+<p>然后根据我们上面推导的公式进行一个循环迭代<br>我们循环迭代1000 次 如果当我们发现 误差在我们的接受范围我们就可以停止 break</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">for j=1:1000</div><div class="line">    tau = (x(j)^2+9*y(j)^2) / (2*x(j)^2+54*y(j)^2);</div><div class="line">    x(j+1) = (1-2*tau)*x(j);</div><div class="line">    y(j+1) = (1-6*tau)*y(j);</div><div class="line">    f(j+1) = x(j+1)^2+3*y(j+1)^2;</div><div class="line">    </div><div class="line">    plot3(x(j+1),y(j+1),f(j+1),&apos;ko&apos;,&apos;Linewidth&apos;,[3]);</div><div class="line"> </div><div class="line">    pause(2);</div><div class="line">    </div><div class="line">    if abs(f(j+1)-f(j)) &lt; 10^(-6)</div><div class="line">        break;</div><div class="line">    end</div><div class="line">end</div></pre></td></tr></table></figure>
+<p>最后的结果路径就为我们红色线那样step by step 走到一个合理区域</p>
+<p><img src="2.png" alt="solution"></p>
+<h3 id="最小二乘法"><a href="#最小二乘法" class="headerlink" title="最小二乘法"></a>最小二乘法</h3><p>与该方法类同有一个 最小二乘法 这里使用淘宝双十一 数据作为一个拟合<br>数据分别是 淘宝这几年 双11 的成交数据 单位都是 RMB 亿元<br>时间是从2009-2019 年这个时间<br>y = [0.5 9.36 52 191 350 571 912 1207 1682 2135 2684]</p>
+<p>当我们把这些数据放在坐标轴上面观察的时候,直觉上的就觉得他是一个指数函数</p>
+<p><img src="3.png" alt="min-square"></p>
+<p>所以我们的一个目标函数就是 ax^2+b ,a 为扩展系统,b 为一个截距在ax+b 中的b 一样的效果</p>
+<p>最小二乘法 就是我们 loss = ∑ ( f(x) - y)²  求解他的最小值 其中 f(x)是 我们假定他的函数 y 为真是的函数的数值 (在上图中横坐标就是年份第一年.第二年,纵坐标就是成交和GMV,也即是我们y 值)</p>
+<p>1: 我们定义个我们的目标函数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">function E=datafitali(x0,x,y)</div><div class="line">A = x0(1); B = x0(2); </div><div class="line">E = sum( (A*x.^2+B-y).^2 )</div><div class="line">2:我们使用fminsarch 结果进行最优化</div><div class="line">x = 1:11</div><div class="line">y = [0.5 9.36 52 191 350 571 912 1207 1682 2135 2684]</div><div class="line"> </div><div class="line">A = 1;</div><div class="line">B = 1;</div><div class="line"> </div><div class="line"> </div><div class="line">plot(x,y,&apos;ko&apos;),hold on</div><div class="line"> </div><div class="line"> </div><div class="line"> </div><div class="line"> coeff = fminsearch(&apos;datafitali&apos;,[A B],[],x,y);</div><div class="line"> A1 = coeff(1) ; B1 = coeff(2);</div><div class="line"> f2 = A1 * x.^2+B1</div><div class="line"> </div><div class="line"> plot(x,f2,&apos;g’);</div></pre></td></tr></table></figure>
+<p>基本上是符合一个指数增长的,这条曲线确实挺完美的 !</p>
+<p><img src="4.png" alt="min-square-result"></p>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                     data-title="c++复制构造函数"
-                     data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/"
+                     data-thread-key="2020/05/15/2020-05-15-无约束优化--实践/"
+                     data-title="无约束优化--实践"
+                     data-url="http://happyer.github.io/2020/05/15/2020-05-15-无约束优化--实践/"
                      data-images=""
-                     data-content="今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一... | chauncy&#39;s blog ">
+                     data-content="无约束优化–实践假设满足如下方程
+ f(x,y) = x² + 3y²
+需要求得改方程的最小值... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -222,15 +224,10 @@ w1 = w2;        //调用copy assignment操作符
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-12-09-java8 collector/" data-toggle="tooltip" data-placement="top"
-                           title="java 8 自定义 收集器（collector）">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2016/12/09/2016-02-02-仿函数/" data-toggle="tooltip" data-placement="top"
-                           title="仿函数（functor function objects）">Next Post &rarr;</a>
+                        <a href="/2020/04/07/2020-04-07-自己实现数据库（4）优化器/" data-toggle="tooltip" data-placement="top"
+                           title="自己实现数据库（4）优化器">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -239,9 +236,9 @@ w1 = w2;        //调用copy assignment操作符
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2013-01-13-复制构造函数/"
-                         data-title="c++复制构造函数"
-                         data-url="http://happyer.github.io/2016/12/09/2013-01-13-复制构造函数/">
+                         data-thread-key="2020/05/15/2020-05-15-无约束优化--实践/"
+                         data-title="无约束优化--实践"
+                         data-url="http://happyer.github.io/2020/05/15/2020-05-15-无约束优化--实践/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -253,7 +250,7 @@ w1 = w2;        //调用copy assignment操作符
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#无约束优化–实践"><span class="toc-text">无约束优化–实践</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最小二乘法"><span class="toc-text">最小二乘法</span></a></li></ol>
                 </div>
             </div>
         </div>
@@ -274,6 +271,9 @@ w1 = w2;        //调用copy assignment操作符
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#math"
+                           title="math">math</a>
                         
                     </div>
                 </section>

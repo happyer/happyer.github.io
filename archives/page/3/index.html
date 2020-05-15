@@ -153,6 +153,30 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/09/2016-03-02-java内存模型/">
+        <h2 class="post-title">
+            java内存模型
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                首先计算机运行程序需要将内存里面的数据读取到CPU中，CPU对数据进行处理，然后CPU从内存读入到CPU这种代价是很大的，所以CPU根内存又加入了一道高速缓存 
+ 假设一个线程（CPU1）为变量 a赋值 a = 3; 那么CPU2，CPU3，在上面条件下能看到3这个值？如果缺少了同步，就会有很多..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2016-12-09-java8 collector/">
         <h2 class="post-title">
             java 8 自定义 收集器（collector）
@@ -195,6 +219,30 @@ class Widget  {
       public:
       Widget();   //default 构造函数
       Widget(const Widget &amp; rhs)..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-02-仿函数/">
+        <h2 class="post-title">
+            仿函数（functor function objects）
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
+.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
             </p>
         </div>
     </a>
@@ -255,9 +303,9 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-02-仿函数/">
+    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
         <h2 class="post-title">
-            仿函数（functor function objects）
+            maven的聚合与继承的使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -265,8 +313,8 @@ public..
         
         <div class="post-content-preview">
             <p>
-                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
-.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
+                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
+在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
             </p>
         </div>
     </a>
@@ -291,53 +339,6 @@ public..
             <p>
                 CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
 public static vo..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
-        <h2 class="post-title">
-            事件驱动模型的角度来看 JAVA NIO
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
-        <h2 class="post-title">
-            maven的聚合与继承的使用
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
             </p>
         </div>
     </a>
@@ -451,8 +452,6 @@ public static vo..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -460,6 +459,8 @@ public static vo..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
+                    
+                    
                     
                     
                     
@@ -484,12 +485,14 @@ public static vo..
                     
                     
                     
-                    
-                    
-                    
-                    
                     <a href="/tags/#db" title="db"
                        rel="4">db</a>
+                    
+                    
+                    
+                    
+                    
+                    
                     
                     
                 </div>

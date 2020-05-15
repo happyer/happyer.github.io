@@ -22,7 +22,7 @@
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/archives/">
+    <link rel="canonical" href="http://happyer.github.io/tags/math/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -43,7 +43,7 @@
 <!-- hack iOS CSS :active style -->
 <body ontouchstart="" class="animated fadeIn">
 <!-- Navigation -->
-<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "false" data-istags="false
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "false" data-istags="true
 " data-ishome = "false" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -178,183 +178,11 @@
 
 
 
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2020/04/07/2020-04-07-自己实现数据库（4）优化器/">
-        <h2 class="post-title">
-            自己实现数据库（4）优化器
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-07
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                自己实现数据库（4）优化器join cast核心
-类 JoinOptimizer
-public double estimateJoinCost(LogicalJoinNode j, int card1, int card2,            double cost1, double cos..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/">
-        <h2 class="post-title">
-            自己实现数据库（3）BufferPool
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-07
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                自己实现数据库（3）BufferPoolBufferPool 在数据的重要性不证明自明，素有的数据IO 都需通过BufferPool 来获取，同时系统也要保证多个线程并发访问的正确性，已经也要负责将BufferPool 的数据进行flush 到磁盘持久化的过程
-BufferPool 的基本变量p..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/">
-        <h2 class="post-title">
-            自己实现一个简单的DB(二)
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-01-15
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                自己实现一个简单的DB(2) -底层的存储数据库为了能够高效的吞吐，同时也要能够持久化数据，而持久化数据就是将我们的数据放入到我们的磁盘（机械磁盘，ssd nvme 等）
-为了能够适应不同的存储获取方式我们需要一个接口来进行一个定义，然后子类自己去实现各种具体的存储
-public interfa..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2019/12/19/2019-12-19-自己实现一个简单的DB/">
-        <h2 class="post-title">
-            自己实现一个简单的DB
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2019-12-19
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                自己实现一个简单的DB  传统的RDBMS 在存储表格数据数据的时候,是以row 单位的,而row 的存储就是一个多元的tuple,tuple 里面存储的就是我们每个字段 字段的值 (Filed name Filed Value),然后Field 它又是有类型的,对应到我们的字段就是int va..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2018/08/08/2018-08-08-flink-output/">
-        <h2 class="post-title">
-            Flink 数据的发送
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2018-08-08
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Flink 数据的发送是通过 Collector 的collector 方法public interface Collector&lt;T&gt; &#123;		/**	 * Emits a record.	 * 	 * @param record The record to collect...
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2018/06/14/2018-06-14-netty-tcp/">
-        <h2 class="post-title">
-            Netty 百万连接协议解析
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2018-06-14
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                Netty 百万连接协议解析
-Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传输,在保持高性能的同时也保证了API的简单易用性,可谓是广大Java er 网络编程必选神器
-在IOT的领域里面,为了更好的采集更多更准确的数据,业界也常常使用的一种方案保持长连接,然后保持长连接的手段就..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2017/06/26/2017-06-26-sharekv/">
-        <h2 class="post-title">
-            Go 语言实现分布式数据库
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-06-26
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                老司机带你用 Go 语言实现分布式数据库该分布式数据使用了raft 协议作为一致性协议为基础，raft 协议的实现在这里一个良好的分布式数据实现包括以下几个方面：    1 可用性，即是在一些机器各种故障的情况下是否能够继续提供服务   (a)    2 在分布式环境中，机器之间通过网络通信，他..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
 <ul class="pager">
     
-    
-    <li class="next">
-        <a href="/archives/page/2/">Older Posts &rarr;</a>
-    </li>
     
 </ul>
 
