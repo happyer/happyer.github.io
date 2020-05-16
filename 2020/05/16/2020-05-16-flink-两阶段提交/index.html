@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        flink 两阶段的提交｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2020/05/16/2020-05-16-flink-两阶段提交/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>flink 两阶段的提交</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2020-05-16
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            flink 两阶段的提交
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><p>flink 1.4 以前都是一直在宣传自己是能够保证 Exactly-Once,但是这里的exactly once 的语义是指的它自己的内部的一个保证,即是输入数据(source)然后计算(operator),最后输出(sink) 这个内部是不会有重复的计算或者漏掉数据没有计算的,直到1.4过后有了end-to-end 的一致性保证</p>
+<p>我们通过例子来看这怎么保证end-to-end 的exactly once<br><img src="1.png" alt=""></p>
+<p>一个 从kafka consumer 数据的 data source<br>通过一个窗口,进行一个聚合<br>最后的数据sink到 kafka </p>
+<p>要想完成准确的一次处理,需要外部系统支持 事务的提交 回滚操作</p>
+<p><img src="2.png" alt=""><br>当数据在开始的时候job manager 会注入一个 barrier ,然后跟着数据流进行传递到<br><img src="3.png" alt=""><br>当每一个节点收到数据barrier 过后,他会存储当前算子的state,当我们的sink 算子收到barrier 的时候它会把数据进行send(producer flush) 到kafka 里面去,这也是就是 2PC量阶段提交的pre commit 阶段<br><img src="4.png" alt=""><br>当所有的 算子都已经处理完inject barrier 的时候,job manager 会调用 每个算在的 CheckpointLister 的<br>notifyCheckpointComplete 方法,在sink算子里面在这个方法会进行 commit 提交( kafka producer commitTransactin) </p>
+<p>简单的进行一个总结,然后后面对这几个情况进行源代码进行分析</p>
+<ol>
+<li>beginTransaction -我们可以创建一个临时目录,用户存放我们的数据</li>
+<li>preCommit -我们在这个阶段吧数据进行flush 到我们创建的目录里面,然后也不会在去更改他</li>
+<li>commit-我们原子性的将pre-commit file 到我们的目的目录下面</li>
+<li>abort-如果失败了,我们将会进行delte 我们之前创建的目录</li>
+</ol>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public abstract class TwoPhaseCommitSinkFunction&lt;IN, TXN, CONTEXT&gt;</div><div class="line">        extends RichSinkFunction&lt;IN&gt;</div><div class="line">        implements CheckpointedFunction, CheckpointListener &#123;</div><div class="line"></div><div class="line"></div><div class="line">    protected final LinkedHashMap&lt;Long, TransactionHolder&lt;TXN&gt;&gt; pendingCommitTransactions = new LinkedHashMap&lt;&gt;();</div><div class="line"></div><div class="line">    protected transient Optional&lt;CONTEXT&gt; userContext;</div><div class="line"></div><div class="line">    protected transient ListState&lt;State&lt;TXN, CONTEXT&gt;&gt; state;</div><div class="line"></div><div class="line">    private final Clock clock;</div><div class="line"></div><div class="line"></div><div class="line">    private TransactionHolder&lt;TXN&gt; currentTransactionHolder;</div><div class="line"></div><div class="line">    </div><div class="line">    private long transactionTimeout = Long.MAX_VALUE;</div><div class="line"></div><div class="line"></div><div class="line">    private boolean ignoreFailuresAfterTransactionTimeout;</div><div class="line"></div><div class="line">    private double transactionTimeoutWarningRatio = -1;</div><div class="line"></div><div class="line"></div><div class="line">    </div><div class="line">    protected abstract void invoke(TXN transaction, IN value, Context context) throws Exception;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Method that starts a new transaction.</div><div class="line">     *</div><div class="line">     * @return newly created transaction.</div><div class="line">     */</div><div class="line">    protected abstract TXN beginTransaction() throws Exception;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Pre commit previously created transaction. Pre commit must make all of the necessary steps to prepare the</div><div class="line">     * transaction for a commit that might happen in the future. After this point the transaction might still be</div><div class="line">     * aborted, but underlying implementation must ensure that commit calls on already pre committed transactions</div><div class="line">     * will always succeed.</div><div class="line">     *</div><div class="line">     * &lt;p&gt;Usually implementation involves flushing the data.</div><div class="line">     */</div><div class="line">    protected abstract void preCommit(TXN transaction) throws Exception;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Commit a pre-committed transaction. If this method fail, Flink application will be</div><div class="line">     * restarted and &#123;@link TwoPhaseCommitSinkFunction#recoverAndCommit(Object)&#125; will be called again for the</div><div class="line">     * same transaction.</div><div class="line">     */</div><div class="line">    protected abstract void commit(TXN transaction);</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Invoked on recovered transactions after a failure. User implementation must ensure that this call will eventually</div><div class="line">     * succeed. If it fails, Flink application will be restarted and it will be invoked again. If it does not succeed</div><div class="line">     * eventually, a data loss will occur. Transactions will be recovered in an order in which they were created.</div><div class="line">     */</div><div class="line">    protected void recoverAndCommit(TXN transaction) &#123;</div><div class="line">        commit(transaction);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Abort a transaction.</div><div class="line">     */</div><div class="line">    protected abstract void abort(TXN transaction);</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Abort a transaction that was rejected by a coordinator after a failure.</div><div class="line">     */</div><div class="line">    protected void recoverAndAbort(TXN transaction) &#123;</div><div class="line">        abort(transaction);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    </div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    public final void notifyCheckpointComplete(long checkpointId) throws Exception &#123;</div><div class="line"></div><div class="line">        Iterator&lt;Map.Entry&lt;Long, TransactionHolder&lt;TXN&gt;&gt;&gt; pendingTransactionIterator = pendingCommitTransactions.entrySet().iterator();</div><div class="line">        checkState(pendingTransactionIterator.hasNext(), &quot;checkpoint completed, but no transaction pending&quot;);</div><div class="line">        Throwable firstError = null;</div><div class="line"></div><div class="line">        while (pendingTransactionIterator.hasNext()) &#123;</div><div class="line">            Map.Entry&lt;Long, TransactionHolder&lt;TXN&gt;&gt; entry = pendingTransactionIterator.next();</div><div class="line">            Long pendingTransactionCheckpointId = entry.getKey();</div><div class="line">            TransactionHolder&lt;TXN&gt; pendingTransaction = entry.getValue();</div><div class="line">            if (pendingTransactionCheckpointId &gt; checkpointId) &#123;</div><div class="line">                continue;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            LOG.info(&quot;&#123;&#125; - checkpoint &#123;&#125; complete, committing transaction &#123;&#125; from checkpoint &#123;&#125;&quot;,</div><div class="line">                name(), checkpointId, pendingTransaction, pendingTransactionCheckpointId);</div><div class="line"></div><div class="line">            logWarningIfTimeoutAlmostReached(pendingTransaction);</div><div class="line">            try &#123;</div><div class="line">                commit(pendingTransaction.handle);</div><div class="line">            &#125; catch (Throwable t) &#123;</div><div class="line">                if (firstError == null) &#123;</div><div class="line">                    firstError = t;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line"></div><div class="line">            pendingTransactionIterator.remove();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (firstError != null) &#123;</div><div class="line">            throw new FlinkRuntimeException(&quot;Committing one of transactions failed, logging first encountered failure&quot;,</div><div class="line">                firstError);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void snapshotState(FunctionSnapshotContext context) throws Exception &#123;</div><div class="line">        // this is like the pre-commit of a 2-phase-commit transaction</div><div class="line">        // we are ready to commit and remember the transaction</div><div class="line"></div><div class="line">        checkState(currentTransactionHolder != null, &quot;bug: no transaction object when performing state snapshot&quot;);</div><div class="line"></div><div class="line">        long checkpointId = context.getCheckpointId();</div><div class="line">        LOG.debug(&quot;&#123;&#125; - checkpoint &#123;&#125; triggered, flushing transaction &apos;&#123;&#125;&apos;&quot;, name(), context.getCheckpointId(), currentTransactionHolder);</div><div class="line"></div><div class="line">        preCommit(currentTransactionHolder.handle);</div><div class="line">        pendingCommitTransactions.put(checkpointId, currentTransactionHolder);</div><div class="line">        LOG.debug(&quot;&#123;&#125; - stored pending transactions &#123;&#125;&quot;, name(), pendingCommitTransactions);</div><div class="line"></div><div class="line">        currentTransactionHolder = beginTransactionInternal();</div><div class="line">        LOG.debug(&quot;&#123;&#125; - started new transaction &apos;&#123;&#125;&apos;&quot;, name(), currentTransactionHolder);</div><div class="line"></div><div class="line">        state.clear();</div><div class="line">        state.add(new State&lt;&gt;(</div><div class="line">            this.currentTransactionHolder,</div><div class="line">            new ArrayList&lt;&gt;(pendingCommitTransactions.values()),</div><div class="line">            userContext));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void initializeState(FunctionInitializationContext context) throws Exception &#123;</div><div class="line">    </div><div class="line">        state = context.getOperatorStateStore().getListState(stateDescriptor);</div><div class="line"></div><div class="line">        boolean recoveredUserContext = false;</div><div class="line">        if (context.isRestored()) &#123;</div><div class="line">            LOG.info(&quot;&#123;&#125; - restoring state&quot;, name());</div><div class="line">            for (State&lt;TXN, CONTEXT&gt; operatorState : state.get()) &#123;</div><div class="line">                userContext = operatorState.getContext();</div><div class="line">                List&lt;TransactionHolder&lt;TXN&gt;&gt; recoveredTransactions = operatorState.getPendingCommitTransactions();</div><div class="line">                for (TransactionHolder&lt;TXN&gt; recoveredTransaction : recoveredTransactions) &#123;</div><div class="line">                    // If this fails to succeed eventually, there is actually data loss</div><div class="line">                    recoverAndCommitInternal(recoveredTransaction);</div><div class="line">                    LOG.info(&quot;&#123;&#125; committed recovered transaction &#123;&#125;&quot;, name(), recoveredTransaction);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                recoverAndAbort(operatorState.getPendingTransaction().handle);</div><div class="line">                LOG.info(&quot;&#123;&#125; aborted recovered transaction &#123;&#125;&quot;, name(), operatorState.getPendingTransaction());</div><div class="line"></div><div class="line">                if (userContext.isPresent()) &#123;</div><div class="line">                    finishRecoveringContext();</div><div class="line">                    recoveredUserContext = true;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // if in restore we didn&apos;t get any userContext or we are initializing from scratch</div><div class="line">        if (!recoveredUserContext) &#123;</div><div class="line">            LOG.info(&quot;&#123;&#125; - no state to restore&quot;, name());</div><div class="line"></div><div class="line">            userContext = initializeUserContext();</div><div class="line">        &#125;</div><div class="line">        this.pendingCommitTransactions.clear();</div><div class="line"></div><div class="line">        currentTransactionHolder = beginTransactionInternal();</div><div class="line">    &#125;    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面抽取了TwoPhaseCommitSinkFunction 核心的结构,也基本就是我们上面设计的模型</p>
+<ul>
+<li>beginTransaction</li>
+<li>preCommit</li>
+<li>commit</li>
+<li>abort<br>这些方法需啊哟在子类自行实现,在下面kafka 里面会看一下他的具体实现<br>当然为了能够进行容错,管理恢复我们需要实现一些中间状态的管理<br>在任务进行恢复的时候,进行一个状态的初始化,以及状态的恢复</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">public void initializeState(FunctionInitializationContext context) throws Exception &#123;</div><div class="line"> </div><div class="line">    //获取operator 的状态</div><div class="line">   state = context.getOperatorStateStore().getListState(stateDescriptor);</div><div class="line"></div><div class="line">   boolean recoveredUserContext = false;</div><div class="line">   if (context.isRestored()) &#123;</div><div class="line"></div><div class="line">      for (State&lt;TXN, CONTEXT&gt; operatorState : state.get()) &#123;</div><div class="line">         userContext = operatorState.getContext();</div><div class="line">        //从operator 状态中获取,需要commit 的transaction </div><div class="line">         List&lt;TransactionHolder&lt;TXN&gt;&gt; recoveredTransactions = operatorState.getPendingCommitTransactions();</div><div class="line">         for (TransactionHolder&lt;TXN&gt; recoveredTransaction : recoveredTransactions) &#123;</div><div class="line">            // 这里会调用 子类的commit 实现方法,进行tnx 进行commit,里面还有一个检查,如果超时会打印日志</div><div class="line">            recoverAndCommitInternal(recoveredTransaction);</div><div class="line">         &#125;</div><div class="line">        //在operator 里面会 pending tnx 这一部分tnx 是不能进行提交的,因为他们进入per commit 阶段,其实简单的理解,只要进入了完成了precommit 阶段,就会进入commit 最后</div><div class="line">         recoverAndAbort(operatorState.getPendingTransaction().handle);</div><div class="line">        </div><div class="line">         if (userContext.isPresent()) &#123;</div><div class="line">            finishRecoveringContext();</div><div class="line">            recoveredUserContext = true;</div><div class="line">         &#125;</div><div class="line">      &#125;</div><div class="line">   &#125;</div><div class="line">      userContext = initializeUserContext();</div><div class="line">   &#125;</div><div class="line">    //最后就是将pending commit 数据进行一个清空</div><div class="line">   this.pendingCommitTransactions.clear();</div><div class="line">    //生产一个新的holder 来保存下一个tnx</div><div class="line">   currentTransactionHolder = beginTransactionInternal();</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当收到一个barrier 的时候,会进行状态的持久化</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void snapshotState(FunctionSnapshotContext context) throws Exception &#123;</div><div class="line"></div><div class="line"></div><div class="line">   checkState(currentTransactionHolder != null, &quot;bug: no transaction object when performing state snapshot&quot;);</div><div class="line"></div><div class="line">   long checkpointId = context.getCheckpointId();</div><div class="line"></div><div class="line">    </div><div class="line">    //这里进行一个pre commit 的提交,具体在kafka 里面是直接flush</div><div class="line">   preCommit(currentTransactionHolder.handle);</div><div class="line"></div><div class="line">//这里将当前的tnx 放在 pend comit 列表里面,这个需要持久化的,如果后续恢复了,需要执行commit</div><div class="line">   pendingCommitTransactions.put(checkpointId, currentTransactionHolder);</div><div class="line"></div><div class="line">//开启一个新的 holder 用于存储下一个tnx</div><div class="line">   currentTransactionHolder = beginTransactionInternal();</div><div class="line">//clean 一下  </div><div class="line">   state.clear();</div><div class="line">//加入到operator 的state ,这里的this.currentTransactionHolder 是没有进行precommit 的所以后续恢复的时候需要abort</div><div class="line">//pendingCommitTransactions.values() 是已pre commit 了,在恢复的时候进行commit 的一个提交</div><div class="line">   state.add(new State&lt;&gt;(</div><div class="line">      this.currentTransactionHolder,</div><div class="line">      new ArrayList&lt;&gt;(pendingCommitTransactions.values()),</div><div class="line">      userContext));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当所有的barrire 已经完成,即使是pre commit 已经完成了,job manager (flink) 会notify 各个 operator </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public final void notifyCheckpointComplete(long checkpointId) throws Exception &#123;</div><div class="line">  </div><div class="line">    //1: 正常的完成一个事物 ---&gt; commit</div><div class="line">//   2: 因为checkpoint 的失败(有可能会这样的情况),所以会有多个需要提交的事务</div><div class="line">  // checkpoint 失败的原因如下:</div><div class="line">     // master 不能持久化 checkpoint 的数据(可能存储系统临时失败),但是还是会调用checklister 的方法</div><div class="line">    // 其他的task mananger 不能持久化上一个ck 的数据,同时也没有上报失败,因为它们可以在后续检查点中成功地保持其态</div><div class="line">  // 但是我们需要提交之前没有达到commit 状态的事务</div><div class="line">//3: 有多个pending 的事物,但是他不是当前最新的一个,因为notify 会有延迟</div><div class="line">// 4: 当触发这个方法的时候,也就表明了这里没有个tnx不是已经pre commit 的,其实就是所有的tnx 都可以commiit</div><div class="line">  </div><div class="line">Iterator&lt;Map.Entry&lt;Long, TransactionHolder&lt;TXN&gt;&gt;&gt; pendingTransactionIterator = pendingCommitTransactions.entrySet().iterator();</div><div class="line">   checkState(pendingTransactionIterator.hasNext(), &quot;checkpoint completed, but no transaction pending&quot;);</div><div class="line">   Throwable firstError = null;</div><div class="line"></div><div class="line">   while (pendingTransactionIterator.hasNext()) &#123;</div><div class="line">      Map.Entry&lt;Long, TransactionHolder&lt;TXN&gt;&gt; entry = pendingTransactionIterator.next();</div><div class="line">      Long pendingTransactionCheckpointId = entry.getKey();</div><div class="line">      TransactionHolder&lt;TXN&gt; pendingTransaction = entry.getValue();</div><div class="line">    //这里就是有可能 notify 会有延迟,导致需要ckpid &gt; 当前的checkpid</div><div class="line">      if (pendingTransactionCheckpointId &gt; checkpointId) &#123;</div><div class="line">         continue;</div><div class="line">      &#125;</div><div class="line"></div><div class="line">      //这里就是一个延迟log</div><div class="line">      logWarningIfTimeoutAlmostReached(pendingTransaction);</div><div class="line">      try &#123;</div><div class="line">        //这里直接进行commit</div><div class="line">         commit(pendingTransaction.handle);</div><div class="line">      &#125; catch (Throwable t) &#123;</div><div class="line">         if (firstError == null) &#123;</div><div class="line">            firstError = t;</div><div class="line">         &#125;</div><div class="line">      &#125;</div><div class="line">    //移除掉 已经comm</div><div class="line">      pendingTransactionIterator.remove();</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   if (firstError != null) &#123;</div><div class="line">      throw new FlinkRuntimeException(&quot;Committing one of transactions failed, logging first encountered failure&quot;,</div><div class="line">         firstError);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们可以看一下FlinkKafkaProducer011 是怎么实现刚才那个2阶段提交的模型的<br>KafkaTransactionState  里面保存了 transaction Id producer 的信息 这里不做详细的说明</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">protected KafkaTransactionState beginTransaction() throws FlinkKafka011Exception &#123;</div><div class="line">   switch (semantic) &#123;</div><div class="line">      //如果数据是准确一次,那我么就启动producer的 beginTransaction</div><div class="line">      case EXACTLY_ONCE:</div><div class="line">         FlinkKafkaProducer&lt;byte[], byte[]&gt; producer = createTransactionalProducer();</div><div class="line">         producer.beginTransaction();</div><div class="line">         return new KafkaTransactionState(producer.getTransactionalId(), producer);</div><div class="line">        …...</div><div class="line">      default:</div><div class="line">         throw new UnsupportedOperationException(&quot;Not implemented semantic&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"></div><div class="line">protected void preCommit(KafkaTransactionState transaction) throws FlinkKafka011Exception &#123;</div><div class="line">   switch (semantic) &#123;</div><div class="line">      case EXACTLY_ONCE:</div><div class="line">      case AT_LEAST_ONCE:</div><div class="line">    //这里直接call flush,最后调用 producer 里面,他会吧recorder 发送到kafka 的broker 上面,这里可能需要结合kafka 的</div><div class="line">//leo watermark 来管理 consumer 的消费</div><div class="line">         flush(transaction);</div><div class="line">         break;</div><div class="line">      case NONE:</div><div class="line">         break;</div><div class="line">      default:</div><div class="line">         throw new UnsupportedOperationException(&quot;Not implemented semantic&quot;);</div><div class="line">   &#125;</div><div class="line">   checkErroneous();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个比较简单,直接使用kafka 的producer 的commit transaction 就可以了</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">protected void commit(KafkaTransactionState transaction) &#123;</div><div class="line">   if (transaction.isTransactional()) &#123;</div><div class="line">      try &#123;</div><div class="line">         transaction.producer.commitTransaction();</div><div class="line">      &#125; finally &#123;</div><div class="line">         recycleTransactionalProducer(transaction.producer);</div><div class="line">      &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div><div class="line">//同上</div><div class="line">protected void abort(KafkaTransactionState transaction) &#123;</div><div class="line">   if (transaction.isTransactional()) &#123;</div><div class="line">      transaction.producer.abortTransaction();</div><div class="line">      recycleTransactionalProducer(transaction.producer);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>总结,flink 框架已经帮我们实现 量阶段提交 的主要模型抽象了,我么只需要简单的override 几个方法就可以了<br>但是这里还有一个问题,就是我们本来是使用kafka 作为source的是,那么在source 端是不是应该手动的管理kafka 的offset<br>这样作为一个整体才是一个end-to-end 的语言保证</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2020/05/16/2020-05-16-flink-两阶段提交/"
+                     data-title="flink 两阶段的提交"
+                     data-url="http://happyer.github.io/2020/05/16/2020-05-16-flink-两阶段提交/"
+                     data-images=""
+                     data-content="流程flink 1.4 以前都是一直在宣传自己是能够保证 Exactly-Once,但是这里的... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/05/15/2020-05-15-无约束优化--实践/" data-toggle="tooltip" data-placement="top"
+                           title="无约束优化--实践">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2020/05/16/2020-05-16-flink-两阶段提交/"
+                         data-title="flink 两阶段的提交"
+                         data-url="http://happyer.github.io/2020/05/16/2020-05-16-flink-两阶段提交/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#流程"><span class="toc-text">流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码分析"><span class="toc-text">源码分析</span></a></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2020
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>

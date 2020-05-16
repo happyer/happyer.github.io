@@ -153,9 +153,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
         <h2 class="post-title">
-            事件驱动模型的角度来看 JAVA NIO
+            maven的聚合与继承的使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -163,7 +163,8 @@
         
         <div class="post-content-preview">
             <p>
-                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
+                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
+在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
             </p>
         </div>
     </a>
@@ -250,6 +251,29 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/09/2016-02-11-事件驱动模型的角度来看NIO/">
+        <h2 class="post-title">
+            事件驱动模型的角度来看 JAVA NIO
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                事件驱动模型的角度来看 JAVA NIO事件驱动模型的角度来看 java nio，先作知识的简单铺垫，1，阻塞非阻塞阻塞式I/O模型：（1）等待数据准备好；（2）从内核向进程复制数据。2，非阻塞式I/O： 当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把进程投入睡眠，而是返回一个错误。..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
         <h2 class="post-title">
             深入分析ConcurrentHashMap
@@ -263,29 +287,6 @@ WebSocket 规范定义了一种 API，可在网络浏览器和服务器之间建
                 再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
 do {
 Entry&lt;K,V&gt; next = e.next; //..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-15-AQS/">
-        <h2 class="post-title">
-            The java.util.concurrent Synchronizer Framework（译）
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
             </p>
         </div>
     </a>
@@ -321,9 +322,9 @@ Entry&lt;K,V&gt; next = e.next; //..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
+    <a href="/2016/12/09/2016-03-15-AQS/">
         <h2 class="post-title">
-            spring 流程 （一）
+            The java.util.concurrent Synchronizer Framework（译）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -331,8 +332,7 @@ Entry&lt;K,V&gt; next = e.next; //..
         
         <div class="post-content-preview">
             <p>
-                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
-到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
+                在J2SE 1.5的java.util.concurrent包（下称j.u.c包）中，大部分的同步器（例如锁，屏障等）都是基于AbstractQueuedSynchronizer（下称AQS类）这个简单的框架来构建的。对于同步状态的原子性、线程的阻塞和解除阻塞这个框架提供了一个种通用的机制。这篇..
             </p>
         </div>
     </a>
@@ -446,6 +446,8 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -453,8 +455,6 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
-                    
-                    
                     
                     
                     
@@ -479,12 +479,15 @@ Entry&lt;K,V&gt; next = e.next; //..
                     
                     
                     
+                    
+                    
+                    <a href="/tags/#flink" title="flink"
+                       rel="2">flink</a>
+                    
+                    
+                    
                     <a href="/tags/#db" title="db"
                        rel="4">db</a>
-                    
-                    
-                    
-                    
                     
                     
                     

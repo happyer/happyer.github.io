@@ -153,6 +153,31 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/24/2016-12-24-mysql索引/">
+        <h2 class="post-title">
+            mysql 索引
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-24
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                #索引目的索引的目的在于提高查询效率，就内比为字典一样
+#索引原理
+生活中都有很多例子，动车上车的时候，以及图书官等，数据库也是一样，只是更为复杂还有范围查询(&gt;、&lt;、between、in)、模糊查询(like)、并集查询(or)等等。数据库应该选择怎么样的方式来应对所有的问题呢？我..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/09/2016-03-02-java内存模型/">
         <h2 class="post-title">
             java内存模型
@@ -231,9 +256,9 @@ class Widget  {
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-02-仿函数/">
+    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
         <h2 class="post-title">
-            仿函数（functor function objects）
+            java多线程CountDownLatch使用
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -241,31 +266,8 @@ class Widget  {
         
         <div class="post-content-preview">
             <p>
-                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
-.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2016/12/09/2015-02-04-builder设计模式/">
-        <h2 class="post-title">
-            buider设计模式
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
+                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
+public static vo..
             </p>
         </div>
     </a>
@@ -303,9 +305,9 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-12-maven继承聚合/">
+    <a href="/2016/12/09/2015-02-04-builder设计模式/">
         <h2 class="post-title">
-            maven的聚合与继承的使用
+            buider设计模式
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -313,8 +315,7 @@ public..
         
         <div class="post-content-preview">
             <p>
-                简介：maven 用于构建我们的项目，帮组我们管理已一些依赖包1，maven聚合
-在解释之前，先引入一个模块（module）的概念，我们在做开发的时候很喜欢将单独的功能，做一个独立的，让它与其他各个功能进行解耦。这样做的目的是希望在开发的过程中不至于重复实现相同的东西，已经进一步降低开发的复制度..
+                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
             </p>
         </div>
     </a>
@@ -327,9 +328,9 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-05-CountDownLatch/">
+    <a href="/2016/12/09/2016-02-02-仿函数/">
         <h2 class="post-title">
-            java多线程CountDownLatch使用
+            仿函数（functor function objects）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -337,8 +338,8 @@ public..
         
         <div class="post-content-preview">
             <p>
-                CountDownLatch是一个计数器，只不是事原子操作。不过这一点在多线程里面是很重要的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。直接展示代码      public class CountDownLatch {
-public static vo..
+                . 传递给算法的”函数参数”,并不一定的是函数,可以使行为类似的函数对象.这种对象称为function object(函数物件),或者是functor(仿函数,跟函数有点一样,所以叫做仿函数呵呵)
+.什么是仿函数了?  你可以说,任何东西行为向函数,他就是函数,也就是一个对象可以向函数那样来使用..
             </p>
         </div>
     </a>
@@ -452,6 +453,8 @@ public static vo..
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -459,8 +462,6 @@ public static vo..
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
-                    
-                    
                     
                     
                     
@@ -485,12 +486,15 @@ public static vo..
                     
                     
                     
+                    
+                    
+                    <a href="/tags/#flink" title="flink"
+                       rel="2">flink</a>
+                    
+                    
+                    
                     <a href="/tags/#db" title="db"
                        rel="4">db</a>
-                    
-                    
-                    
-                    
                     
                     
                     
