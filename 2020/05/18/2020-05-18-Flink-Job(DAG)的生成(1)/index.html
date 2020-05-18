@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        Flink-Job(DAG)的生成(1)｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2020/05/18/2020-05-18-Flink-Job(DAG)的生成(1)/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>Flink-Job(DAG)的生成(1)</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2020-05-18
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            Flink-Job(DAG)的生成(1)
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h3 id="Flink-job-的流程"><a href="#Flink-job-的流程" class="headerlink" title="Flink job 的流程"></a>Flink job 的流程</h3><p>As we knonw ,Flink 编写代码的一共就分为三步</p>
+<ul>
+<li>定义 source 数据源</li>
+<li>对source 进行操作(map,fliter,flatmap process etc)</li>
+<li>定义一个sink,数据处理完结果输出地</li>
+</ul>
+<p>当然这仅仅是一个大体主要的流程,还有一些去其他配置这里就忽略掉了</p>
+<p>定义完所有操作过后,他会生成一个DAG,然后部署到集群进行运行</p>
+<h3 id="从一个例子开始"><a href="#从一个例子开始" class="headerlink" title="从一个例子开始"></a>从一个例子开始</h3><p>从flink 与代码里面example 样例找的一个</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static void main(String[] args) throws Exception &#123;</div><div class="line"></div><div class="line">		// Checking input parameters</div><div class="line">		final ParameterTool params = ParameterTool.fromArgs(args);</div><div class="line">		System.out.println(&quot;Usage: TwitterExample [--output &lt;path&gt;] &quot; +</div><div class="line">				&quot;[--twitter-source.consumerKey &lt;key&gt; --twitter-source.consumerSecret &lt;secret&gt; --twitter-source.token &lt;token&gt; --twitter-source.tokenSecret &lt;tokenSecret&gt;]&quot;);</div><div class="line"></div><div class="line">		// set up the execution environment</div><div class="line">		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</div><div class="line"></div><div class="line">		// make parameters available in the web interface</div><div class="line">		env.getConfig().setGlobalJobParameters(params);</div><div class="line"></div><div class="line">		env.setParallelism(params.getInt(&quot;parallelism&quot;, 1));</div><div class="line"></div><div class="line">		// get input data</div><div class="line">		DataStream&lt;String&gt; streamSource;</div><div class="line">		if (params.has(TwitterSource.CONSUMER_KEY) &amp;&amp;</div><div class="line">				params.has(TwitterSource.CONSUMER_SECRET) &amp;&amp;</div><div class="line">				params.has(TwitterSource.TOKEN) &amp;&amp;</div><div class="line">				params.has(TwitterSource.TOKEN_SECRET)</div><div class="line">				) &#123;</div><div class="line">			streamSource = env.addSource(new TwitterSource(params.getProperties()));</div><div class="line">		&#125; else &#123;</div><div class="line">			System.out.println(&quot;Executing TwitterStream example with default props.&quot;);</div><div class="line">			System.out.println(&quot;Use --twitter-source.consumerKey &lt;key&gt; --twitter-source.consumerSecret &lt;secret&gt; &quot; +</div><div class="line">					&quot;--twitter-source.token &lt;token&gt; --twitter-source.tokenSecret &lt;tokenSecret&gt; specify the authentication info.&quot;);</div><div class="line">			// get default test text data</div><div class="line">			streamSource = env.fromElements(TwitterExampleData.TEXTS);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		DataStream&lt;Tuple2&lt;String, Integer&gt;&gt; tweets = streamSource</div><div class="line">				// selecting English tweets and splitting to (word, 1)</div><div class="line">				.flatMap(new SelectEnglishAndTokenizeFlatMap())</div><div class="line">				// group by words and sum their occurrences</div><div class="line">				.keyBy(0).sum(1);</div><div class="line"></div><div class="line">		// emit result</div><div class="line">		if (params.has(&quot;output&quot;)) &#123;</div><div class="line">			tweets.writeAsText(params.get(&quot;output&quot;));</div><div class="line">		&#125; else &#123;</div><div class="line">			System.out.println(&quot;Printing result to stdout. Use --output to specify output path.&quot;);</div><div class="line">			tweets.print();</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		// execute program</div><div class="line">		env.execute(&quot;Twitter Streaming Example&quot;);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>他的步骤如下</p>
+<ul>
+<li>ParameterTool.fromArgs(args) 解析参数(可以ignore)</li>
+<li>StreamExecutionEnvironment.getExecutionEnvironment() (得到一个环境变量,如果是本地的话,就是调用的local stream execution env)</li>
+<li>env.setParallelism 设置并行度 </li>
+<li>streamSource = env.addSource(new TwitterSource(params.getProperties())) 设置一个source ,上面说过的</li>
+<li>streamSource<pre><code>and splitting to (word, 1)
+.flatMap(new SelectEnglishAndTokenizeFlatMap())
+.keyBy(0).sum(1); 对这source 进行计算 上面说到的operator
+</code></pre></li>
+<li>tweets.writeAsText(params.get(“output”)); 数据输出到哪里,定义一个sink</li>
+<li>env.execute(“Twitter Streaming Example”); 最后进行一个执行</li>
+</ul>
+<p>前面的配置项我们暂时可以忽略<br>主要看怎么添加source ,operator 怎么转换的,sink 怎么添加的,最后怎么生产的DAG 的</p>
+<h3 id="环境变量StreamExecutionEnvironment"><a href="#环境变量StreamExecutionEnvironment" class="headerlink" title="环境变量StreamExecutionEnvironment"></a>环境变量StreamExecutionEnvironment</h3><p>StreamExecutionEnvironment 是一个抽象的class<br>定义了一些addSource fromCollection 基本跟怎么获取一个source 有关的方法,以及一些类型<br>他的主要子类有 RemoteStreamEnvironment LocalStreamEnvironment 这里的区别就是Local 就是用于在直接启动一个job,remote 就是在生产环境,提交一个job ,这个有可能是yarn 的资源调度</p>
+<p>根据我们的例子,我们主要看一下他的addSource 方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public &lt;OUT&gt; DataStreamSource&lt;OUT&gt; addSource(SourceFunction&lt;OUT&gt; function, String sourceName, TypeInformation&lt;OUT&gt; typeInfo) &#123;</div><div class="line"></div><div class="line">		if (typeInfo == null) &#123;</div><div class="line">			if (function instanceof ResultTypeQueryable) &#123;</div><div class="line">				typeInfo = ((ResultTypeQueryable&lt;OUT&gt;) function).getProducedType();</div><div class="line">			&#125; else &#123;</div><div class="line">				try &#123;</div><div class="line">					typeInfo = TypeExtractor.createTypeInfo(</div><div class="line">							SourceFunction.class,</div><div class="line">							function.getClass(), 0, null, null);</div><div class="line">				&#125; catch (final InvalidTypesException e) &#123;</div><div class="line">					typeInfo = (TypeInformation&lt;OUT&gt;) new MissingTypeInfo(sourceName, e);</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		boolean isParallel = function instanceof ParallelSourceFunction;</div><div class="line"></div><div class="line">		clean(function);</div><div class="line">		StreamSource&lt;OUT, ?&gt; sourceOperator;</div><div class="line">		if (function instanceof StoppableFunction) &#123;</div><div class="line">			sourceOperator = new StoppableStreamSource&lt;&gt;(cast2StoppableSourceFunction(function));</div><div class="line">		&#125; else &#123;</div><div class="line">			sourceOperator = new StreamSource&lt;&gt;(function);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		return new DataStreamSource&lt;&gt;(this, typeInfo, sourceOperator, isParallel, sourceName);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>主要步骤</p>
+<ul>
+<li>type info 类型的初始化</li>
+<li>并行度的设置</li>
+<li>构造一个StreamSource</li>
+<li>最后生成一个 DataStreamSource</li>
+</ul>
+<p>###StreamSource<br>StreamSource 继承AbstractUdfStreamOperator 同时实现了StreamOperator ,然AbstractUdfStreamOperator 继承AbstractStreamOperator ,AbstractStreamOperator 实现了StreamOperator<br>StreamOperator 主要是一些生命周期的方法,状态 快照的一些更新 存储</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public class StreamSource&lt;OUT, SRC extends SourceFunction&lt;OUT&gt;&gt;</div><div class="line">		extends AbstractUdfStreamOperator&lt;OUT, SRC&gt; implements StreamOperator&lt;OUT&gt;</div></pre></td></tr></table></figure>
+<p>###DataStreamSource</p>
+<p>DataStreamSource 继承 SingleOutputStreamOperator ,SingleOutputStreamOperator 继承DataStream,DataStream 就是所有的operator 的一个抽象,他提供了 flatMap,map<br>,filter etc,不过 DataStream 依赖于StreamExecutionEnvironment  StreamTransformation</p>
+<h3 id="整体的类图"><a href="#整体的类图" class="headerlink" title="整体的类图"></a>整体的类图</h3><p><img src="1.png" alt="source 类图"></p>
+<p>DataStream 与StreamOperator 中间通过StreamTransformation 进行一个桥接</p>
+<p>可以这样理解,DataStream 是一个具体的数据流,StreamOperator 是在这个流上进行一个操作,比如map ,filter 这样的</p>
+<h3 id="DataStream-具体的operator"><a href="#DataStream-具体的operator" class="headerlink" title="DataStream 具体的operator"></a>DataStream 具体的operator</h3><p>例子中的DataStream 的 flatMap(new SelectEnglishAndTokenizeFlatMap())<br>进入flatMap</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public &lt;R&gt; SingleOutputStreamOperator&lt;R&gt; flatMap(FlatMapFunction&lt;T, R&gt; flatMapper) &#123;</div><div class="line"></div><div class="line">		TypeInformation&lt;R&gt; outType = TypeExtractor.getFlatMapReturnTypes(clean(flatMapper),</div><div class="line">				getType(), Utils.getCallLocationName(), true);</div><div class="line"></div><div class="line">		return transform(&quot;Flat Map&quot;, outType, new StreamFlatMap&lt;&gt;(clean(flatMapper)));</div><div class="line"></div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>生成 out type 生成一个StreamFlatMap,StreamFlatMap 上线了OneInputStreamOperator ,OneInputStreamOperator 继承了 StreamOperator ,所以生产了还是一个 streamOPerator 最后call transform 方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public &lt;R&gt; SingleOutputStreamOperator&lt;R&gt; transform(String operatorName, TypeInformation&lt;R&gt; outTypeInfo, OneInputStreamOperator&lt;T, R&gt; operator) &#123;</div><div class="line"></div><div class="line">		// read the output type of the input Transform to coax out errors about MissingTypeInfo</div><div class="line">		transformation.getOutputType();</div><div class="line"></div><div class="line">		OneInputTransformation&lt;T, R&gt; resultTransform = new OneInputTransformation&lt;&gt;(</div><div class="line">				this.transformation,</div><div class="line">				operatorName,</div><div class="line">				operator,</div><div class="line">				outTypeInfo,</div><div class="line">				environment.getParallelism());</div><div class="line"></div><div class="line">		@SuppressWarnings(&#123; &quot;unchecked&quot;, &quot;rawtypes&quot; &#125;)</div><div class="line">		SingleOutputStreamOperator&lt;R&gt; returnStream = new SingleOutputStreamOperator(environment, resultTransform);</div><div class="line"></div><div class="line">		getExecutionEnvironment().addOperator(resultTransform);</div><div class="line"></div><div class="line">		return returnStream;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>生成一个 resultTransform ,它是一个Transformation,因为OneInputTransformation是Transformation的子类,同时我们new OneInputTransformation 的时候也需要传入了OneInputStreamOperator<br>在这里 Transformation 与stream operator 联系起来了,然后DataStream 又有一个transformation ,所以 这里就是 DataStream 通过transformation 连接了StreamOperator ,最后调用了 ExecutionEnvironment 的addOperator,将transformation放到 execution env 里面</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void addOperator(StreamTransformation&lt;?&gt; transformation) &#123;</div><div class="line">		Preconditions.checkNotNull(transformation, &quot;transformation must not be null.&quot;);</div><div class="line">		this.transformations.add(transformation);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h3 id="env-execute"><a href="#env-execute" class="headerlink" title="env.execute"></a>env.execute</h3><p>最后当我们执行 env.execute 他就会将 env 里面的transformation 生成一个有向无环图DAG …敬请期待</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2020/05/18/2020-05-18-Flink-Job(DAG)的生成(1)/"
+                     data-title="Flink-Job(DAG)的生成(1)"
+                     data-url="http://happyer.github.io/2020/05/18/2020-05-18-Flink-Job(DAG)的生成(1)/"
+                     data-images=""
+                     data-content="Flink job 的流程As we knonw ,Flink 编写代码的一共就分为三步
+
+定... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/05/16/2020-05-16-flink-两阶段提交/" data-toggle="tooltip" data-placement="top"
+                           title="flink 两阶段的提交">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2020/05/18/2020-05-18-Flink-Job(DAG)的生成(1)/"
+                         data-title="Flink-Job(DAG)的生成(1)"
+                         data-url="http://happyer.github.io/2020/05/18/2020-05-18-Flink-Job(DAG)的生成(1)/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Flink-job-的流程"><span class="toc-text">Flink job 的流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#从一个例子开始"><span class="toc-text">从一个例子开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#环境变量StreamExecutionEnvironment"><span class="toc-text">环境变量StreamExecutionEnvironment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#整体的类图"><span class="toc-text">整体的类图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DataStream-具体的operator"><span class="toc-text">DataStream 具体的operator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#env-execute"><span class="toc-text">env.execute</span></a></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2020
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>
