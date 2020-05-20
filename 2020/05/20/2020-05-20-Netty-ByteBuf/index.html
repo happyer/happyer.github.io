@@ -18,11 +18,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
     <title>
         
-        进一步理解java垃圾收集器｜chauncy&#39;s blog
+        Netty-ByteBuf｜chauncy&#39;s blog
         
     </title>
 
-    <link rel="canonical" href="http://happyer.github.io/2016/12/09/2016-02-18-java gc总结/">
+    <link rel="canonical" href="http://happyer.github.io/2020/05/20/2020-05-20-Netty-ByteBuf/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,15 +145,18 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
                 <div class="post-heading">
-                    <h1>进一步理解java垃圾收集器</h1>
+                    <h1>Netty-ByteBuf</h1>
                     
                     <span class="meta">
                          作者 chauncy
                         <span>
-                          日期 2016-12-09
+                          日期 2020-05-20
                          </span>
                     </span>
                     <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
                         
                     </div>
                 </div>
@@ -162,7 +165,7 @@
     </div>
     <div class="post-title-haojen">
         <span>
-            进一步理解java垃圾收集器
+            Netty-ByteBuf
         </span>
     </div>
 </header>
@@ -173,34 +176,50 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <p>1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。</p>
-<p>2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间</p>
-<p>3)垃圾收集器让java 编程者脱离内存管理，而不是跟c++一样管理内存是每个使用它的必要掌握技能，这样做的目的是为了让我们更加注重业务需求逻辑</p>
-<p>4）垃圾收集器在java 中被守护进线程所实现</p>
-<p>5)在垃圾收集器回收对象之前，会调用对象的finalize()方法，这样是给我提供在回收对象清理之前，我们可以处以一些收尾的工作</p>
-<p>6）作为java 程序员不能强制之行垃圾回收，jvm 会根据堆内存的大小自动执行</p>
-<p>7)有类似的方法System.gc（）的和Runtime.gc（）这是用来发送垃圾收集的请求到JVM的，但它不能保证垃圾回收会发生。</p>
-<p>8)如果没有足够的内存来分配给新创建的对象，jvm 会抛出OutOfMemoryError or java.lang.OutOfMemoryError heap space异常。</p>
-<p>什么时候对象符合垃圾回收</p>
-<p>  一个对象如果是不能从任何线程抵达或者没有任何引用那就符合被回收的，或者你可以认为一个对象符合被回收，那么他的引用对象为空，循环引用不作为引用，比如：一个对象A引用一个对象B，同时对象B又引用对象A,对象A和对象B他们都没有其他任何存活的对象引用，那么A ,B都符合被垃圾回收。</p>
-<p>符合垃圾回收满足如下:<br>  1) 显式地设置为null如对象,e.g. object = null<br>  2) 一个局部变量（创建一个临时对象）失去作用域<br>  3）父对象设置为null，如果一个对象包含另一个对象的引用，当您设置容器对象的引用为null，子对象或所含对象自动进行垃圾收集<br>  4）如果一个对象仅仅是weak references通过WeakHashMap 他将会被回收</p>
-<p>java堆垃圾收集分代<br>  java堆被分成 3个部分，分别是年轻代(young)，老年代(old)，和永久代（perm），年轻代又被分为3个部分，eden 区，survivor1 survivor2 ,当一个对象第一次被创建，那它将在eden区中，后续进行 minor gc 时候，如果对象还存活，它将从survivor1 移动到survivor2 中如果是在major gc发生时候将存活的对象移 老年代区<br>  堆中的永久带区域存放的是 类和方法的meta data，以及我们承载了我们讨论的String,至于perm 区的回收则取决jvm 的实现平台，如果想判断当前使用的平台是否支持perm区的回收，简单的办法就是创建成千上万很多的String，看gc 是或者看是否有OutOfMemoryError 错误。</p>
-<p>java gc的几种类型</p>
-<p>  SerialGC ：Serial 收集器是最基本、 发展历史最悠久的收集器，曾经(在JDK1.3.1之前)是虚拟机新生代收集的唯一选择。大家看名字 就会知道，这个收集器是一个单线程的收集器，但它的“单线程”的意义并不仅仅说明它只会使用一个CPU或一条收集线程去完成垃圾收集工作，更重要的是他进行垃圾收集时，必须暂停其他所有的工作线程，直到它收集结束。“stop the world”这个词也许听起来很酷，这项工作时由虚拟机在后台自动发起的，在用户不可见的情况下把用户正常工作的线程全部停掉。并非一无是处，对于限定单个cpu的环境来说，该收集器由于没有线程交互的开销，专心垃圾收集自然可以获得最高的单线程手机效率</p>
-<p>ParNew 收集器：ParNew收集器启示就是 serial收集器的多线程版本，除了使用多线程之外，其余行为包括serial 收集器可用的所有控制参数（例如 -XX:SurvivorRatio -XX:PretenureSizeThreshold -XX:HandlePromotionFailure 等），收集算法，Stop The World 等都一样<br>  在继续介绍之前，先做一个名词解释：<br>      paralle 并行，指多条垃圾手机线程并行工作，但此时用户线程仍然处于等待状态<br>      concurrent 并发，指用户线程与垃圾收集线程（但不一定是并行的，可能会交替执行），用户程序继续运行，而垃圾垃圾收集程序运行另外一个CPU</p>
-<p>  ConcMarkSweepGC：cms收集器是基于“标记－清楚”算法实现的，它的运作过程分为4个步骤：初始标记，并发标记，重新标记，并发清除<br>  其中初始标记，重新标记这两个步骤仍然需要”stop the world”。初始标记仅仅只是标记一下gc roots能直接关联到的对象，数度很快，并发标记阶段就是进行gc roots tracing 的过程，而重新新标记阶段则是为了修正并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象的标记纪录。由于整个过程中耗时最长的并发标记和并发清楚过程收集器线程都可以与用户线程一起工作，所以，从总体来说，cms收集器的内存回收过程是与用户线程一起并发执行的。</p>
-<p> Garbage-First:G1能利用多CPU,多核环境下的硬件优势，使用多个CPU来缩短 stop-the-world 停顿时间，部分其他收集器原本需要停顿java线程执行gc动作，g1收集器仍然可以通过并发的方式让java程序继续执行。使用G1收集器它将整个java堆划分为多哥大小相当独立区域（region）,虽然还保留新生代和老年代的概念，但新生代和老年代步在时物理隔离的了，他们都是一部分region (不需要连续)的集合，G1在后台维护一个优先队列表，每次根据允许的收集时间，优先回收价值最大的region。<br> 在G1收集器中，Region之间的对象引用以及其他收集器中的新生代与老年代之间的对象引用，虚拟机都使用Rememberd Set 来避免全堆扫描的。G1中每个region都有一个与之对应的Rememberd Set，程序在对references类型的数据 进行写操作时，会产生一个write barrier 暂时中断写操作，检查reference 引用对象是否处于不同的region之中，便通过cardtable把相关引用信息记录到被引用对象所属的region 的Rememberd Set之中，在gc根节点的枚举范围加入 Rememberd set 即可保证不对全堆扫描<br> G1步骤：初始标记，并发标记，最终标记，筛选回收</p>
+                <p>回顾一下之前使用Netty 进行开发的一个百万物联网设备网关,其中我觉得里面最好用的就是Netty 的ByteBuf,从源码整体的设计回顾一下</p>
+<h3 id="ByteBuf-分类"><a href="#ByteBuf-分类" class="headerlink" title="ByteBuf 分类"></a>ByteBuf 分类</h3><p>在Netty中他的ByteBuf 一共有 有4 种类型吧<br>从他所在的内存区域来划分:</p>
+<ul>
+<li>Heap java 堆内存</li>
+<li>Off Heap  java 的堆外(跟DirectBuffer 一样)<br>从是否进行池话来看:</li>
+<li>Pooled</li>
+<li>Unpooled<br>所用总共就有4类 </li>
+<li>Pooled Heap </li>
+<li>Unpooled Heap</li>
+<li>Pooled off heap</li>
+<li>Unpoop off heap</li>
+</ul>
+<h3 id="整个层次结构"><a href="#整个层次结构" class="headerlink" title="整个层次结构"></a>整个层次结构</h3><p><img src="1.png" alt="heap-pool图"></p>
+<p>ReferenceCounted 用于引用计数,就是专门针对pool 的<br>ByteBuf 是一个操作的抽象,定义了read write 的一些一些方法<br>AbstractReferenceCountedByteBuf 就是对上面一些封装,资源的回收的<br>底层就有 PooledByteBuf UnpooledHeapByteBuf UnpooledDirectByteBuf</p>
+<p>ByteBufAllocator 是一个专门用于allocat 各种buffer,可以理解为一个抽象工厂<br>对于具体的抽象工厂他有UnpooledByteBufAllocator  PooledByteBufAllocator 的实现<br>其中PooledByteBufAllocator 里面含有一个PoolArena ,他是每一个线程都有自己独立的PoolArena ,这样的设计也降低了线程资源的并发需要一些同步带来的复杂设计,已经性能降低</p>
+<p>PoolArena 里面包含了PooledByteBuf ,而到他们分别的子类PooledHeapByteBuf  PooledDirectByteBuf 和 HeapArena DirectArena 具体去实现create 操作<br>这里也是用了 桥接的设计模式在里面 PooledByteBuf PoolArena 进行一个连接<br>PooledByteBufAllocator 关联了PoolArena 从而 将factory 和具体的生成的product 进行一个结合</p>
+<h3 id="ByteBuf-的具体实现"><a href="#ByteBuf-的具体实现" class="headerlink" title="ByteBuf 的具体实现"></a>ByteBuf 的具体实现</h3><p>一般当我们数据到来了,io 线程指向decode里面可以是使用的是Unpooled.headBuffer() ,因为我们这个需要在业务里面进行不断的对他进行操作<br>如果是进行io 的话,使用Direct buf 这样减少io 的copy<br>这仅仅以Unpooled.headBuffer 例子<br>它的里面其实一个 byte[] array; 数组用于存放真正的数据<br>当我们对他进行具体的read 和write 的时候其实是操作的是readIndex writeIndex</p>
+<p>基类 AbstractByteBuf<br><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public abstract class AbstractByteBuf extends ByteBuf &#123;</div><div class="line">    int readerIndex;</div><div class="line">    int writerIndex;</div><div class="line">    private int markedReaderIndex;</div><div class="line">    private int markedWriterIndex;</div><div class="line">    private int maxCapacity;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>看一下他的read short </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">@Override</div><div class="line">   public short readShort() &#123;</div><div class="line">       checkReadableBytes0(2);</div><div class="line">       short v = _getShort(readerIndex);</div><div class="line">       readerIndex += 2;</div><div class="line">       return v;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>因为short 占用2 个字节,所以他会 readIndex+=2,读操作就是对readIndex 进行</p>
+<p>同理写是对writeIndex</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public ByteBuf writeShort(int value) &#123;</div><div class="line">        ensureWritable0(2);</div><div class="line">        _setShort(writerIndex, value);</div><div class="line">        writerIndex += 2;</div><div class="line">        return this;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>如下图<br><img src="2.png" alt="bytebuf read write"></p>
+<p>当read index 超过 wriete index 会有一个 数组越界的异常<br>capacity 是当前的容量,这个容量是扩容的,最大容量是int 的最大值</p>
+<h3 id="ByteBuf-与ByteBuffer-对比"><a href="#ByteBuf-与ByteBuffer-对比" class="headerlink" title="ByteBuf 与ByteBuffer 对比"></a>ByteBuf 与ByteBuffer 对比</h3><ul>
+<li>首先 ByteBuf 他是读写分离的,(read index write index 是分开的)</li>
+<li><p>ByteBuffer  他是金有个 postion(当前的的位置) limit (如果是可读,表示当前最大的读的位置) capacity 需要读写切换的时候需要调用flip 函数,进行转换,操作很麻烦且容易出错,若两次连续调用则就没有数据可读 </p>
+</li>
+<li><p>ByteBuffer 里面是用的是一个final byte [] 不能进行扩容,ByteBuf 可以进行扩容,并且扩容的时候为多线程使用了自旋+cas 操作保证了thread safe</p>
+</li>
+<li>ByteBuf 还可以进行pool,使用reference count </li>
+</ul>
 
                 <hr>
                 
                 <!-- 多说 Share start -->
                 <div class="ds-share"
                      style="text-align: right"
-                     data-thread-key="2016/12/09/2016-02-18-java gc总结/"
-                     data-title="进一步理解java垃圾收集器"
-                     data-url="http://happyer.github.io/2016/12/09/2016-02-18-java gc总结/"
+                     data-thread-key="2020/05/20/2020-05-20-Netty-ByteBuf/"
+                     data-title="Netty-ByteBuf"
+                     data-url="http://happyer.github.io/2020/05/20/2020-05-20-Netty-ByteBuf/"
                      data-images=""
-                     data-content="1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的... | chauncy&#39;s blog ">
+                     data-content="回顾一下之前使用Netty 进行开发的一个百万物联网设备网关,其中我觉得里面最好用的就是Net... | chauncy&#39;s blog ">
                     <div class="ds-share-inline">
                         <ul class="ds-share-icons-16">
                             <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
@@ -218,15 +237,10 @@
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/" data-toggle="tooltip" data-placement="top"
-                           title="深入分析ConcurrentHashMap">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2016/12/09/2016-10-14-spring-流程（一)/" data-toggle="tooltip" data-placement="top"
-                           title="spring 流程 （一）">Next Post &rarr;</a>
+                        <a href="/2020/05/18/2020-05-18-Flink-Job(DAG)的生成(1)/" data-toggle="tooltip" data-placement="top"
+                           title="Flink-Job(DAG)的生成(1)">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -235,9 +249,9 @@
                 <!-- 多说评论框 start -->
                 <div class="comment">
                     <div class="ds-thread"
-                         data-thread-key="2016/12/09/2016-02-18-java gc总结/"
-                         data-title="进一步理解java垃圾收集器"
-                         data-url="http://happyer.github.io/2016/12/09/2016-02-18-java gc总结/">
+                         data-thread-key="2020/05/20/2020-05-20-Netty-ByteBuf/"
+                         data-title="Netty-ByteBuf"
+                         data-url="http://happyer.github.io/2020/05/20/2020-05-20-Netty-ByteBuf/">
                     </div>
                 </div>
                 <!-- 多说评论框 end -->
@@ -249,7 +263,7 @@
 
             <div class="hidden-xs col-sm-3 toc-col">
                 <div class="toc-wrap">
-                    
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteBuf-分类"><span class="toc-text">ByteBuf 分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#整个层次结构"><span class="toc-text">整个层次结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteBuf-的具体实现"><span class="toc-text">ByteBuf 的具体实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteBuf-与ByteBuffer-对比"><span class="toc-text">ByteBuf 与ByteBuffer 对比</span></a></li></ol>
                 </div>
             </div>
         </div>
@@ -270,6 +284,9 @@
                         <a href="/tags/">FEATURED TAGS</a>
                     </h5>
                     <div class="tags">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
                         
                     </div>
                 </section>
