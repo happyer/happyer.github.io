@@ -153,9 +153,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-02-18-java gc总结/">
+    <a href="/2016/12/09/2016-02-23-深入分析ConcurrentHashMap/">
         <h2 class="post-title">
-            进一步理解java垃圾收集器
+            深入分析ConcurrentHashMap
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -163,9 +163,9 @@
         
         <div class="post-content-preview">
             <p>
-                1）java对象的创建是在java堆(heap)中，如本地变量和成员变量不在此区域。值得注意的是，类变量（static）静态成员的创建是在方法区（method area),方法区和堆区是被各个线程共享。
-2）垃圾收集是由Java虚拟机提供了一个机制，它通过回收可以回收的对象，来重新分配堆空间
-3..
+                再多线程的情况下，如果使用HashMap,就会导致死循环，导致cpu利用率接近100%，所以如果是并发的情况不要使用HashMap导致死循环主要是这段代码，当在多线程的情况由于没有同步导致，着段代码在扩容的时候会执行
+do {
+Entry&lt;K,V&gt; next = e.next; //..
             </p>
         </div>
     </a>
@@ -178,9 +178,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
+    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
         <h2 class="post-title">
-            spring 流程 （一）
+            Netty的FastThreadLocal
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -188,8 +188,7 @@
         
         <div class="post-content-preview">
             <p>
-                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
-到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
+                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
             </p>
         </div>
     </a>
@@ -225,9 +224,9 @@
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2016-03-04-Netty的FastThreadLocal/">
+    <a href="/2016/12/09/2016-10-14-spring-流程（一)/">
         <h2 class="post-title">
-            Netty的FastThreadLocal
+            spring 流程 （一）
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -235,7 +234,8 @@
         
         <div class="post-content-preview">
             <p>
-                Summary:    Netty is a NIO client server framework which enables quick and easy development of network applications such as protocol servers and cli..
+                依赖控制反转的实现很多方式，在spring中IOC容器是实现这个模式的载体，他可以在对象生成或初始化直接将数据注入
+到对象中，也可以通过将对象引用主导数据域中的方式来注入方法调用的依赖。这种依赖注入可以是递归的，对象被逐层注入。这种方案有一种完整而简介的美感，他把对象的依赖关系有序的建立起来，简..
             </p>
         </div>
     </a>
@@ -390,6 +390,10 @@
                     
                     
                     
+                    
+                    
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -397,10 +401,6 @@
                     
                     <a href="/tags/#mq" title="mq"
                        rel="2">mq</a>
-                    
-                    
-                    
-                    
                     
                     
                     
@@ -427,13 +427,13 @@
                     
                     
                     
-                    <a href="/tags/#db" title="db"
-                       rel="4">db</a>
-                    
-                    
-                    
                     <a href="/tags/#flink" title="flink"
                        rel="4">flink</a>
+                    
+                    
+                    
+                    <a href="/tags/#db" title="db"
+                       rel="4">db</a>
                     
                     
                     
