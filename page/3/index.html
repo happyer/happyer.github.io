@@ -273,6 +273,30 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2016/12/30/2016-12-30-distributed-system-clock/">
+        <h2 class="post-title">
+            分布式一致算法 clock
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-30
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                aws 的 Dynamo 在数据一致性上面使用的算法为 vector clock （也叫做Data Version） 感觉挺不错，然后就去看了看paper
+主要是使用的是一种 vector clock 和 logic clock要解释这一个东西，就不得不说一个神一样的纯在的lamport大神写的..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2016/12/28/2016-12-30-distributed-system-clock/2016-12-27-java-SynchronousQueue/">
         <h2 class="post-title">
             java-SynchronousQueue
@@ -396,33 +420,6 @@ Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2013-01-13-复制构造函数/">
-        <h2 class="post-title">
-            c++复制构造函数
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
-class Widget  {
-      public:
-      Widget();   //default 构造函数
-      Widget(const Widget &amp; rhs)..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
     <a href="/2016/12/09/2015-7-05-android-圆形进度条/">
         <h2 class="post-title">
             android圆形进度条自定义
@@ -448,9 +445,9 @@ public..
 
 <div class="post-preview "
      style="background-image: url('')">
-    <a href="/2016/12/09/2015-02-04-builder设计模式/">
+    <a href="/2016/12/09/2013-01-13-复制构造函数/">
         <h2 class="post-title">
-            buider设计模式
+            c++复制构造函数
         </h2>
         <p class="post-meta">
             <i class="fa fa-calendar" aria-hidden="true"></i> 2016-12-09
@@ -458,7 +455,11 @@ public..
         
         <div class="post-content-preview">
             <p>
-                如果类的构造器或者静态工厂中具有多个参数，设计这种类时，builder模式就一种不错的选择，特别是当大多数参数都是可选的时候，与使用传统的重叠构造器模式相比，用builder模式的代码更好读和可控。    总结一句话，就是在够着一个对象的时候，需要传入一些参赛，但是有些参数是可以传入的，有些又是..
+                今天看了effectC++看到了,不知构造函数,就回忆了一下,然后网上看了一些资料,就来总结一下
+class Widget  {
+      public:
+      Widget();   //default 构造函数
+      Widget(const Widget &amp; rhs)..
             </p>
         </div>
     </a>
@@ -572,8 +573,6 @@ public..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -589,9 +588,6 @@ public..
                     
                     
                     
-                    <a href="/tags/#mapreduce" title="mapreduce"
-                       rel="2">mapreduce</a>
-                    
                     
                     
                     <a href="/tags/#ds" title="ds"
@@ -601,12 +597,17 @@ public..
                     
                     
                     
+                    <a href="/tags/#mapreduce" title="mapreduce"
+                       rel="2">mapreduce</a>
+                    
+                    
+                    
                     
                     
                     
                     
                     <a href="/tags/#netty" title="netty"
-                       rel="2">netty</a>
+                       rel="3">netty</a>
                     
                     
                     
