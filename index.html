@@ -273,6 +273,54 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2020/05/29/2020-05-30-Flink-MemorySegment/">
+        <h2 class="post-title">
+            Flink-MemorySegment
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-05-29
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                介绍对于Flink 来说，需要进行大部分的IO,以及保证更高的吞吐降低GC 压力，需要自己管理一套内存，以及还需要自己的序列化，因为序列化我们知道他的数据结构，所以自己实现一套来说性能会更好，序列化也是需要使用内存的，所以flink 创作了MemorySegment
+MemorySegmentM..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2020/05/29/2020-05-29-Flink-异步操作AsyncIO/">
+        <h2 class="post-title">
+            Flink-异步操作AsyncIO
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-05-29
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                简介从单一数据源过来之后，需要跟具体的某个数据源，或者维度信息就行一个join操作，或者其他操作，就会涉及到Flink 与外部系统的交互。但是在与外部系统交互的过程中，难免会遇到一些耗时比较久的操作，所以异步IO 就显得有必要了，用于提高整个系统的吞吐
+如下，flink async io 的一个..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2020/05/21/2020-05-21-Flink-StateBackend/">
         <h2 class="post-title">
             Flink-StateBackend
@@ -431,55 +479,6 @@ public double estimateJoinCost(LogicalJoinNode j, int card1, int card2,         
 
 
 
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/">
-        <h2 class="post-title">
-            自己实现数据库（3）BufferPool
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-07
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                自己实现数据库（3）BufferPoolBufferPool 在数据的重要性不证明自明，素有的数据IO 都需通过BufferPool 来获取，同时系统也要保证多个线程并发访问的正确性，已经也要负责将BufferPool 的数据进行flush 到磁盘持久化的过程
-BufferPool 的基本变量p..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/">
-        <h2 class="post-title">
-            自己实现一个简单的DB(二)
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-01-15
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                自己实现一个简单的DB(2) -底层的存储数据库为了能够高效的吞吐，同时也要能够持久化数据，而持久化数据就是将我们的数据放入到我们的磁盘（机械磁盘，ssd nvme 等）
-为了能够适应不同的存储获取方式我们需要一个接口来进行一个定义，然后子类自己去实现各种具体的存储
-public interfa..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
@@ -579,6 +578,8 @@ public interfa..
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -601,8 +602,6 @@ public interfa..
                     
                     
                     
-                    
-                    
                     <a href="/tags/#mapreduce" title="mapreduce"
                        rel="2">mapreduce</a>
                     
@@ -613,12 +612,12 @@ public interfa..
                     
                     
                     <a href="/tags/#netty" title="netty"
-                       rel="3">netty</a>
+                       rel="2">netty</a>
                     
                     
                     
                     <a href="/tags/#flink" title="flink"
-                       rel="3">flink</a>
+                       rel="6">flink</a>
                     
                     
                     

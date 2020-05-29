@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="chuancy Github 上的个人博客">
+    <meta name="keyword" content="null">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="chauncy" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        Flink-异步操作AsyncIO｜chauncy&#39;s blog
+        
+    </title>
+
+    <link rel="canonical" href="http://happyer.github.io/2020/05/29/2020-05-29-Flink-异步操作AsyncIO/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//www.baidu.com/logo.png')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    chauncy
+                </span>
+                's Blog
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/tags/">tags</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>Flink-异步操作AsyncIO</h1>
+                    
+                    <span class="meta">
+                         作者 chauncy
+                        <span>
+                          日期 2020-05-29
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            Flink-异步操作AsyncIO
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>从单一数据源过来之后，需要跟具体的某个数据源，或者维度信息就行一个join操作，或者其他操作，就会涉及到Flink 与外部系统的交互<br>。<br>但是在与外部系统交互的过程中，难免会遇到一些耗时比较久的操作，所以异步IO 就显得有必要了，用于提高整个系统的吞吐</p>
+<p>如下，flink async io 的一个图<br><img src="1.png" alt=""><br>如果我们不是异步的话，就会一个一个的去等待，吞吐就会降低，如果使用 async io 那就不管其中任何一操作是否会好耕更多的时间</p>
+<h3 id="样例"><a href="#样例" class="headerlink" title="样例"></a>样例</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// create input stream of an single integer</div><div class="line">DataStream&lt;Integer&gt; inputStream = env.addSource(new SimpleSource(maxCount));</div><div class="line"></div><div class="line">// create async function, which will *wait* for a while to simulate the process of async i/o</div><div class="line">AsyncFunction&lt;Integer, String&gt; function =</div><div class="line">      new SampleAsyncFunction(sleepFactor, failRatio, shutdownWaitTS);</div><div class="line"></div><div class="line">// add async operator to streaming job</div><div class="line">DataStream&lt;String&gt; result;</div><div class="line">if (ORDERED.equals(mode)) &#123;</div><div class="line">   result = AsyncDataStream.orderedWait(</div><div class="line">      inputStream,</div><div class="line">      function,</div><div class="line">      timeout,</div><div class="line">      TimeUnit.MILLISECONDS,</div><div class="line">      20).setParallelism(taskNum);</div><div class="line">&#125;</div><div class="line">else &#123;</div><div class="line">   result = AsyncDataStream.unorderedWait(</div><div class="line">      inputStream,</div><div class="line">      function,</div><div class="line">      timeout,</div><div class="line">      TimeUnit.MILLISECONDS,</div><div class="line">      20).setParallelism(taskNum);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// add a reduce to get the sum of each keys.</div><div class="line">result.flatMap(new FlatMapFunction&lt;String, Tuple2&lt;String, Integer&gt;&gt;() &#123;</div><div class="line">   private static final long serialVersionUID = -938116068682344455L;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   public void flatMap(String value, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; out) throws Exception &#123;</div><div class="line">      out.collect(new Tuple2&lt;&gt;(value, 1));</div><div class="line">   &#125;</div><div class="line">&#125;).keyBy(0).sum(1).print()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private static class SampleAsyncFunction extends RichAsyncFunction&lt;Integer, String&gt; &#123;</div><div class="line"></div><div class="line"></div><div class="line">  public void asyncInvoke(final Integer input, final ResultFuture&lt;String&gt; resultFuture) &#123;</div><div class="line">   executorService.submit(() -&gt; &#123;</div><div class="line">      // wait for while to simulate async operation here</div><div class="line">      long sleep = (long) (ThreadLocalRandom.current().nextFloat() * sleepFactor);</div><div class="line">      try &#123;</div><div class="line">         Thread.sleep(sleep);</div><div class="line"></div><div class="line">         if (ThreadLocalRandom.current().nextFloat() &lt; failRatio) &#123;</div><div class="line">            resultFuture.completeExceptionally(new Exception(&quot;wahahahaha...&quot;));</div><div class="line">         &#125; else &#123;</div><div class="line">            resultFuture.complete(</div><div class="line">               Collections.singletonList(&quot;key-&quot; + (input % 10)));</div><div class="line">         &#125;</div><div class="line">      &#125; catch (InterruptedException e) &#123;</div><div class="line">         resultFuture.complete(new ArrayList&lt;&gt;(0));</div><div class="line">      &#125;</div><div class="line">   &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="整体的流程"><a href="#整体的流程" class="headerlink" title="整体的流程"></a>整体的流程</h3><p><img src="2.png" alt=""></p>
+<p>Msg 通过 AsyncWaiterOperator 放入到queue 里面，然后在里面进行一个操作，完成过后通过Emiter 线程从队列里面获取结果</p>
+<p>对于如果有watermark 这样语义下面同时还是unorder的，那我们需要保证watermark 的顺序，同时也要保证最大的一个吞吐<br>将watermark 和数据 进行一个隔离</p>
+<p><img src="3.png" alt=""><br>在未完成的队列里里面其实一个有序队列，他们里面的数据通过wartermark 进行一个隔离，也即是未完成的队列里面存放的是一个set 集合，集合里面可以进行存放watermark 也可以进行存放element ,当遇到watermark 的时候，他需要单独的一个set，然后放置在<br>未完成的集合里面，当有新元素来的的时候放入到last 里面，first从未完成的队列里面获取元素，等到调用AsyncFunction comple 的是时候将first 让如到已完成队列里面，然后emiter 线程进行消费，first 可以是乱序的</p>
+<p>###实现类图<br><img src="4.png" alt=""></p>
+<p>入口AsyncDataStream的unorderedWait 方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public static &lt;IN, OUT&gt; SingleOutputStreamOperator&lt;OUT&gt; unorderedWait(</div><div class="line">      DataStream&lt;IN&gt; in,</div><div class="line">      AsyncFunction&lt;IN, OUT&gt; func,</div><div class="line">      long timeout,</div><div class="line">      TimeUnit timeUnit,</div><div class="line">      int capacity) &#123;</div><div class="line">   return addOperator(in, func, timeUnit.toMillis(timeout), capacity, OutputMode.UNORDERED);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后调用了addOperator 的方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private static &lt;IN, OUT&gt; SingleOutputStreamOperator&lt;OUT&gt; addOperator(</div><div class="line">      DataStream&lt;IN&gt; in,</div><div class="line">      AsyncFunction&lt;IN, OUT&gt; func,</div><div class="line">      long timeout,</div><div class="line">      int bufSize,</div><div class="line">      OutputMode mode) &#123;</div><div class="line"></div><div class="line">   TypeInformation&lt;OUT&gt; outTypeInfo = TypeExtractor.getUnaryOperatorReturnType(</div><div class="line">      func,</div><div class="line">      AsyncFunction.class,</div><div class="line">      0,</div><div class="line">      1,</div><div class="line">      new int[]&#123;1, 0&#125;,</div><div class="line">      in.getType(),</div><div class="line">      Utils.getCallLocationName(),</div><div class="line">      true);</div><div class="line"></div><div class="line">   // create transform</div><div class="line">   AsyncWaitOperator&lt;IN, OUT&gt; operator = new AsyncWaitOperator&lt;&gt;(</div><div class="line">      in.getExecutionEnvironment().clean(func),</div><div class="line">      timeout,</div><div class="line">      bufSize,</div><div class="line">      mode);</div><div class="line"></div><div class="line">   return in.transform(&quot;async wait operator&quot;, outTypeInfo, operator);</div></pre></td></tr></table></figure>
+<p>最后通过 AsyncWaitOperator 进行一个数据处理<br>AsyncWaitOperator 是一个one input stream operator 所以可以直接processElement</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void processElement(StreamRecord&lt;IN&gt; element) throws Exception &#123;</div><div class="line">   final StreamRecordQueueEntry&lt;OUT&gt; streamRecordBufferEntry = new StreamRecordQueueEntry&lt;&gt;(element);</div><div class="line"></div><div class="line">   if (timeout &gt; 0L) &#123;</div><div class="line">      // register a timeout for this AsyncStreamRecordBufferEntry</div><div class="line">      long timeoutTimestamp = timeout + getProcessingTimeService().getCurrentProcessingTime();</div><div class="line"></div><div class="line">      final ScheduledFuture&lt;?&gt; timerFuture = getProcessingTimeService().registerTimer(</div><div class="line">         timeoutTimestamp,</div><div class="line">         new ProcessingTimeCallback() &#123;</div><div class="line">            @Override</div><div class="line">            public void onProcessingTime(long timestamp) throws Exception &#123;</div><div class="line">               userFunction.timeout(element.getValue(), streamRecordBufferEntry);</div><div class="line">            &#125;</div><div class="line">         &#125;);</div><div class="line"></div><div class="line">      // Cancel the timer once we&apos;ve completed the stream record buffer entry. This will remove</div><div class="line">      // the register trigger task</div><div class="line">      streamRecordBufferEntry.onComplete(</div><div class="line">         (StreamElementQueueEntry&lt;Collection&lt;OUT&gt;&gt; value) -&gt; &#123;</div><div class="line">            timerFuture.cancel(true);</div><div class="line">         &#125;,</div><div class="line">         executor);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   addAsyncBufferEntry(streamRecordBufferEntry);</div><div class="line"></div><div class="line">   userFunction.asyncInvoke(element.getValue(), streamRecordBufferEntry);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>逻辑还是听清楚的，创建一个超时的time，如果超时了就行报错<br> streamRecordBufferEntry.onComplete 这里是一个重点<br>streamRecordBufferEntry.onComplete 里面如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void onComplete(</div><div class="line">      final Consumer&lt;StreamElementQueueEntry&lt;T&gt;&gt; completeFunction,</div><div class="line">      Executor executor) &#123;</div><div class="line">   final StreamElementQueueEntry&lt;T&gt; thisReference = this;</div><div class="line"></div><div class="line">   getFuture().whenCompleteAsync(</div><div class="line">      // call the complete function for normal completion as well as exceptional completion</div><div class="line">      // see FLINK-6435</div><div class="line">      (value, throwable) -&gt; completeFunction.accept(thisReference),</div><div class="line">      executor);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里面的有一个 getFunture 方法，是返回个CompletableFuture ，当然 CompletableFuture 调用了compute 方法才会执行 whenCompleteAsync方法 也即是<br>当输入到达的时候这里其实么有真正的执行，可以认为这里 仅仅是注册了一个回调函数，会面会讲解回调函数什么时候会触发</p>
+<p>注册完回调函数过后，调用addAsyncBufferEntry(streamRecordBufferEntry)<br>进行添加队列元素，我们分析无序队列，最后调用到了UnorderedStreamElementQueue 的 addEntry</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">private &lt;T&gt; void addEntry(StreamElementQueueEntry&lt;T&gt; streamElementQueueEntry) &#123;</div><div class="line">   assert(lock.isHeldByCurrentThread());</div><div class="line"></div><div class="line">   if (streamElementQueueEntry.isWatermark()) &#123;</div><div class="line">      lastSet = new HashSet&lt;&gt;(capacity);</div><div class="line"></div><div class="line">      if (firstSet.isEmpty()) &#123;</div><div class="line">         firstSet.add(streamElementQueueEntry);</div><div class="line">      &#125; else &#123;</div><div class="line">         Set&lt;StreamElementQueueEntry&lt;?&gt;&gt; watermarkSet = new HashSet&lt;&gt;(1);</div><div class="line">         watermarkSet.add(streamElementQueueEntry);</div><div class="line">         uncompletedQueue.offer(watermarkSet);</div><div class="line">      &#125;</div><div class="line">      uncompletedQueue.offer(lastSet);</div><div class="line">   &#125; else &#123;</div><div class="line">      lastSet.add(streamElementQueueEntry);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   streamElementQueueEntry.onComplete(</div><div class="line">      (StreamElementQueueEntry&lt;T&gt; value) -&gt; &#123;</div><div class="line">         try &#123;</div><div class="line">            onCompleteHandler(value);</div><div class="line">         &#125; catch (InterruptedException e) &#123;</div><div class="line">            // The accept executor thread got interrupted. This is probably cause by</div><div class="line">            // the shutdown of the executor.</div><div class="line">            LOG.debug(&quot;AsyncBufferEntry could not be properly completed because the &quot; +</div><div class="line">               &quot;executor thread has been interrupted.&quot;, e);</div><div class="line">         &#125; catch (Throwable t) &#123;</div><div class="line">            operatorActions.failOperator(new Exception(&quot;Could not complete the &quot; +</div><div class="line">               &quot;stream element queue entry: &quot; + value + &apos;.&apos;, t));</div><div class="line">         &#125;</div><div class="line">      &#125;,</div><div class="line">      executor);</div><div class="line"></div><div class="line">   numberEntries++;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的逻辑也就是之前说的逻辑，如果是水位线，需要新建一个set用于存放watermark,然后添加到uncopmlete queue 里面，如果不是水位线，则将元素添加到lastSet 这里需要注意的是，遇到一个watermark 需要添加一个新的last set 到 uncomplete queue 里面，同时first的书 也是从uncomplete里面过去的，与uncomplte 不同的的是first first 里面是真正的数据，跟之前这里也有一个回调函数<br>异步调用完成<br>AsyncFunction 里面asyncInvoke 需要我们自己实现，数据完成的时候，会调用ResultFuture complete   方法<br>根据我们上面的类图 得知 最后调用了 StreamRecordQueueEntry</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void complete(Collection&lt;OUT&gt; result) &#123;</div><div class="line">   resultFuture.complete(result);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的resultFuture 就是一个CompletableFuture 对象 ，此事我们的回调函数触发了</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void onComplete(</div><div class="line">      final Consumer&lt;StreamElementQueueEntry&lt;T&gt;&gt; completeFunction,</div><div class="line">      Executor executor) &#123;</div><div class="line">   final StreamElementQueueEntry&lt;T&gt; thisReference = this;</div><div class="line"></div><div class="line">   getFuture().whenCompleteAsync(</div><div class="line">      // call the complete function for normal completion as well as exceptional completion</div><div class="line">      // see FLINK-6435</div><div class="line">      (value, throwable) -&gt; completeFunction.accept(thisReference),</div><div class="line">      executor);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>而触发的是completeFunction ，这个就会执行<br>UnorderQueue里面的 addEntry 的哪个回调代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line"> streamElementQueueEntry.onComplete(</div><div class="line">      (StreamElementQueueEntry&lt;T&gt; value) -&gt; &#123;</div><div class="line">         try &#123;</div><div class="line">            onCompleteHandler(value);</div><div class="line">         &#125; catch (InterruptedException e) &#123;</div><div class="line">            // The accept executor thread got interrupted. This is probably cause by</div><div class="line">            // the shutdown of the executor.</div><div class="line">            LOG.debug(&quot;AsyncBufferEntry could not be properly completed because the &quot; +</div><div class="line">               &quot;executor thread has been interrupted.&quot;, e);</div><div class="line">         &#125; catch (Throwable t) &#123;</div><div class="line">            operatorActions.failOperator(new Exception(&quot;Could not complete the &quot; +</div><div class="line">               &quot;stream element queue entry: &quot; + value + &apos;.&apos;, t));</div><div class="line">         &#125;</div><div class="line">      &#125;,</div><div class="line">      executor);</div><div class="line"></div><div class="line">numberEntries++;</div></pre></td></tr></table></figure>
+<p>最后调用了onCompleteHandler  方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void onCompleteHandler(StreamElementQueueEntry&lt;?&gt; streamElementQueueEntry) throws InterruptedException &#123;</div><div class="line">   lock.lockInterruptibly();</div><div class="line"></div><div class="line">   try &#123;</div><div class="line">      if (firstSet.remove(streamElementQueueEntry)) &#123;</div><div class="line">         completedQueue.offer(streamElementQueueEntry);</div><div class="line"></div><div class="line">         while (firstSet.isEmpty() &amp;&amp; firstSet != lastSet) &#123;</div><div class="line">            firstSet = uncompletedQueue.poll();</div><div class="line"></div><div class="line">            Iterator&lt;StreamElementQueueEntry&lt;?&gt;&gt; it = firstSet.iterator();</div><div class="line"></div><div class="line">            while (it.hasNext()) &#123;</div><div class="line">               StreamElementQueueEntry&lt;?&gt; bufferEntry = it.next();</div><div class="line"></div><div class="line">               if (bufferEntry.isDone()) &#123;</div><div class="line">                  completedQueue.offer(bufferEntry);</div><div class="line">                  it.remove();</div><div class="line">               &#125;</div><div class="line">            &#125;</div><div class="line">         &#125;</div><div class="line"></div><div class="line">         LOG.debug(&quot;Signal unordered stream element queue has completed entries.&quot;);</div><div class="line">         hasCompletedEntries.signalAll();</div><div class="line">      &#125;</div><div class="line">   &#125; finally &#123;</div><div class="line">      lock.unlock();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里面的逻辑是，fist 里面的数据移除，同时在complete queue 里面添加完成的元素，最后发送信号  hasCompletedEntries.signalAll() 告诉emiter 线程曲消费数据<br>Emiter 线程代码 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">public void run() &#123;</div><div class="line">   try &#123;</div><div class="line">      while (running) &#123;</div><div class="line">         LOG.debug(&quot;Wait for next completed async stream element result.&quot;);</div><div class="line">         AsyncResult streamElementEntry = streamElementQueue.peekBlockingly();</div><div class="line"></div><div class="line">         output(streamElementEntry);</div><div class="line">      &#125;</div><div class="line">   &#125; catch (InterruptedException e) &#123;</div><div class="line">      if (running) &#123;</div><div class="line">         operatorActions.failOperator(e);</div><div class="line">      &#125; else &#123;</div><div class="line">         // Thread got interrupted which means that it should shut down</div><div class="line">         LOG.debug(&quot;Emitter thread got interrupted, shutting down.&quot;);</div><div class="line">      &#125;</div><div class="line">   &#125; catch (Throwable t) &#123;</div><div class="line">      operatorActions.failOperator(new Exception(&quot;AsyncWaitOperator&apos;s emitter caught an &quot; +</div><div class="line">         &quot;unexpected throwable.&quot;, t));</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>逻辑比较简单，即是区获取 queue 里面的数据，然后output到下游即可</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>使用 队列的里面存放 数据集合（watermark 也是一个数据认为），进行通过watermark 进行区分<br>使用 first 和complte queue 进行一个数据与处理进行解耦<br>同时使用completefuture 的功能来达到一个异步变成的效果</p>
+
+                <hr>
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                     style="text-align: right"
+                     data-thread-key="2020/05/29/2020-05-29-Flink-异步操作AsyncIO/"
+                     data-title="Flink-异步操作AsyncIO"
+                     data-url="http://happyer.github.io/2020/05/29/2020-05-29-Flink-异步操作AsyncIO/"
+                     data-images=""
+                     data-content="简介从单一数据源过来之后，需要跟具体的某个数据源，或者维度信息就行一个join操作，或者其他操... | chauncy&#39;s blog ">
+                    <div class="ds-share-inline">
+                        <ul class="ds-share-icons-16">
+                            <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                            <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                            <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                            <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                        </ul>
+                        <div class="ds-share-icons-more">
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/05/29/2020-05-30-Flink-MemorySegment/" data-toggle="tooltip" data-placement="top"
+                           title="Flink-MemorySegment">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/05/21/2020-05-21-Flink-StateBackend/" data-toggle="tooltip" data-placement="top"
+                           title="Flink-StateBackend">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                         data-thread-key="2020/05/29/2020-05-29-Flink-异步操作AsyncIO/"
+                         data-title="Flink-异步操作AsyncIO"
+                         data-url="http://happyer.github.io/2020/05/29/2020-05-29-Flink-异步操作AsyncIO/">
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#简介"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#样例"><span class="toc-text">样例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#整体的流程"><span class="toc-text">整体的流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#flink"
+                           title="flink">flink</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by Hux
+    var _user = 'chauncy';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user};
+    (function () {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';
+        ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chauncy">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; chauncy 2020
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://happyer.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- swiftype -->
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install','null','2.0.0');
+</script>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="null">
+</body>
+
+</html>

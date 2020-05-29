@@ -273,6 +273,55 @@
 
 <div class="post-preview "
      style="background-image: url('')">
+    <a href="/2020/04/07/2020-04-07-自己实现数据库（3）BufferPool/">
+        <h2 class="post-title">
+            自己实现数据库（3）BufferPool
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-04-07
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                自己实现数据库（3）BufferPoolBufferPool 在数据的重要性不证明自明，素有的数据IO 都需通过BufferPool 来获取，同时系统也要保证多个线程并发访问的正确性，已经也要负责将BufferPool 的数据进行flush 到磁盘持久化的过程
+BufferPool 的基本变量p..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
+    <a href="/2020/01/15/2020-01-15-自己实现一个简单的DB(2)/">
+        <h2 class="post-title">
+            自己实现一个简单的DB(二)
+        </h2>
+        <p class="post-meta">
+            <i class="fa fa-calendar" aria-hidden="true"></i> 2020-01-15
+        </p>
+        
+        <div class="post-content-preview">
+            <p>
+                自己实现一个简单的DB(2) -底层的存储数据库为了能够高效的吞吐，同时也要能够持久化数据，而持久化数据就是将我们的数据放入到我们的磁盘（机械磁盘，ssd nvme 等）
+为了能够适应不同的存储获取方式我们需要一个接口来进行一个定义，然后子类自己去实现各种具体的存储
+public interfa..
+            </p>
+        </div>
+    </a>
+
+</div>
+
+<hr>
+
+
+
+<div class="post-preview "
+     style="background-image: url('')">
     <a href="/2019/12/19/2019-12-19-自己实现一个简单的DB/">
         <h2 class="post-title">
             自己实现一个简单的DB
@@ -415,53 +464,6 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
 
 
 
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2017/02/06/2017-02-06-raft/">
-        <h2 class="post-title">
-            老司机带你用 Go 语言实现 Raft 分布式一致性协议
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-02-06
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                老司机带你用 Go 语言实现 Raft 分布式一致性协议&emsp;&emsp;随着大型网站的各种高并发访问、海量数据处理等场景越来越多，如何实现网站的高可用、易伸缩、可扩展、安全等目标就显得越来越重要。
-&emsp;&emsp;为了解决这样一系列问题，大型网站的架构也在不断发展。提高大型网站的..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
-<div class="post-preview "
-     style="background-image: url('')">
-    <a href="/2017/01/16/2017-01-16-mapreduce/">
-        <h2 class="post-title">
-            老司机带你用 Go 语言实现 MapReduce 框架
-        </h2>
-        <p class="post-meta">
-            <i class="fa fa-calendar" aria-hidden="true"></i> 2017-01-16
-        </p>
-        
-        <div class="post-content-preview">
-            <p>
-                老司机带你用 Go 语言实现 MapReduce 框架&emsp;&emsp;MapReduce 是 Google 提出的一个软件架构，用于大规模数据集（大于1TB）的并行运算。简而言之，就是将任务切分成很小的任务然后一个一个区的执行最后汇总，这就像小时候我们老师经常教育我们一样，大事化小，小事..
-            </p>
-        </div>
-    </a>
-
-</div>
-
-<hr>
-
-
-
 
 <!-- 翻页 pager -->
 
@@ -565,6 +567,8 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
                     
                     
                     
+                    
+                    
                     <a href="/tags/#scala" title="scala"
                        rel="2">scala</a>
                     
@@ -587,8 +591,6 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
                     
                     
                     
-                    
-                    
                     <a href="/tags/#mapreduce" title="mapreduce"
                        rel="2">mapreduce</a>
                     
@@ -599,12 +601,12 @@ Netty 是一个高性能的网络框架,被广泛的运用在底层的网络传�
                     
                     
                     <a href="/tags/#netty" title="netty"
-                       rel="3">netty</a>
+                       rel="2">netty</a>
                     
                     
                     
                     <a href="/tags/#flink" title="flink"
-                       rel="3">flink</a>
+                       rel="6">flink</a>
                     
                     
                     
